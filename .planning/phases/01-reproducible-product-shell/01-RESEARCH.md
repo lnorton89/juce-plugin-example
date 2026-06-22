@@ -149,6 +149,10 @@ Define protocol version `1` and stable message/event names in one native header 
 
 Use a CMake cache option such as `LUMASCOPE_WEBVIEW_DEV_SERVER` (empty by default). Empty means embedded resource root. A validated localhost URL enables Vite mode and is reflected in `host.info`; failure shows actionable diagnostics. Never probe remote/local URLs automatically in release builds.
 
+### Pattern 4: One project-scoped Context7 MCP server
+
+Codex supports trusted-project MCP configuration in `.codex/config.toml`. Configure a single streamable HTTP server with `[mcp_servers.context7]` and `url = "https://mcp.context7.com/mcp"`; do not create one server per library URL. Record the required library IDs in `AGENTS.md` and `docs/development.md`: `/websites/juce_master`, `/janwilczek/juce-webview-tutorial`, and `/websites/mui_material-ui`. An optional API key belongs in the developer's environment/config, never in the repository.
+
 ### Anti-Patterns to Avoid
 
 - Copying the tutorial's JUCE/WebView2 versions or VS2022 preset without reconciling the locked baseline.
@@ -316,6 +320,7 @@ webView.goToURL(devServerUrl.isEmpty()
 - [JUCE CMake API](https://github.com/juce-framework/JUCE/blob/8.0.14/docs/CMake%20API.md) — target flags and WebView2 package location.
 - [JUCE WebBrowserComponent API](https://docs.juce.com/master/classjuce_1_1WebBrowserComponent.html) — backend and resource/native APIs.
 - [Jan Wilczek JUCE WebView tutorial](https://github.com/janwilczek/juce-webview-tutorial) — inspected current CMake, editor/resource provider, presets, and SDK download script.
+- [Codex MCP manual](https://developers.openai.com/codex/mcp) — project-scoped `.codex/config.toml` and Context7 server configuration.
 - `.planning/phases/01-reproducible-product-shell/01-UI-SPEC.md` — approved visual and interaction contract.
 
 ### Secondary (MEDIUM confidence)
