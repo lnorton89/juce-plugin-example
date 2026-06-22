@@ -71,7 +71,10 @@ LumaScopeAudioProcessorEditor::LumaScopeAudioProcessorEditor (LumaScopeAudioProc
     setSize (960, 600);
     setResizable (true, true);
     setResizeLimits (560, 360, 1920, 1200);
-    const auto simulation = juce::SystemStats::getEnvironmentVariable ("LUMASCOPE_SIMULATE_WEB_FAILURE", {});
+    juce::String simulation;
+   #if JUCE_DEBUG
+    simulation = juce::SystemStats::getEnvironmentVariable ("LUMASCOPE_SIMULATE_WEB_FAILURE", {});
+   #endif
     if (simulation == "webview2")
     {
         showFallback ("webview2_unavailable", "The WebView2 runtime is unavailable. Install or repair Evergreen WebView2, then reopen LumaScope.");
