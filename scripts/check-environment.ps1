@@ -39,17 +39,20 @@ $result = [ordered]@{
     node = Get-CommandVersion 'node' @('--version')
     npm = Get-CommandVersion 'npm.cmd' @('--version')
     ninja = Get-CommandVersion 'ninja' @('--version')
+    vsDeveloperEnvironment = [bool] (Get-Command 'cl.exe' -ErrorAction SilentlyContinue)
+    webView2Sdk = if (Test-Path (Join-Path $PSScriptRoot '../.deps/webview2/packages/Microsoft.Web.WebView2.1.0.4022.49/build/native/Microsoft.Web.WebView2.targets')) { '1.0.4022.49 (cached)' } else { 'not cached (CMake downloads the pinned SDK)' }
     webView2 = $webView
     errors = [System.Collections.Generic.List[string]]::new()
 }
 
 if (-not $IsWindows -and $PSVersionTable.PSEdition -eq 'Core') { $result.errors.Add('Windows is required.') }
 if ($windows.OSArchitecture -ne '64-bit') { $result.errors.Add('64-bit Windows is required.') }
-if (-not $vs) { $result.errors.Add('Visual Studio 2019 with the Desktop development with C++ workload is required.') }
-foreach ($tool in @('cmake', 'node', 'npm', 'ninja')) {
+if (-not $vs) { $result.errors.Add('Visual Studio 2019 with the Desktop development with C++ workload is required. Install that workload; LumaScope will not substitute another compiler.') }
+foreach ($tool in @('cmake', 'node', 'npm')) {
     if (-not $result[$tool]) { $result.errors.Add("$tool is required and was not found on PATH.") }
 }
-if (-not $webView) { $result.errors.Add('Microsoft Edge WebView2 Evergreen Runtime is required.') }
+if (-not $result.ninja) { $result.errors.Add('Ninja was not found on PATH. Install Ninja or use the default Visual Studio 2019 presets.') }
+if (-not $webView) { $result.errors.Add('Microsoft Edge WebView2 Evergreen Runtime is missing. Install or repair the Evergreen Runtime before launching LumaScope.') }
 $result.ok = $result.errors.Count -eq 0
 
 if ($Json) {
@@ -58,6 +61,8 @@ if ($Json) {
     Write-Host "Windows: $($result.windows.product) build $($result.windows.build) $($result.windows.architecture)"
     Write-Host "Visual Studio 2019: $($result.visualStudio.version)"
     Write-Host "CMake: $($result.cmake) | Node: $($result.node) | npm: $($result.npm) | Ninja: $($result.ninja)"
+    Write-Host "VS developer environment active: $($result.vsDeveloperEnvironment) (required only for Ninja/MSVC command-line builds)"
+    Write-Host "WebView2 SDK: $($result.webView2Sdk)"
     Write-Host "WebView2 Evergreen Runtime: $($result.webView2)"
     foreach ($message in $result.errors) { Write-Error $message }
 }

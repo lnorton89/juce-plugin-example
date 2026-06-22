@@ -115,6 +115,10 @@ Architecture not yet mapped. Follow existing patterns found in the codebase.
 No project skills found. Add skills to any of: `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`, or `.codex/skills/` with a `SKILL.md` index file.
 <!-- GSD:skills-end -->
 
+## Context7 Documentation
+
+Use the single project Context7 server for library/API setup and version-sensitive implementation details. Query `/websites/juce_master` for JUCE, `/janwilczek/juce-webview-tutorial` for the WebView tutorial architecture, and `/websites/mui_material-ui` for Material UI. Do not create per-library MCP servers or commit API keys.
+
 <!-- GSD:workflow-start source:GSD defaults -->
 ## GSD Workflow Enforcement
 
