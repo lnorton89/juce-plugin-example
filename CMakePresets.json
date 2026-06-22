@@ -1,0 +1,54 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 22, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "LUMASCOPE_DEPENDENCY_DIR": "${sourceDir}/.deps"
+      }
+    },
+    {
+      "name": "vs2019-debug",
+      "inherits": "base",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "cacheVariables": { "CMAKE_CONFIGURATION_TYPES": "Debug;Release" }
+    },
+    {
+      "name": "vs2019-release",
+      "inherits": "base",
+      "generator": "Visual Studio 16 2019",
+      "architecture": "x64",
+      "cacheVariables": { "CMAKE_CONFIGURATION_TYPES": "Debug;Release" }
+    },
+    {
+      "name": "ninja-debug",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "ninja-release",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "vs2019-debug", "configurePreset": "vs2019-debug", "configuration": "Debug" },
+    { "name": "vs2019-release", "configurePreset": "vs2019-release", "configuration": "Release" },
+    { "name": "ninja-debug", "configurePreset": "ninja-debug" },
+    { "name": "ninja-release", "configurePreset": "ninja-release" }
+  ],
+  "testPresets": [
+    { "name": "vs2019-debug", "configurePreset": "vs2019-debug", "configuration": "Debug", "output": { "outputOnFailure": true } },
+    { "name": "vs2019-release", "configurePreset": "vs2019-release", "configuration": "Release", "output": { "outputOnFailure": true } },
+    { "name": "ninja-debug", "configurePreset": "ninja-debug", "output": { "outputOnFailure": true } },
+    { "name": "ninja-release", "configurePreset": "ninja-release", "output": { "outputOnFailure": true } }
+  ]
+}
+

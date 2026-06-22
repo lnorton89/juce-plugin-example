@@ -1,0 +1,4 @@
+add_executable(LumaScopeNativeTests SmokeTests.cpp)
+target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
+add_test(NAME LumaScopeNativeTests COMMAND LumaScopeNativeTests)
+

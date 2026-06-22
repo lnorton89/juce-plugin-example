@@ -1,0 +1,7 @@
+/.deps/
+/build/
+/ui/node_modules/
+/ui/dist/
+/.vs/
+*.user
+

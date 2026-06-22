@@ -1,0 +1,37 @@
+set(LUMASCOPE_DEPENDENCY_DIR "${CMAKE_SOURCE_DIR}/.deps" CACHE PATH "Repository-local dependency cache")
+file(MAKE_DIRECTORY "${LUMASCOPE_DEPENDENCY_DIR}")
+set(CPM_SOURCE_CACHE "${LUMASCOPE_DEPENDENCY_DIR}/cpm-cache" CACHE PATH "CPM source cache" FORCE)
+
+include("${CMAKE_CURRENT_LIST_DIR}/CPM.cmake")
+
+CPMAddPackage(
+  NAME JUCE
+  GITHUB_REPOSITORY juce-framework/JUCE
+  GIT_TAG 8.0.14
+  OPTIONS "JUCE_BUILD_EXAMPLES OFF" "JUCE_BUILD_EXTRAS OFF")
+
+if(WIN32)
+  set(WEBVIEW2_VERSION "1.0.4022.49")
+  set(WEBVIEW2_PACKAGES_DIR "${LUMASCOPE_DEPENDENCY_DIR}/webview2/packages")
+  set(WEBVIEW2_PACKAGE_DIR "${WEBVIEW2_PACKAGES_DIR}/Microsoft.Web.WebView2.${WEBVIEW2_VERSION}")
+  set(WEBVIEW2_NUPKG "${LUMASCOPE_DEPENDENCY_DIR}/webview2/Microsoft.Web.WebView2.${WEBVIEW2_VERSION}.nupkg")
+  if(NOT EXISTS "${WEBVIEW2_PACKAGE_DIR}/build/native/Microsoft.Web.WebView2.targets")
+    file(MAKE_DIRECTORY "${LUMASCOPE_DEPENDENCY_DIR}/webview2")
+    if(NOT EXISTS "${WEBVIEW2_NUPKG}")
+      file(DOWNLOAD
+        "https://api.nuget.org/v3-flatcontainer/microsoft.web.webview2/${WEBVIEW2_VERSION}/microsoft.web.webview2.${WEBVIEW2_VERSION}.nupkg"
+        "${WEBVIEW2_NUPKG}"
+        TLS_VERIFY ON
+        STATUS WEBVIEW2_DOWNLOAD_STATUS)
+      list(GET WEBVIEW2_DOWNLOAD_STATUS 0 WEBVIEW2_DOWNLOAD_CODE)
+      if(NOT WEBVIEW2_DOWNLOAD_CODE EQUAL 0)
+        file(REMOVE "${WEBVIEW2_NUPKG}")
+        message(FATAL_ERROR "Unable to download Microsoft.Web.WebView2 ${WEBVIEW2_VERSION}: ${WEBVIEW2_DOWNLOAD_STATUS}")
+      endif()
+    endif()
+    file(MAKE_DIRECTORY "${WEBVIEW2_PACKAGE_DIR}")
+    file(ARCHIVE_EXTRACT INPUT "${WEBVIEW2_NUPKG}" DESTINATION "${WEBVIEW2_PACKAGE_DIR}")
+  endif()
+  set(JUCE_WEBVIEW2_PACKAGE_LOCATION "${WEBVIEW2_PACKAGES_DIR}" CACHE PATH "Pinned WebView2 NuGet package root" FORCE)
+  message(STATUS "LumaScope WebView2 SDK: ${WEBVIEW2_VERSION} (${WEBVIEW2_PACKAGE_DIR})")
+endif()
