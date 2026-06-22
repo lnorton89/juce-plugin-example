@@ -1,3 +1,5 @@
+include("${CMAKE_SOURCE_DIR}/cmake/WebBundle.cmake")
+
 juce_add_plugin(LumaScope
   COMPANY_NAME "Signal Foundry Audio"
   IS_SYNTH FALSE
@@ -17,8 +19,10 @@ juce_add_plugin(LumaScope
 target_sources(LumaScope PRIVATE
   include/LumaScope/PluginEditor.h
   include/LumaScope/PluginProcessor.h
+  include/LumaScope/WebResources.h
   source/PluginEditor.cpp
-  source/PluginProcessor.cpp)
+  source/PluginProcessor.cpp
+  source/WebResources.cpp)
 
 target_include_directories(LumaScope PUBLIC include)
 target_compile_features(LumaScope PUBLIC cxx_std_20)
@@ -27,6 +31,8 @@ target_compile_definitions(LumaScope PUBLIC
   JUCE_USE_CURL=0
   JUCE_VST3_CAN_REPLACE_VST2=0)
 target_link_libraries(LumaScope PRIVATE
+  LumaScopeWebBundle
   juce::juce_audio_utils
   juce::juce_gui_extra
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
+add_dependencies(LumaScope LumaScopeWebBundle)

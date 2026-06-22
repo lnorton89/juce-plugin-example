@@ -1,4 +1,10 @@
-add_executable(LumaScopeNativeTests SmokeTests.cpp)
-target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
-add_test(NAME LumaScopeNativeTests COMMAND LumaScopeNativeTests)
+set(WEB_FIXTURE_ARCHIVE "${CMAKE_CURRENT_BINARY_DIR}/web-fixture.zip")
+file(GLOB WEB_FIXTURE_FILES RELATIVE "${CMAKE_SOURCE_DIR}/tests/fixtures/web" "${CMAKE_SOURCE_DIR}/tests/fixtures/web/*")
+file(ARCHIVE_CREATE OUTPUT "${WEB_FIXTURE_ARCHIVE}" PATHS ${WEB_FIXTURE_FILES} FORMAT zip MTIME "2020-01-01" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/fixtures/web")
+juce_add_binary_data(TestWebResources HEADER_NAME TestWebResources.h NAMESPACE TestWebResourcesData SOURCES "${WEB_FIXTURE_ARCHIVE}")
 
+add_executable(LumaScopeNativeTests WebResourcesTests.cpp "${CMAKE_SOURCE_DIR}/plugin/source/WebResources.cpp")
+target_include_directories(LumaScopeNativeTests PRIVATE "${CMAKE_SOURCE_DIR}/plugin/include")
+target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
+target_link_libraries(LumaScopeNativeTests PRIVATE TestWebResources juce::juce_gui_extra)
+add_test(NAME LumaScopeNativeTests COMMAND LumaScopeNativeTests)
