@@ -11,6 +11,7 @@ export interface HostInfo {
   productVersion: string;
   hostMode: 'VST3' | 'Standalone';
   uiSource: 'embedded' | 'vite';
+  buildMarker: string;
 }
 export interface BridgeError { code: string; message: string; protocolVersion: number }
 
@@ -25,6 +26,7 @@ export function parseHostInfo(value: unknown): HostInfo | null {
   const bounded = (field: unknown) => typeof field === 'string' && field.length > 0 && field.length <= 128;
   return item.protocolVersion === protocolVersion && item.productName === 'LumaScope'
     && item.companyName === 'Signal Foundry Audio' && bounded(item.productVersion)
+    && bounded(item.buildMarker)
     && (item.hostMode === 'VST3' || item.hostMode === 'Standalone')
     && (item.uiSource === 'embedded' || item.uiSource === 'vite') ? item as unknown as HostInfo : null;
 }

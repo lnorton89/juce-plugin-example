@@ -6,7 +6,7 @@ import type { BridgeStatus } from '../bridge/protocol';
 
 const ready = (hostMode: 'VST3' | 'Standalone', uiSource: 'embedded' | 'vite'): BridgeStatus => ({
   state: 'ready',
-  hostInfo: { protocolVersion: 1, productName: 'LumaScope', companyName: 'Signal Foundry Audio', productVersion: '0.1.0', hostMode, uiSource },
+  hostInfo: { protocolVersion: 1, productName: 'LumaScope', companyName: 'Signal Foundry Audio', productVersion: '0.1.0', hostMode, uiSource, buildMarker: '0.1.0-Debug' },
 });
 const error = (code: string, message = 'diagnostic'): BridgeStatus => ({ state: 'error', code, message });
 const renderState = (status: BridgeStatus) => render(<BridgeProvider initialStatus={status}><App /></BridgeProvider>);

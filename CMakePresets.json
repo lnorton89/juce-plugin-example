@@ -8,7 +8,9 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "LUMASCOPE_DEPENDENCY_DIR": "${sourceDir}/.deps"
+        "LUMASCOPE_DEPENDENCY_DIR": "${sourceDir}/.deps",
+        "LUMASCOPE_WEBVIEW_DEV_SERVER": "",
+        "LUMASCOPE_RELEASE_BUILD": "OFF"
       }
     },
     {
@@ -19,11 +21,20 @@
       "cacheVariables": { "CMAKE_CONFIGURATION_TYPES": "Debug;Release" }
     },
     {
+      "name": "vs2019-vite",
+      "inherits": "vs2019-debug",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": { "LUMASCOPE_WEBVIEW_DEV_SERVER": "http://127.0.0.1:5174" }
+    },
+    {
       "name": "vs2019-release",
       "inherits": "base",
       "generator": "Visual Studio 16 2019",
       "architecture": "x64",
-      "cacheVariables": { "CMAKE_CONFIGURATION_TYPES": "Debug;Release" }
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+        "LUMASCOPE_RELEASE_BUILD": "ON"
+      }
     },
     {
       "name": "ninja-debug",
@@ -40,6 +51,7 @@
   ],
   "buildPresets": [
     { "name": "vs2019-debug", "configurePreset": "vs2019-debug", "configuration": "Debug" },
+    { "name": "vs2019-vite", "configurePreset": "vs2019-vite", "configuration": "Debug" },
     { "name": "vs2019-release", "configurePreset": "vs2019-release", "configuration": "Release" },
     { "name": "ninja-debug", "configurePreset": "ninja-debug" },
     { "name": "ninja-release", "configurePreset": "ninja-release" }
@@ -51,4 +63,3 @@
     { "name": "ninja-release", "configurePreset": "ninja-release", "output": { "outputOnFailure": true } }
   ]
 }
-

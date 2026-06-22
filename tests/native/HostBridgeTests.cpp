@@ -17,7 +17,7 @@ int runHostBridgeTests()
     {
         if (! condition) { std::cerr << "FAIL: " << message << '\n'; ++failures; }
     };
-    lumascope::HostBridge bridge ("Standalone", "embedded", "0.1.0");
+    lumascope::HostBridge bridge ("Standalone", "embedded", "0.1.0", "0.1.0-Debug");
     const auto ready = bridge.handleUiReady (readFixture (LUMASCOPE_FIXTURE_UI_READY));
     expect (ready.ready && ready.eventId == lumascope::HostBridge::hostInfoEvent, "valid ui.ready succeeds");
     expect (juce::JSON::toString (ready.payload, true) == juce::JSON::toString (readFixture (LUMASCOPE_FIXTURE_HOST_INFO), true), "host.info matches fixture");

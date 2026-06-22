@@ -13,7 +13,7 @@ test('renders the semantic three-row shell while connecting', () => {
 
 test('renders honest ready copy without future controls or fabricated values', () => {
   render(
-    <BridgeProvider initialStatus={{ state: 'ready', hostInfo: { protocolVersion: 1, productName: 'LumaScope', companyName: 'Signal Foundry Audio', productVersion: '0.1.0', hostMode: 'Standalone', uiSource: 'embedded' } }}>
+    <BridgeProvider initialStatus={{ state: 'ready', hostInfo: { protocolVersion: 1, productName: 'LumaScope', companyName: 'Signal Foundry Audio', productVersion: '0.1.0', hostMode: 'Standalone', uiSource: 'embedded', buildMarker: '0.1.0-Debug' } }}>
       <App />
     </BridgeProvider>,
   );

@@ -19,7 +19,8 @@ public:
     static const juce::Identifier hostInfoEvent;
     static const juce::Identifier bridgeErrorEvent;
 
-    HostBridge (juce::String hostMode, juce::String uiSource, juce::String productVersion);
+    HostBridge (juce::String hostMode, juce::String uiSource, juce::String productVersion,
+                juce::String buildMarker);
     BridgeResponse handleUiReady (const juce::var& payload) const;
     juce::var makeHostInfo() const;
 
@@ -30,6 +31,6 @@ private:
     juce::String hostMode;
     juce::String uiSource;
     juce::String productVersion;
+    juce::String buildMarker;
 };
 }
-

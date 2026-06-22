@@ -4,5 +4,6 @@
   "companyName": "Signal Foundry Audio",
   "productVersion": "0.1.0",
   "hostMode": "Standalone",
-  "uiSource": "embedded"
+  "uiSource": "embedded",
+  "buildMarker": "0.1.0-Debug"
 }

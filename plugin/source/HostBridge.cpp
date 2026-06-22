@@ -6,14 +6,17 @@ const juce::Identifier HostBridge::uiReadyEvent { "ui.ready" };
 const juce::Identifier HostBridge::hostInfoEvent { "host.info" };
 const juce::Identifier HostBridge::bridgeErrorEvent { "bridge.error" };
 
-HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn)
+HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn,
+                        juce::String buildMarkerIn)
     : hostMode (std::move (hostModeIn)),
       uiSource (std::move (uiSourceIn)),
-      productVersion (std::move (productVersionIn))
+      productVersion (std::move (productVersionIn)),
+      buildMarker (std::move (buildMarkerIn))
 {
     jassert (hostMode == "VST3" || hostMode == "Standalone");
     jassert (uiSource == "embedded" || uiSource == "vite");
     jassert (productVersion.length() <= 128);
+    jassert (buildMarker.isNotEmpty() && buildMarker.length() <= 128);
 }
 
 bool HostBridge::isBoundedString (const juce::var& value)
@@ -40,6 +43,7 @@ juce::var HostBridge::makeHostInfo() const
     object->setProperty ("productVersion", productVersion);
     object->setProperty ("hostMode", hostMode);
     object->setProperty ("uiSource", uiSource);
+    object->setProperty ("buildMarker", buildMarker);
     return result;
 }
 
@@ -59,9 +63,9 @@ BridgeResponse HostBridge::handleUiReady (const juce::var& payload) const
     const auto* hostObject = hostInfo.getDynamicObject();
     if (hostObject == nullptr || ! isBoundedString (hostObject->getProperty ("productName"))
         || ! isBoundedString (hostObject->getProperty ("companyName"))
-        || ! isBoundedString (hostObject->getProperty ("productVersion")))
+        || ! isBoundedString (hostObject->getProperty ("productVersion"))
+        || ! isBoundedString (hostObject->getProperty ("buildMarker")))
         return error ("runtime_error", "Native host information is invalid.");
     return { hostInfoEvent, hostInfo, true };
 }
 }
-
