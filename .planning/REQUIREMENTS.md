@@ -7,9 +7,9 @@
 
 ### Build and Packaging
 
-- [ ] **BUILD-01**: Developer can configure and build Windows VST3 and standalone targets from a clean checkout using documented CMake presets.
-- [ ] **BUILD-02**: Build resolves pinned JUCE, WebView2 SDK, frontend, Worker, and test dependencies without requiring globally installed project libraries.
-- [ ] **BUILD-03**: Release targets embed the compiled React frontend and open it without a development server.
+- [x] **BUILD-01**: Developer can configure and build Windows VST3 and standalone targets from a clean checkout using documented CMake presets.
+- [x] **BUILD-02**: Build resolves pinned JUCE, WebView2 SDK, frontend, Worker, and test dependencies without requiring globally installed project libraries.
+- [x] **BUILD-03**: Release targets embed the compiled React frontend and open it without a development server.
 - [ ] **BUILD-04**: Development mode supports rapid frontend iteration without changing release packaging behavior.
 - [ ] **BUILD-05**: Project records one Context7 MCP endpoint and the exact JUCE, JUCE WebView tutorial, and Material UI library IDs for implementation guidance.
 
@@ -39,9 +39,9 @@
 
 ### WebView User Interface
 
-- [ ] **UI-01**: User sees a responsive React/TypeScript Material UI application hosted by JUCE WebView2 in both VST3 and standalone targets.
+- [x] **UI-01**: User sees a responsive React/TypeScript Material UI application hosted by JUCE WebView2 in both VST3 and standalone targets.
 - [ ] **UI-02**: Spectrum renders smoothly at a bounded display frame rate without creating a DOM/MUI element per FFT bin.
-- [ ] **UI-03**: Native and web layers communicate through a versioned, typed protocol with validated message shapes, request identifiers, and stable error envelopes.
+- [x] **UI-03**: Native and web layers communicate through a versioned, typed protocol with validated message shapes, request identifiers, and stable error envelopes.
 - [ ] **UI-04**: UI exposes source selection and source/error state in standalone while omitting standalone-only controls in VST3.
 - [ ] **UI-05**: UI exposes activation, activated, offline-grace, revalidation-required, deactivation, and actionable failure states.
 - [ ] **UI-06**: UI remains usable across supported window sizes and Windows DPI scaling, with keyboard-accessible controls and sufficient contrast.
@@ -131,9 +131,9 @@ Roadmap phase mappings are populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01 | Phase 1 | Pending |
-| BUILD-02 | Phase 1 | Pending |
-| BUILD-03 | Phase 1 | Pending |
+| BUILD-01 | Phase 1 | Complete |
+| BUILD-02 | Phase 1 | Complete |
+| BUILD-03 | Phase 1 | Complete |
 | BUILD-04 | Phase 1 | Pending |
 | BUILD-05 | Phase 1 | Pending |
 | DSP-01 | Phase 2 | Pending |
@@ -151,9 +151,9 @@ Roadmap phase mappings are populated during roadmap creation.
 | CAP-03 | Phase 3 | Pending |
 | CAP-04 | Phase 3 | Pending |
 | CAP-05 | Phase 3 | Pending |
-| UI-01 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 2 | Pending |
-| UI-03 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 6 | Pending |
 | UI-06 | Phase 7 | Pending |

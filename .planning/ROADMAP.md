@@ -34,7 +34,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 Plans:
 **Wave 1**
 
-- [ ] 01-01: Establish pinned CMake/JUCE targets, presets, dependency policy, and native test skeleton.
+- [x] 01-01: Establish pinned CMake/JUCE targets, presets, dependency policy, and native test skeleton.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -185,7 +185,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Reproducible Product Shell | 0/3 | Not started | - |
+| 1. Reproducible Product Shell | 1/3 | In Progress | |
 | 2. End-to-End VST3 Analyzer | 0/4 | Not started | - |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
