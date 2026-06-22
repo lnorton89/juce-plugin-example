@@ -38,7 +38,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02: Establish React/TypeScript/Vite/MUI workspace and deterministic embedded-asset pipeline.
+- [x] 01-02: Establish React/TypeScript/Vite/MUI workspace and deterministic embedded-asset pipeline.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -185,7 +185,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Reproducible Product Shell | 1/3 | In Progress | |
+| 1. Reproducible Product Shell | 2/3 | In Progress|  |
 | 2. End-to-End VST3 Analyzer | 0/4 | Not started | - |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
