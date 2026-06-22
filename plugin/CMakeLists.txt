@@ -1,5 +1,17 @@
 include("${CMAKE_SOURCE_DIR}/cmake/WebBundle.cmake")
 
+if(LUMASCOPE_RELEASE_BUILD AND LUMASCOPE_WEBVIEW_DEV_SERVER)
+  message(FATAL_ERROR "LUMASCOPE_WEBVIEW_DEV_SERVER must be empty in Release builds. "
+    "Set the environment variable to empty or use a Debug preset.")
+endif()
+if(LUMASCOPE_WEBVIEW_DEV_SERVER AND NOT LUMASCOPE_WEBVIEW_DEV_SERVER MATCHES "^http://127\\.0\\.0\\.1:5174/?$")
+  message(FATAL_ERROR "LUMASCOPE_WEBVIEW_DEV_SERVER must be exactly "
+    "'http://127.0.0.1:5174' (canonical loopback) or empty. "
+    "Got: '${LUMASCOPE_WEBVIEW_DEV_SERVER}'. "
+    "Hostnames, remote addresses, HTTPS, alternate ports, credentials, "
+    "paths, queries, and fragments are rejected.")
+endif()
+
 juce_add_plugin(LumaScope
   COMPANY_NAME "Signal Foundry Audio"
   IS_SYNTH FALSE
