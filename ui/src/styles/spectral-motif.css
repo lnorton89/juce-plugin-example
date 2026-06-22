@@ -1,0 +1,38 @@
+.spectral-motif {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--mui-palette-border) 28%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--mui-palette-border) 28%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 82%, transparent 100%);
+}
+
+.spectral-motif::before,
+.spectral-motif span {
+  content: '';
+  position: absolute;
+  width: 44%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(52px);
+  opacity: .09;
+  animation: spectral-drift 10s ease-in-out infinite alternate;
+}
+
+.spectral-motif::before { left: 12%; bottom: -34%; background: var(--mui-palette-primary-main); }
+.spectral-motif span { right: 10%; top: -38%; background: var(--mui-palette-success-main); animation-delay: -4s; }
+
+@keyframes spectral-drift { from { transform: translate3d(-2%, 0, 0); } to { transform: translate3d(2%, -2%, 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .spectral-motif::before,
+  .spectral-motif span { animation: none; }
+}
+
+@media (max-height: 440px) {
+  .spectral-motif::before,
+  .spectral-motif span { display: none; }
+}
