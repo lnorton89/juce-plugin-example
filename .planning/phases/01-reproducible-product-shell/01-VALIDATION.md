@@ -33,7 +33,7 @@ created: 2026-06-22
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 01-01-01 | 01 | 1 | BUILD-01, BUILD-02 | T-01-01 | Dependency sources and dev URL are explicit | preflight/build | `pwsh -NoProfile -File scripts/check-environment.ps1 -Json` plus VS2019 configure/build probe | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | BUILD-02, BUILD-03, UI-01 | T-01-02 | Embedded archive serves only normalized known paths | unit/build | `npm --prefix ui test -- --run && cmake --build --preset vs2019-debug --target LumaScope_All` | ❌ W0 | ⬜ pending |
+| 01-01-02 | 01 | 1 | BUILD-02, BUILD-03, UI-01 | T-01-02 | Embedded archive serves only normalized known paths | unit/build | `npm --prefix ui test -- --run && cmake --build --preset vs2019-debug --target LumaScope_Standalone LumaScope_VST3` | ❌ W0 | ⬜ pending |
 | 01-01-03 | 01 | 1 | UI-03 | T-01-03 | Handshake rejects malformed/unsupported protocol versions | unit/integration | `pwsh -NoProfile -File scripts/test-quick.ps1` | ❌ W0 | ⬜ pending |
 | 01-02-01 | 02 | 2 | UI-01 | — | UI uses local bundled assets and semantic controls | component | `npm --prefix ui test -- --run` | ❌ W0 | ⬜ pending |
 | 01-02-02 | 02 | 2 | BUILD-03, UI-01 | T-01-02 | Production bundle contains no remote font/CDN dependency | build/source | `npm --prefix ui run build && npm --prefix ui run check:bundle` | ❌ W0 | ⬜ pending |

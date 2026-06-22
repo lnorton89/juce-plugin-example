@@ -60,19 +60,19 @@ The largest uncertainty is Visual Studio 2019. The user's machine has the requir
 | JUCE | 8.0.14 exact tag | VST3/Standalone targets and WebView2 integration | Current approved JUCE release and official CMake helpers |
 | CMake | Minimum 3.22; baseline 4.0.3 | Native dependency and target graph | JUCE's supported build API |
 | MSVC | VS2019 16.11 baseline | Windows C++20 build | Locked to current machine; prove compatibility immediately |
-| React | Pin current stable during execution | Browser UI | Locked product decision; ecosystem-standard component model |
-| TypeScript | Pin current stable during execution | Typed UI/bridge schema | Prevents protocol drift and improves fixture testing |
-| Vite | Pin current stable during execution | UI development and production bundle | Fast explicit hot reload and deterministic build hooks |
-| Material UI | Pin current stable during execution | Theme and accessible shell components | Locked UI system and approved UI-SPEC |
-| WebView2 SDK | Pin a tested current stable NuGet version | WebView2 loader/header/library | Required by JUCE CMake's `NEEDS_WEBVIEW2` path |
+| React / React DOM | 19.2.7 | Browser UI | Locked product decision; ecosystem-standard component model |
+| TypeScript | 6.0.3 | Typed UI/bridge schema | Prevents protocol drift and improves fixture testing |
+| Vite / React plugin | 8.0.16 / 6.0.2 | UI development and production bundle | Fast explicit hot reload and deterministic build hooks |
+| Material UI / icons | 9.1.1 | Theme and accessible shell components | Locked UI system and approved UI-SPEC |
+| WebView2 SDK | 1.0.4022.49 | WebView2 loader/header/library | Latest stable NuGet version checked during research; required by JUCE CMake's `NEEDS_WEBVIEW2` path |
 
 ### Supporting
 
 | Library/Tool | Version | Purpose | When to Use |
 |--------------|---------|---------|-------------|
-| CPM.cmake | Pinned release/commit | Fetch JUCE into repository-local cache | Keep checkout reproducible without a JUCE submodule |
-| Vitest | Pin current stable | UI and bridge-adapter tests | Browser-side protocol/state tests |
-| React Testing Library | Pin current stable | Accessible shell behavior | Status/error/recovery assertions |
+| CPM.cmake | v0.42.3 | Fetch JUCE into repository-local cache | Keep checkout reproducible without a JUCE submodule |
+| Vitest / jsdom | 4.1.9 / 29.1.1 | UI and bridge-adapter tests | Browser-side protocol/state tests |
+| React Testing Library / jest-dom | 16.3.2 / 6.9.1 | Accessible shell behavior | Status/error/recovery assertions |
 | CTest + small native test target | CMake-provided | Native protocol/resource tests | Validate serialization, MIME mapping, and archive lookup |
 
 ### Alternatives Considered
@@ -270,9 +270,9 @@ webView.goToURL(devServerUrl.isEmpty()
    - Unclear: checked sources do not explicitly guarantee VS2019 for 8.0.14.
    - Recommendation: make the minimal compiler probe the first blocking task; do not silently substitute VS2022 or older JUCE.
 
-2. **Which current WebView2 SDK version should be pinned?**
-   - Known: Evergreen runtime 149 is installed; SDK and runtime versions need not match exactly.
-   - Recommendation: select a current stable SDK during execution, record it in dependency configuration, and verify static loader compatibility under VS2019 before locking.
+2. **Does WebView2 SDK 1.0.4022.49 statically link with the locked VS2019 toolset?**
+   - Known: 1.0.4022.49 was the latest stable NuGet package during research; Evergreen runtime 149 is installed, and SDK/runtime versions need not match exactly.
+   - Recommendation: pin 1.0.4022.49 and prove static loader compatibility in the first build task; do not substitute the prerelease package.
 </open_questions>
 
 <validation_architecture>
