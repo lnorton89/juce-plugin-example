@@ -7,5 +7,5 @@ test('renders the honest connecting shell', () => {
   render(<BridgeProvider><App /></BridgeProvider>);
   expect(screen.getByRole('heading', { name: 'LumaScope' })).toBeInTheDocument();
   expect(screen.getByRole('region', { name: 'Spectrum display' })).toBeInTheDocument();
-  expect(screen.getByRole('status')).toHaveTextContent('Connecting to audio engine');
+  expect(screen.getAllByRole('status')[0]).toHaveTextContent('Connecting to audio engine');
 });

@@ -4,9 +4,9 @@ import type { BridgeStatus as BridgeState } from '../bridge/protocol';
 import { BridgeStatus } from './BridgeStatus';
 import '../styles/spectral-motif.css';
 
-export interface AnalyzerStageProps { bridge: BridgeState }
+export interface AnalyzerStageProps { bridge: BridgeState; onRetry?: () => void }
 
-export function AnalyzerStage({ bridge }: AnalyzerStageProps) {
+export function AnalyzerStage({ bridge, onRetry }: AnalyzerStageProps) {
   return (
     <Box
       component="section"
@@ -41,7 +41,7 @@ export function AnalyzerStage({ bridge }: AnalyzerStageProps) {
             </Typography>
           </>
         ) : null}
-        <BridgeStatus bridge={bridge} />
+        <BridgeStatus bridge={bridge} onRetry={onRetry} />
       </Box>
     </Box>
   );

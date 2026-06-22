@@ -7,6 +7,7 @@ import { StatusFooter } from '../components/StatusFooter';
 export function AppShell() {
   const bridge = useBridgeStatus();
   const mode = bridge.state === 'ready' ? bridge.hostInfo.hostMode : undefined;
+  const retryConnection = () => window.location.reload();
 
   return (
     <Box
@@ -26,7 +27,7 @@ export function AppShell() {
         component="main"
         sx={{ minWidth: 0, minHeight: 0, p: 4, '@media (max-width:639px)': { p: 3 } }}
       >
-        <AnalyzerStage bridge={bridge} />
+        <AnalyzerStage bridge={bridge} onRetry={retryConnection} />
       </Box>
       <StatusFooter bridge={bridge} />
     </Box>

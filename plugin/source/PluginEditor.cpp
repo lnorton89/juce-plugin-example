@@ -42,9 +42,20 @@ LumaScopeAudioProcessorEditor::LumaScopeAudioProcessorEditor (LumaScopeAudioProc
 void LumaScopeAudioProcessorEditor::paint (juce::Graphics& graphics)
 {
     graphics.fillAll (juce::Colour (0xff0b0f12));
+    const auto fallbackBounds = getLocalBounds().reduced (16);
+    graphics.setColour (juce::Colour (0xff121a20));
+    graphics.fillRoundedRectangle (fallbackBounds.toFloat(), 10.0f);
+    graphics.setColour (juce::Colour (0xff24323a));
+    graphics.drawRoundedRectangle (fallbackBounds.toFloat(), 10.0f, 1.0f);
     graphics.setColour (juce::Colour (0xfff2f7f8));
-    graphics.setFont (24.0f);
-    graphics.drawFittedText ("LumaScope", getLocalBounds(), juce::Justification::centred, 1);
+    graphics.setFont (juce::FontOptions { 24.0f });
+    graphics.drawFittedText ("LumaScope", fallbackBounds.withTrimmedBottom (fallbackBounds.getHeight() / 2),
+                             juce::Justification::centredBottom, 1);
+    graphics.setColour (juce::Colour (0xff91a4ae));
+    graphics.setFont (juce::FontOptions { 14.0f });
+    graphics.drawFittedText ("The interface could not start. Check the WebView2 runtime and reopen LumaScope.",
+                             fallbackBounds.withTrimmedTop (fallbackBounds.getHeight() / 2),
+                             juce::Justification::centredTop, 2);
 }
 
 void LumaScopeAudioProcessorEditor::resized()

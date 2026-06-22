@@ -29,7 +29,7 @@ test('unsupported and malformed fixtures never reach ready state', async () => {
   const backend = new MockBackend();
   render(<BridgeProvider backend={backend}><App /></BridgeProvider>);
   backend.reply('host.info', unsupported);
-  expect(await screen.findByRole('status')).toHaveTextContent('Native host information was invalid');
+  expect(await screen.findByRole('status')).toHaveTextContent('The interface could not start');
   backend.reply('host.info', malformed);
   expect(screen.queryByText('Bridge ready')).not.toBeInTheDocument();
 });
