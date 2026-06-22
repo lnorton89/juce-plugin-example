@@ -131,12 +131,71 @@ Roadmap phase mappings are populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| BUILD-01 | Phase 1 | Pending |
+| BUILD-02 | Phase 1 | Pending |
+| BUILD-03 | Phase 1 | Pending |
+| BUILD-04 | Phase 1 | Pending |
+| BUILD-05 | Phase 1 | Pending |
+| DSP-01 | Phase 2 | Pending |
+| DSP-02 | Phase 2 | Pending |
+| DSP-03 | Phase 2 | Pending |
+| DSP-04 | Phase 2 | Pending |
+| DSP-05 | Phase 2 | Pending |
+| DSP-06 | Phase 2 | Pending |
+| VST3-01 | Phase 2 | Pending |
+| VST3-02 | Phase 2 | Pending |
+| VST3-03 | Phase 2 | Pending |
+| VST3-04 | Phase 2 | Pending |
+| CAP-01 | Phase 3 | Pending |
+| CAP-02 | Phase 3 | Pending |
+| CAP-03 | Phase 3 | Pending |
+| CAP-04 | Phase 3 | Pending |
+| CAP-05 | Phase 3 | Pending |
+| UI-01 | Phase 1 | Pending |
+| UI-02 | Phase 2 | Pending |
+| UI-03 | Phase 1 | Pending |
+| UI-04 | Phase 3 | Pending |
+| UI-05 | Phase 6 | Pending |
+| UI-06 | Phase 7 | Pending |
+| UI-07 | Phase 7 | Pending |
+| CLOUD-01 | Phase 4 | Pending |
+| CLOUD-02 | Phase 4 | Pending |
+| CLOUD-03 | Phase 4 | Pending |
+| CLOUD-04 | Phase 5 | Pending |
+| CLOUD-05 | Phase 5 | Pending |
+| CLOUD-06 | Phase 5 | Pending |
+| CLOUD-07 | Phase 5 | Pending |
+| CLOUD-08 | Phase 5 | Pending |
+| CLOUD-09 | Phase 5 | Pending |
+| CLOUD-10 | Phase 5 | Pending |
+| LIC-01 | Phase 6 | Pending |
+| LIC-02 | Phase 6 | Pending |
+| LIC-03 | Phase 6 | Pending |
+| LIC-04 | Phase 6 | Pending |
+| LIC-05 | Phase 6 | Pending |
+| LIC-06 | Phase 6 | Pending |
+| LIC-07 | Phase 6 | Pending |
+| LIC-08 | Phase 6 | Pending |
+| LIC-09 | Phase 6 | Pending |
+| LIC-10 | Phase 6 | Pending |
+| INFRA-01 | Phase 4 | Pending |
+| INFRA-02 | Phase 4 | Pending |
+| INFRA-03 | Phase 4 | Pending |
+| INFRA-04 | Phase 4 | Pending |
+| INFRA-05 | Phase 4 | Pending |
+| INFRA-06 | Phase 4 | Pending |
+| INFRA-07 | Phase 4 | Pending |
+| INFRA-08 | Phase 4 | Pending |
+| QUAL-01 | Phase 7 | Pending |
+| QUAL-02 | Phase 7 | Pending |
+| QUAL-03 | Phase 7 | Pending |
+| QUAL-04 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 59 total
-- Mapped to phases: 0
-- Unmapped: 59
+- Mapped to phases: 59
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-22*
-*Last updated: 2026-06-22 after initial definition*
+*Last updated: 2026-06-22 after roadmap creation*
