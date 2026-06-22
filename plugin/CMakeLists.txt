@@ -19,7 +19,9 @@ juce_add_plugin(LumaScope
 target_sources(LumaScope PRIVATE
   include/LumaScope/PluginEditor.h
   include/LumaScope/PluginProcessor.h
+  include/LumaScope/HostBridge.h
   include/LumaScope/WebResources.h
+  source/HostBridge.cpp
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
   source/WebResources.cpp)
@@ -28,6 +30,7 @@ target_include_directories(LumaScope PUBLIC include)
 target_compile_features(LumaScope PUBLIC cxx_std_20)
 target_compile_definitions(LumaScope PUBLIC
   JUCE_WEB_BROWSER=1
+  JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING=1
   JUCE_USE_CURL=0
   JUCE_VST3_CAN_REPLACE_VST2=0)
 target_link_libraries(LumaScope PRIVATE

@@ -18,7 +18,10 @@ const theme = createTheme({
 
 export default function App() {
   const bridge = useBridgeStatus();
-  const status = bridge.state === 'connecting' ? 'Connecting to audio engine…' : 'Bridge ready';
+  const status = bridge.state === 'connecting' ? 'Connecting to audio engine…'
+    : bridge.state === 'ready' ? `${bridge.hostInfo.uiSource === 'embedded' ? 'Embedded UI' : 'Vite development'} · Bridge ready`
+      : bridge.message;
+  const mode = bridge.state === 'ready' ? bridge.hostInfo.hostMode : '';
 
   return (
     <ThemeProvider theme={theme}>
@@ -27,10 +30,10 @@ export default function App() {
         <Box component="section" aria-label="Spectrum display" sx={{ width: '100%', maxWidth: 928, minHeight: 328, bgcolor: 'background.paper', border: 1, borderColor: '#24323A', borderRadius: '10px', p: 4 }}>
           <Typography component="h1" variant="h4">LumaScope</Typography>
           <Typography color="text.secondary">Spectrum analyzer</Typography>
+          {mode && <Typography aria-label="Product mode" sx={{ mt: 2 }}>{mode}</Typography>}
           <Typography role="status" aria-live="polite" sx={{ mt: 4 }}>{status}</Typography>
         </Box>
       </Box>
     </ThemeProvider>
   );
 }
-

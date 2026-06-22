@@ -1,0 +1,8 @@
+{
+  "protocolVersion": 1,
+  "productName": "LumaScope",
+  "companyName": "Signal Foundry Audio",
+  "productVersion": "0.1.0",
+  "hostMode": "Standalone",
+  "uiSource": "embedded"
+}

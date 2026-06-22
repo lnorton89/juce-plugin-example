@@ -2,6 +2,8 @@
 #include "TestWebResources.h"
 #include <iostream>
 
+int runHostBridgeTests();
+
 namespace
 {
 int failures = 0;
@@ -25,5 +27,6 @@ int main()
     expect (! resources.get ("C:/index.html"), "rejects absolute paths");
     expect (! resources.get ("/unknown.bin"), "rejects unknown MIME type");
     expect (! resources.get ("/missing.js"), "rejects missing resources");
+    failures += runHostBridgeTests();
     return failures == 0 ? 0 : 1;
 }
