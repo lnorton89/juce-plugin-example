@@ -1,5 +1,6 @@
 import type { Env } from './env';
 import { handleLemonWebhook } from './webhook';
+import { handleActivate, handleDeactivate, handleValidate } from './api/activationRoutes';
 
 export async function handleRequest(
   request: Request,
@@ -16,6 +17,15 @@ export async function handleRequest(
 
     case method === 'POST' && path === '/api/webhook/lemon-squeezy':
       return handleLemonWebhook(request, env, ctx);
+
+    case method === 'POST' && path === '/api/v1/activate':
+      return handleActivate(request, env);
+
+    case method === 'POST' && path === '/api/v1/validate':
+      return handleValidate(request, env);
+
+    case method === 'POST' && path === '/api/v1/deactivate':
+      return handleDeactivate(request, env);
 
     default:
       return new Response(JSON.stringify({ error: 'Not Found' }), {

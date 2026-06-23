@@ -215,4 +215,143 @@ describe('Repository', () => {
       expect(active[0].is_active).toBeTruthy();
     });
   });
+
+  describe('activation policy operations', () => {
+    async function insertActiveLicense(): Promise<number> {
+      const license = await repo.upsertFromWebhook({
+        lemon_order_id: 'order_policy_001',
+        license_key: 'LICENSE-POLICY-001',
+        product_id: 'prod_1',
+        variant_id: 'var_1',
+        store_id: 'store_1',
+        status: 'active',
+      });
+      return license.id;
+    }
+
+    it('activates a machine when no active activation exists', async () => {
+      const licenseId = await insertActiveLicense();
+
+      const result = await repo.activateMachine(
+        licenseId,
+        'machine_001',
+        '2026-06-23T12:00:00.000Z'
+      );
+
+      expect(result.outcome).toBe('activated');
+      expect(result.activation?.machine_identifier).toBe('machine_001');
+      expect(result.activation?.is_active).toBe(1);
+      expect(mockDb.activations).toHaveLength(1);
+    });
+
+    it('refreshes the same active machine idempotently', async () => {
+      const licenseId = await insertActiveLicense();
+      await repo.activateMachine(licenseId, 'machine_001', '2026-06-23T12:00:00.000Z');
+
+      const result = await repo.activateMachine(
+        licenseId,
+        'machine_001',
+        '2026-06-23T12:05:00.000Z'
+      );
+
+      expect(result.outcome).toBe('refreshed');
+      expect(result.activation?.machine_identifier).toBe('machine_001');
+      expect(result.activation?.last_validated_at).toBe('2026-06-23T12:05:00.000Z');
+      expect(mockDb.activations).toHaveLength(1);
+    });
+
+    it('rejects a different active machine', async () => {
+      const licenseId = await insertActiveLicense();
+      await repo.activateMachine(licenseId, 'machine_001', '2026-06-23T12:00:00.000Z');
+
+      const result = await repo.activateMachine(
+        licenseId,
+        'machine_002',
+        '2026-06-23T12:05:00.000Z'
+      );
+
+      expect(result.outcome).toBe('activation_limit_reached');
+      expect(result.activation?.machine_identifier).toBe('machine_001');
+      expect(mockDb.activations).toHaveLength(1);
+    });
+
+    it('treats unique-index activation collisions as activation limit failures', async () => {
+      const licenseId = await insertActiveLicense();
+      mockDb.activationInsertRaceWinner = {
+        id: 99,
+        license_id: licenseId,
+        machine_identifier: 'machine_race_winner',
+        activated_at: '2026-06-23T12:00:00.000Z',
+        last_validated_at: '2026-06-23T12:00:00.000Z',
+        deactivated_at: null,
+        is_active: 0,
+      };
+      mockDb.rejectNextActivationInsert = true;
+      mockDb.activationInsertRaceWinner.is_active = 1;
+
+      const result = await repo.activateMachine(
+        licenseId,
+        'machine_race_loser',
+        '2026-06-23T12:05:00.000Z'
+      );
+
+      expect(result.outcome).toBe('activation_limit_reached');
+      expect(result.activation?.machine_identifier).toBe('machine_race_winner');
+    });
+
+    it('validates only the matching active machine', async () => {
+      const licenseId = await insertActiveLicense();
+      await repo.activateMachine(licenseId, 'machine_001', '2026-06-23T12:00:00.000Z');
+
+      const valid = await repo.validateMachine(
+        licenseId,
+        'machine_001',
+        '2026-06-23T12:10:00.000Z'
+      );
+      const mismatch = await repo.validateMachine(
+        licenseId,
+        'machine_002',
+        '2026-06-23T12:10:00.000Z'
+      );
+
+      expect(valid.outcome).toBe('refreshed');
+      expect(valid.activation?.last_validated_at).toBe('2026-06-23T12:10:00.000Z');
+      expect(mismatch.outcome).toBe('machine_mismatch');
+    });
+
+    it('deactivates only the matching active machine and allows a new machine later', async () => {
+      const licenseId = await insertActiveLicense();
+      await repo.activateMachine(licenseId, 'machine_001', '2026-06-23T12:00:00.000Z');
+
+      const wrongMachine = await repo.deactivateMachine(
+        licenseId,
+        'machine_002',
+        '2026-06-23T12:15:00.000Z'
+      );
+      expect(wrongMachine.outcome).toBe('machine_mismatch');
+
+      const deactivated = await repo.deactivateMachine(
+        licenseId,
+        'machine_001',
+        '2026-06-23T12:20:00.000Z'
+      );
+      expect(deactivated.outcome).toBe('deactivated');
+      expect(deactivated.activation?.is_active).toBe(0);
+
+      const missing = await repo.validateMachine(
+        licenseId,
+        'machine_001',
+        '2026-06-23T12:25:00.000Z'
+      );
+      expect(missing.outcome).toBe('activation_not_found');
+
+      const newMachine = await repo.activateMachine(
+        licenseId,
+        'machine_002',
+        '2026-06-23T12:30:00.000Z'
+      );
+      expect(newMachine.outcome).toBe('activated');
+      expect(newMachine.activation?.machine_identifier).toBe('machine_002');
+    });
+  });
 });

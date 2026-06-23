@@ -26,6 +26,19 @@ export interface Activation {
   is_active: boolean;
 }
 
+export type ActivationPolicyOutcome =
+  | 'activated'
+  | 'refreshed'
+  | 'activation_limit_reached'
+  | 'activation_not_found'
+  | 'machine_mismatch'
+  | 'deactivated';
+
+export interface ActivationPolicyResult {
+  outcome: ActivationPolicyOutcome;
+  activation: Activation | null;
+}
+
 export interface WebhookIdempotency {
   id: number;
   event_id: string;

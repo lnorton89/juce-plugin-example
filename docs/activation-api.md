@@ -59,6 +59,14 @@ All v1 activation endpoints use `POST` with `Content-Type: application/json`.
 
 The signed payload contains only minimal licensing claims. It must not contain customer name, customer email, raw license key, full request bodies, IP details, webhook lineage, or audit metadata.
 
+## Lifecycle
+
+1. A valid active license calls `/api/v1/activate` with its derived `machineId` and receives a signed entitlement.
+2. Repeating `/api/v1/activate` from the same active machine is idempotent and returns a fresh signed entitlement for the existing activation.
+3. A different machine receives `activation_limit_reached` while one active machine exists.
+4. The active machine calls `/api/v1/validate` to refresh its entitlement. Validation does not recreate missing or deactivated activations.
+5. The active machine calls `/api/v1/deactivate`; after that, validation returns `activation_not_found` and another machine may activate.
+
 ## Error Model
 
 Errors use stable machine-readable codes with generic messages.
@@ -101,4 +109,3 @@ Example:
 ```
 
 `tests/worker/fixtures/entitlement-v1.json` locks the v1 canonical payload, canonical string, key material format, signature, and public key ring for cross-language Phase 6 verification.
-

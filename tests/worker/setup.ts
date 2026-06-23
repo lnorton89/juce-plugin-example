@@ -40,6 +40,8 @@ export class MockD1Database {
   activations: Record<string, any>[] = [];
   webhook_idempotency: Record<string, any>[] = [];
   audit_log: Record<string, any>[] = [];
+  rejectNextActivationInsert = false;
+  activationInsertRaceWinner: Record<string, any> | null = null;
 
   private sequences: Record<string, number> = {
     licenses: 1,
@@ -58,6 +60,8 @@ export class MockD1Database {
     this.activations = [];
     this.webhook_idempotency = [];
     this.audit_log = [];
+    this.rejectNextActivationInsert = false;
+    this.activationInsertRaceWinner = null;
     this.sequences = { licenses: 1, activations: 1, webhook_idempotency: 1, audit_log: 1 };
   }
 }
@@ -99,6 +103,17 @@ class MockPreparedStatement {
       const row = this.db.webhook_idempotency.find(
         (w) => w.event_id === this.bindValues[0]
       );
+      return (row ? { ...row } : null) as T | null;
+    }
+
+    // SELECT * FROM activations WHERE license_id = ? AND machine_identifier = ?
+    if (normalized.includes('from activations') && normalized.includes('machine_identifier')) {
+      const row = this.db.activations.find((a) => {
+        return (
+          a.license_id === this.bindValues[0] &&
+          a.machine_identifier === this.bindValues[1]
+        );
+      });
       return (row ? { ...row } : null) as T | null;
     }
 
@@ -152,6 +167,16 @@ class MockPreparedStatement {
     // INSERT INTO audit_log
     if (normalized.includes('insert') && normalized.includes('into audit_log')) {
       return this.handleInsertAudit();
+    }
+
+    // INSERT INTO activations
+    if (normalized.includes('insert') && normalized.includes('into activations')) {
+      return this.handleInsertActivation();
+    }
+
+    // UPDATE activations
+    if (normalized.includes('update activations')) {
+      return this.handleUpdateActivation(normalized);
     }
 
     return {
@@ -300,6 +325,72 @@ class MockPreparedStatement {
       meta: { duration: 0, changes: 1, last_row_id: row.id },
     };
   }
+
+  private handleInsertActivation(): D1Result<any> {
+    if (this.db.rejectNextActivationInsert) {
+      this.db.rejectNextActivationInsert = false;
+      if (this.db.activationInsertRaceWinner !== null) {
+        this.db.activations.push(this.db.activationInsertRaceWinner);
+        this.db.activationInsertRaceWinner = null;
+      }
+      throw new Error('UNIQUE constraint failed: activations.license_id');
+    }
+
+    const licenseId = this.bindValues[0];
+    const machineIdentifier = this.bindValues[1];
+    const activeForLicense = this.db.activations.find(
+      (a) => a.license_id === licenseId && a.is_active === 1
+    );
+    if (activeForLicense) {
+      throw new Error('UNIQUE constraint failed: activations.license_id');
+    }
+
+    const row = {
+      id: this.db.sequences.activations++,
+      license_id: licenseId,
+      machine_identifier: machineIdentifier,
+      activated_at: this.bindValues[2],
+      last_validated_at: this.bindValues[3],
+      deactivated_at: null,
+      is_active: 1,
+    };
+    this.db.activations.push(row);
+
+    return {
+      success: true,
+      results: [],
+      meta: { duration: 0, changes: 1, last_row_id: row.id },
+    };
+  }
+
+  private handleUpdateActivation(normalized: string): D1Result<any> {
+    const id = this.bindValues[this.bindValues.length - 1];
+    const row = this.db.activations.find((a) => a.id === id);
+    if (!row) {
+      return { success: true, results: [], meta: { duration: 0, changes: 0 } };
+    }
+
+    if (normalized.includes('set is_active = 1')) {
+      const activeForLicense = this.db.activations.find(
+        (a) => a.license_id === row.license_id && a.is_active === 1 && a.id !== id
+      );
+      if (activeForLicense) {
+        throw new Error('UNIQUE constraint failed: activations.license_id');
+      }
+      row.is_active = 1;
+      row.deactivated_at = null;
+      row.last_validated_at = this.bindValues[0];
+      row.activated_at = this.bindValues[1];
+    } else if (normalized.includes('set is_active = 0')) {
+      row.is_active = 0;
+      row.deactivated_at = this.bindValues[0];
+      row.last_validated_at = this.bindValues[1];
+    } else if (normalized.includes('set last_validated_at')) {
+      row.last_validated_at = this.bindValues[0];
+    }
+
+    return { success: true, results: [], meta: { duration: 0, changes: 1 } };
+  }
 }
 
 export interface D1Result<T = unknown> {
@@ -323,6 +414,8 @@ export function createMockEnv(overrides?: Record<string, string | D1Database>): 
     LEMON_PRODUCT_ID: 'prod_1',
     LEMON_VARIANT_ID: 'var_1',
     SIGNING_PRIVATE_KEY: '',
+    SIGNING_KEY_ID: 'test-ed25519-2026-06',
+    SIGNING_PUBLIC_KEYS: '[]',
     ENVIRONMENT: 'test',
     ...overrides,
   };

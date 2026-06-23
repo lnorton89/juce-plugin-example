@@ -5,6 +5,7 @@ import type {
   AuditLogEntry,
   LicenseStatus,
   IdempotencyStatus,
+  ActivationPolicyResult,
 } from './schema';
 
 export class Repository {
@@ -126,5 +127,132 @@ export class Repository {
       .bind(licenseId)
       .all<Activation>();
     return result.results;
+  }
+
+  async findActivationByMachine(
+    licenseId: number,
+    machineIdentifier: string
+  ): Promise<Activation | null> {
+    const row = await this.db
+      .prepare('SELECT * FROM activations WHERE license_id = ? AND machine_identifier = ?')
+      .bind(licenseId, machineIdentifier)
+      .first<Activation>();
+    return row ?? null;
+  }
+
+  async activateMachine(
+    licenseId: number,
+    machineIdentifier: string,
+    nowIso: string
+  ): Promise<ActivationPolicyResult> {
+    const active = await this.findActiveActivations(licenseId);
+    const activeMatch = active.find((activation) => activation.machine_identifier === machineIdentifier);
+    if (activeMatch !== undefined) {
+      await this.refreshActivation(activeMatch.id, nowIso);
+      return {
+        outcome: 'refreshed',
+        activation: await this.findActivationByMachine(licenseId, machineIdentifier),
+      };
+    }
+
+    if (active.length > 0) {
+      return { outcome: 'activation_limit_reached', activation: active[0] };
+    }
+
+    const existing = await this.findActivationByMachine(licenseId, machineIdentifier);
+
+    try {
+      if (existing !== null) {
+        await this.db
+          .prepare(
+            `UPDATE activations
+             SET is_active = 1, deactivated_at = NULL, last_validated_at = ?, activated_at = ?
+             WHERE id = ?`
+          )
+          .bind(nowIso, nowIso, existing.id)
+          .run();
+      } else {
+        await this.db
+          .prepare(
+            `INSERT INTO activations (license_id, machine_identifier, activated_at, last_validated_at, is_active)
+             VALUES (?, ?, ?, ?, 1)`
+          )
+          .bind(licenseId, machineIdentifier, nowIso, nowIso)
+          .run();
+      }
+    } catch {
+      const racedActive = await this.findActiveActivations(licenseId);
+      const racedMatch = racedActive.find(
+        (activation) => activation.machine_identifier === machineIdentifier
+      );
+      return {
+        outcome: racedMatch !== undefined ? 'refreshed' : 'activation_limit_reached',
+        activation: racedMatch ?? racedActive[0] ?? null,
+      };
+    }
+
+    return {
+      outcome: existing === null ? 'activated' : 'refreshed',
+      activation: await this.findActivationByMachine(licenseId, machineIdentifier),
+    };
+  }
+
+  async validateMachine(
+    licenseId: number,
+    machineIdentifier: string,
+    nowIso: string
+  ): Promise<ActivationPolicyResult> {
+    const active = await this.findActiveActivations(licenseId);
+    const activeMatch = active.find((activation) => activation.machine_identifier === machineIdentifier);
+
+    if (activeMatch === undefined) {
+      return {
+        outcome: active.length > 0 ? 'machine_mismatch' : 'activation_not_found',
+        activation: active[0] ?? null,
+      };
+    }
+
+    await this.refreshActivation(activeMatch.id, nowIso);
+    return {
+      outcome: 'refreshed',
+      activation: await this.findActivationByMachine(licenseId, machineIdentifier),
+    };
+  }
+
+  async deactivateMachine(
+    licenseId: number,
+    machineIdentifier: string,
+    nowIso: string
+  ): Promise<ActivationPolicyResult> {
+    const active = await this.findActiveActivations(licenseId);
+    const activeMatch = active.find((activation) => activation.machine_identifier === machineIdentifier);
+
+    if (activeMatch === undefined) {
+      return {
+        outcome: active.length > 0 ? 'machine_mismatch' : 'activation_not_found',
+        activation: active[0] ?? null,
+      };
+    }
+
+    await this.db
+      .prepare(
+        `UPDATE activations
+         SET is_active = 0, deactivated_at = ?, last_validated_at = ?
+         WHERE id = ?`
+      )
+      .bind(nowIso, nowIso, activeMatch.id)
+      .run();
+
+    return {
+      outcome: 'deactivated',
+      activation: await this.findActivationByMachine(licenseId, machineIdentifier),
+    };
+  }
+
+  private async refreshActivation(activationId: number, nowIso: string): Promise<void> {
+    await this.db
+      .prepare('UPDATE activations SET last_validated_at = ? WHERE id = ?')
+      .bind(nowIso, activationId)
+      .run();
   }
 }
