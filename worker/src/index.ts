@@ -23,10 +23,9 @@ export default {
         response.headers.set(key, value);
       }
       return response;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Internal Server Error';
+    } catch {
       return new Response(
-        JSON.stringify({ error: 'Internal Server Error', message }),
+        JSON.stringify({ error: 'Internal Error' }),
         {
           status: 500,
           headers: {

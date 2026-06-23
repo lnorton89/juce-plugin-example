@@ -1,4 +1,5 @@
 import type { Env } from './env';
+import { handleLemonWebhook } from './webhook';
 
 export async function handleRequest(
   request: Request,
@@ -33,20 +34,6 @@ async function handleHealth(env: Env): Promise<Response> {
     }),
     {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    }
-  );
-}
-
-async function handleLemonWebhook(
-  _request: Request,
-  _env: Env,
-  _ctx: ExecutionContext
-): Promise<Response> {
-  return new Response(
-    JSON.stringify({ error: 'Not Implemented' }),
-    {
-      status: 501,
       headers: { 'Content-Type': 'application/json' },
     }
   );
