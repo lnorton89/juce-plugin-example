@@ -2,7 +2,9 @@
 #include "LumaScope/PluginProcessor.h"
 
 #include <cmath>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace
@@ -72,6 +74,29 @@ void expectUnchanged (const juce::AudioBuffer<float>& buffer,
 bool readSnapshot (LumaScopeAudioProcessor& processor, lumascope::SpectrumSnapshot& snapshot, std::uint32_t& lastSeen)
 {
     return processor.readLatestSpectrumSnapshot (snapshot, lastSeen);
+}
+
+std::string readTextFile (const char* path)
+{
+    std::ifstream input (path, std::ios::binary);
+    std::ostringstream contents;
+    contents << input.rdbuf();
+    return contents.str();
+}
+
+std::string extractProcessBlockBody()
+{
+    const auto source = readTextFile (LUMASCOPE_PLUGIN_PROCESSOR_SOURCE);
+    const auto start = source.find ("void LumaScopeAudioProcessor::processBlock");
+    const auto end = source.find ("bool LumaScopeAudioProcessor::readLatestSpectrumSnapshot", start);
+
+    expect (start != std::string::npos, "processBlock implementation is present");
+    expect (end != std::string::npos, "processBlock is followed by snapshot reader");
+
+    if (start == std::string::npos || end == std::string::npos)
+        return {};
+
+    return source.substr (start, end - start);
 }
 
 void processBuffer (LumaScopeAudioProcessor& processor, juce::AudioBuffer<float>& buffer)
@@ -152,6 +177,19 @@ void testProcessingContinuesWithoutEditor()
     expect (readSnapshot (processor, snapshot, lastSeen), "processor publishes snapshots without an editor");
     expect (! readSnapshot (processor, snapshot, lastSeen), "later consumer receives only newer snapshots");
 }
+
+void testProcessBlockRealtimeSafetyShape()
+{
+    const auto body = extractProcessBlockBody();
+
+    for (const auto* token : {
+             "WebBrowser", "emitEvent", "JSON", "juce::var", "juce::File", "juce::URL",
+             "std::mutex", "CriticalSection", "ScopedLock", "MessageManager", "callAsync",
+             "new ", "make_unique", "std::vector", "malloc", "free", "socket", "curl" })
+    {
+        expect (body.find (token) == std::string::npos, "processBlock avoids prohibited realtime token");
+    }
+}
 }
 
 int runPluginProcessorTests()
@@ -160,5 +198,6 @@ int runPluginProcessorTests()
     testVariableBlocksEventuallyPublishSnapshot();
     testSampleRateChangeResetsAnalyzer();
     testProcessingContinuesWithoutEditor();
+    testProcessBlockRealtimeSafetyShape();
     return failures;
 }

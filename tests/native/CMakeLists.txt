@@ -16,6 +16,8 @@ target_compile_definitions(LumaScopeNativeTests PRIVATE
   JucePlugin_VersionString="0.1.0"
   JucePlugin_Build_Standalone=0
   LUMASCOPE_NATIVE_TESTS=1
+  LUMASCOPE_PLUGIN_PROCESSOR_SOURCE="${CMAKE_SOURCE_DIR}/plugin/source/PluginProcessor.cpp"
+  LUMASCOPE_SNAPSHOT_MAILBOX_HEADER="${CMAKE_SOURCE_DIR}/plugin/include/LumaScope/SnapshotMailbox.h"
   LUMASCOPE_WEBVIEW_DEV_SERVER=""
   LUMASCOPE_BUILD_MARKER="0.1.0-test"
   LUMASCOPE_FIXTURE_UI_READY="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/ui-ready-v1.json"
