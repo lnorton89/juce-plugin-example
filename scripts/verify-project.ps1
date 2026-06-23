@@ -32,7 +32,9 @@ if ($errors.Count -eq 0) {
     $config = Get-Content -Raw -LiteralPath (Join-Path $root '.codex/config.toml')
     if (([regex]::Matches($config, '(?m)^\[mcp_servers\.[^]]+\]$')).Count -ne 1) { $errors.Add('Exactly one MCP server table is required.') }
     Require-Text '.codex/config.toml' '(?m)^\[mcp_servers\.context7\]$' 'Context7 MCP table is missing'
-    Require-Text '.codex/config.toml' 'url\s*=\s*"https://mcp\.context7\.com/mcp"' 'Context7 URL is incorrect'
+    Require-Text '.codex/config.toml' '(?m)^command\s*=\s*"npx"\s*$' 'Context7 MCP command is incorrect'
+    Require-Text '.codex/config.toml' '(?m)^args\s*=\s*\["-y",\s*"@upstash/context7-mcp"\]\s*$' 'Context7 MCP args are incorrect'
+    if ($config -match '(?m)^url\s*=') { $errors.Add('Context7 MCP must use stdio command/args, not a url field.') }
     foreach ($path in @('AGENTS.md', 'docs/development.md')) {
         foreach ($id in @('/websites/juce_master', '/janwilczek/juce-webview-tutorial', '/websites/mui_material-ui')) {
             if ((Get-Content -Raw -LiteralPath (Join-Path $root $path)) -notmatch [regex]::Escape($id)) { $errors.Add("Missing Context7 ID $id in $path") }

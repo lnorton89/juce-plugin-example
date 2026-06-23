@@ -59,7 +59,7 @@ The VST3 analyzes audio supplied by its host. The standalone application can ana
 | pluginval | VST3 validation | Run headless validation in CI where feasible |
 | ESLint/Prettier | Frontend quality | Keep WebView code independent from generated artifacts |
 | Wrangler environments | Local/preview/production separation | Never reuse production D1/secrets in local tests |
-| Context7 MCP | Current hosted server | Version-aware implementation references | One server at `https://mcp.context7.com/mcp`; query pinned library IDs |
+| Context7 MCP | Current hosted server via stdio package | Version-aware implementation references | One project server configured with `npx -y @upstash/context7-mcp`; query pinned library IDs |
 ## Installation Shape
 # Native configuration (exact preset names finalized during implementation)
 # Frontend and Worker dependencies
