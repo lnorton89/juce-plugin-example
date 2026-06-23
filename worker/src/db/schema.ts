@@ -47,3 +47,11 @@ export interface AuditLogEntry {
   timestamp: string;
   request_id: string | null;
 }
+
+export interface RepositoryConfig {
+  allProducts: string[];
+  allStores: string[];
+  allVariants: string[];
+}
+
+export type D1ResultRow = Record<string, unknown>;
