@@ -19,14 +19,14 @@
 - [x] **DSP-02**: Analyzer applies a documented window, FFT, single-sided magnitude normalization, and decibel conversion that place deterministic test tones at the expected frequency and level tolerance.
 - [x] **DSP-03**: Analyzer publishes a logarithmic-frequency spectrum with sensible fixed FFT size, visible range, smoothing, and decay defaults.
 - [x] **DSP-04**: Analyzer handles silence, denormals, changing block sizes, sample-rate changes, and channel-layout changes without invalid output or crashes.
-- [ ] **DSP-05**: Audio callbacks perform no dynamic allocation, blocking synchronization, file access, network access, JSON work, or WebView calls.
+- [x] **DSP-05**: Audio callbacks perform no dynamic allocation, blocking synchronization, file access, network access, JSON work, or WebView calls.
 - [x] **DSP-06**: Analyzer configuration and snapshot interfaces allow future FFT, range, smoothing, decay, and display controls without replacing the DSP core.
 
 ### VST3 Plug-in
 
 - [ ] **VST3-01**: User can load the VST3 as an audio effect in a compatible Windows host and see the spectrum for audio routed through it.
-- [ ] **VST3-02**: Plug-in output is sample-equivalent to its input within floating-point tolerance for supported layouts.
-- [ ] **VST3-03**: Plug-in remains stable when its editor is closed, repeatedly opened, resized, or destroyed while audio processing continues.
+- [x] **VST3-02**: Plug-in output is sample-equivalent to its input within floating-point tolerance for supported layouts.
+- [x] **VST3-03**: Plug-in remains stable when its editor is closed, repeatedly opened, resized, or destroyed while audio processing continues.
 - [ ] **VST3-04**: Plug-in passes automated VST3 validation and documented smoke tests in at least one real Windows DAW.
 
 ### Standalone Audio Capture
@@ -140,11 +140,11 @@ Roadmap phase mappings are populated during roadmap creation.
 | DSP-02 | Phase 2 | Complete |
 | DSP-03 | Phase 2 | Complete |
 | DSP-04 | Phase 2 | Complete |
-| DSP-05 | Phase 2 | Pending |
+| DSP-05 | Phase 2 | Complete |
 | DSP-06 | Phase 2 | Complete |
 | VST3-01 | Phase 2 | Pending |
-| VST3-02 | Phase 2 | Pending |
-| VST3-03 | Phase 2 | Pending |
+| VST3-02 | Phase 2 | Complete |
+| VST3-03 | Phase 2 | Complete |
 | VST3-04 | Phase 2 | Pending |
 | CAP-01 | Phase 3 | Pending |
 | CAP-02 | Phase 3 | Pending |
