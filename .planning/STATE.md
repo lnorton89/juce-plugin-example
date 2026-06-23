@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-last_updated: "2026-06-23T23:05:55.486Z"
-last_activity: 2026-06-23
+status: executing
+last_updated: "2026-06-23T23:10:46.974Z"
+last_activity: 2026-06-23 -- Phase 05 planning complete
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 14
+  total_plans: 17
   completed_plans: 14
   percent: 57
 ---
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-22)
 
 **Core value:** A developer can clone the project and build, understand, provision, and run the complete analyzer and licensing stack without reconstructing hidden infrastructure or architecture decisions.
-**Current focus:** Phase 4 — portable purchase infrastructure
+**Current focus:** Phase 5 — one-machine activation service
 
 ## Current Position
 
-Phase: 4
-Plan: 04 — fresh-account provisioning
-Status: Phase 4 complete
-Last activity: 2026-06-23
+Phase: 5
+Plan: 01 — canonical token/API contracts
+Status: Ready to execute
+Last activity: 2026-06-23 -- Phase 05 planning complete
 
-Progress: [██████████] 100%
+Progress: [████████░░] 82% (14/17 plans complete)
 
 ## Performance Metrics
 

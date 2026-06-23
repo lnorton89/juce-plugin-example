@@ -145,11 +145,17 @@ Plans:
   5. Automated tests cover signing, rotation, webhook changes, concurrency, failures, validation, and deactivation.
 
 **Plans**: 3 plans
-
 Plans:
+**Wave 1**
 
 - [ ] 05-01: Define canonical token/API contracts, key rotation, request validation, and error model.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 05-02: Implement concurrency-safe activate/validate/deactivate policy and D1 repository operations.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 05-03: Add rate limits, audit/redaction, signing fixtures, integration tests, and deployed smoke tests.
 
 ### Phase 6: Native Offline Licensing
