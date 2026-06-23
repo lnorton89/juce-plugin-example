@@ -178,7 +178,7 @@ Roadmap phase mappings are populated during roadmap creation.
 | LIC-08 | Phase 6 | Pending |
 | LIC-09 | Phase 6 | Pending |
 | LIC-10 | Phase 6 | Pending |
-| INFRA-01 | Phase 4 | In Progress (04-01: Manifest, wrangler config, generated-state) |
+| INFRA-01 | Phase 4 | Complete (04-01: Manifest, wrangler config, generated-state) |
 | INFRA-02 | Phase 4 | Complete |
 | INFRA-03 | Phase 4 | Complete |
 | INFRA-04 | Phase 4 | Complete |

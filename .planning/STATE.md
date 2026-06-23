@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-last_updated: "2026-06-23T20:30:38.479Z"
+last_updated: "2026-06-23T21:00:00.000Z"
 last_activity: 2026-06-23
 progress:
   total_phases: 7
-  completed_phases: 2
-  total_plans: 14
-  completed_plans: 12
-  percent: 29
+  completed_phases: 3
+  total_plans: 24
+  completed_plans: 13
+  percent: 54
 ---
 
 # Project State
@@ -25,11 +25,11 @@ See: .planning/PROJECT.md (updated 2026-06-22)
 ## Current Position
 
 Phase: 4
-Plan: 03 — webhook + repository
-Status: 03 complete; 04-04 blocked on fresh-account provisioning
+Plan: 04 — fresh-account provisioning
+Status: 01-03 complete; 04-04 pending
 Last activity: 2026-06-23
 
-Progress: [█████████░] 86%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -45,19 +45,11 @@ Progress: [█████████░] 86%
 |-------|-------|-------|----------|
 | 01 | 3 | - | - |
 | 02 | 4 | - | - |
+| 03 | 3 | - | - |
+| 04 | 3 | - | - |
 
-**Recent Trend:** Plan 01-01 completed in 30 min (3 tasks, 45 files).
-| Phase 01 P02 | 46 min | 3 tasks | 17 files |
-| Phase 01 P03 | 6h 35m | 3 tasks | 24 files |
-| Phase 02 P01 | 9 min | 3 tasks | 10 files |
-| Phase 02 P02 | 12 min | 3 tasks | 7 files |
-| Phase 02 P03 | 12 min | 3 tasks | 17 files |
-| Phase 02 P04 | 9h 28m | 3 tasks | 15 files |
-| Phase 03 P01 | 1h 00m | 3 tasks | 16 files |
-| Phase 03 P01 | 1h 00m | 3 tasks | 16 files |
-| Phase 03 P02 | 3h 20m | 3 tasks | 14 files |
-| Phase 03 P03 | - | - | - |
-| Phase 04 P01 | - | - | - |
+**Recent Trend:**
+| Phase 04 P01 | 30 min | 3 tasks | 11 files |
 | Phase 04 P02 | 7h 18m | 3 tasks | 9 files |
 | Phase 04 P03 | 25 min | 3 tasks | 11 files |
 
@@ -71,30 +63,30 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - React/TypeScript/Material UI through JUCE WebView2.
 - Lemon Squeezy plus portable Cloudflare Worker/D1 one-machine activation with seven-day offline grace.
 - One Context7 MCP server with explicit JUCE, tutorial, and MUI library IDs.
-- [Phase 01]: Use JUCE native events for the protocol-v1 handshake; do not evaluate string-built JavaScript. - Keeps the native/web boundary typed and testable.
-- [Phase 01]: Generate embedded web ZIPs with sorted paths and fixed timestamps. - Identical frontend inputs must produce byte-stable embedded archives.
-- [Phase 01]: Use the pinned NuGet package layout expected by JUCE for WebView2 SDK discovery. - Avoids global packages and toolchain substitution.
-- [Phase 01]: Reserve the central stage as a stable Phase 2 renderer mount while Phase 1 displays only honest readiness copy. - Phase 2 can attach rendering without changing the approved shell layout.
-- [Phase 01]: Normalize bridge error codes into approved presentations and render bounded native diagnostics only as React text. - Keeps recovery actionable while preventing unsafe markup and unbounded host text.
-- [Phase 01]: Use http://127.0.0.1:5174 as the canonical LumaScope Vite development URL. - Port 5173 was owned by unrelated bluetti-monitor/PID 13256, and the approved deviation preserved that process untouched.
-- [Phase 01]: Validate development-server origins at root CMake configure time. - Unsafe Debug or Release values fail before native target generation.
-- [Phase 01]: Keep native failure simulation and smoke-result diagnostics Debug-only. - Release builds cannot expose diagnostic test hooks.
-- [Phase 02]: Measurement and Fast are real native profile configs now; user-facing analyzer controls remain v2 scope. - Preserves extension points without adding out-of-scope controls.
-- [Phase 02]: Later UI and bridge work consumes display-ready bounded logarithmic snapshot bins instead of raw FFT bins. - Keeps payloads bounded and UI code independent of FFT internals.
-- [Phase 02]: Keep Musical as the default analyzer profile with 4096 FFT, Hann window, 20 Hz to 20 kHz range, overlapping 1024-sample hops, 45 Hz snapshot cadence, and responsive smoothing. - The original 30 Hz non-overlapped default failed Ableton smoke as laggy/inaccurate; repair commit 5c95579 passed retest.
-- [Phase 02]: Use a fixed two-slot atomic mailbox where the latest complete snapshot wins and stale snapshots are dropped rather than queued. - Preserves realtime bounded handoff without UI backlog.
-- [Phase 02]: Keep analyzer ownership in LumaScopeAudioProcessor so analysis continues while editors are closed or recreated. - Allows the UI to catch up later from processor-owned state.
-- [Phase 02]: Have processBlock observe the actual callback buffer shape and leave samples untouched. - Preserves passthrough while handling mono and malformed edge blocks robustly.
-- [Phase 02]: Keep spectrum.snapshot as a closed protocol-v1 event with bounded bins and explicit parser rejection for malformed payloads. - Preserves typed native/web compatibility and malformed payload resistance.
-- [Phase 02]: Poll processor-owned snapshots from the editor/message timer after bridge readiness, with latest complete snapshot winning and stale frames dropped. - Keeps WebView work off the audio thread and avoids UI backlog.
-- [Phase 02]: Render analyzer data with one filled-curve canvas in the existing stage rather than DOM or MUI elements per FFT bin. - Satisfies UI-02 with bounded renderer nodes.
-- [Phase 02]: Treat pluginval absence as unavailable/skipped, never passed — Keeps VST3-04 evidence honest when pluginval is not installed.
-- [Phase 02]: Use Ableton Live as the preferred real-host smoke target — Fallback hosts are recorded only when Ableton cannot be used, preserving the approved manual DAW proof path.
-- [Phase 02]: Repair failed Ableton smoke through responsive Musical defaults — The fix stayed inside Phase 2 analyzer validation scope without adding standalone capture, licensing, or v2 controls.
-- [Phase 03]: Use void* for COM types in public headers — Avoids Windows.h/JUCE Notification class conflict by storing WAVEFORMATEX* and HANDLE as void* with explicit static_cast in .cpp.
-- [Phase 03]: Silence detection uses exponential moving average with 20-frame hold — alpha=0.1, 1e-6 threshold, consecutiveSilentFrames=20 transition to silent state (D-08).
-- [Phase 03]: Same-source bounded retry only (maxRetryAttempts=3) with no silent fallback — The adapter tracks retryCount; controller enforces D-06 (no endpoint switch on failure) and D-07 (same endpoint retry only).
-- [Phase 03]: IMMNotificationClient registered on controller construction — Notification client creates its own COM apartment and device enumerator; flags are consumed atomically in currentStateSnapshot().
+- [Phase 01]: Use JUCE native events for the protocol-v1 handshake; do not evaluate string-built JavaScript.
+- [Phase 01]: Generate embedded web ZIPs with sorted paths and fixed timestamps.
+- [Phase 01]: Use the pinned NuGet package layout expected by JUCE for WebView2 SDK discovery.
+- [Phase 01]: Reserve the central stage as a stable Phase 2 renderer mount while Phase 1 displays only honest readiness copy.
+- [Phase 01]: Normalize bridge error codes into approved presentations and render bounded native diagnostics only as React text.
+- [Phase 01]: Use http://127.0.0.1:5174 as the canonical LumaScope Vite development URL.
+- [Phase 01]: Validate development-server origins at root CMake configure time.
+- [Phase 01]: Keep native failure simulation and smoke-result diagnostics Debug-only.
+- [Phase 02]: Measurement and Fast are real native profile configs now; user-facing analyzer controls remain v2 scope.
+- [Phase 02]: Later UI and bridge work consumes display-ready bounded logarithmic snapshot bins instead of raw FFT bins.
+- [Phase 02]: Keep Musical as the default analyzer profile with 4096 FFT, Hann window, 20 Hz to 20 kHz range, overlapping 1024-sample hops, 45 Hz snapshot cadence, and responsive smoothing.
+- [Phase 02]: Use a fixed two-slot atomic mailbox where the latest complete snapshot wins and stale snapshots are dropped rather than queued.
+- [Phase 02]: Keep analyzer ownership in LumaScopeAudioProcessor so analysis continues while editors are closed or recreated.
+- [Phase 02]: Have processBlock observe the actual callback buffer shape and leave samples untouched.
+- [Phase 02]: Keep spectrum.snapshot as a closed protocol-v1 event with bounded bins and explicit parser rejection for malformed payloads.
+- [Phase 02]: Poll processor-owned snapshots from the editor/message timer after bridge readiness, with latest complete snapshot winning and stale frames dropped.
+- [Phase 02]: Render analyzer data with one filled-curve canvas in the existing stage rather than DOM or MUI elements per FFT bin.
+- [Phase 02]: Treat pluginval absence as unavailable/skipped, never passed.
+- [Phase 02]: Use Ableton Live as the preferred real-host smoke target.
+- [Phase 02]: Repair failed Ableton smoke through responsive Musical defaults.
+- [Phase 03]: Use void* for COM types in public headers.
+- [Phase 03]: Silence detection uses exponential moving average with 20-frame hold.
+- [Phase 03]: Same-source bounded retry only (maxRetryAttempts=3) with no silent fallback.
+- [Phase 03]: IMMNotificationClient registered on controller construction.
 
 ### Pending Todos
 
@@ -113,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-23T20:29:16.000Z
-Stopped at: 04-02 infrastructure automation scripts complete; 04-04 pending
+Last session: 2026-06-23T21:00:00.000Z
+Plans 04-01 through 04-03 complete. Next: 04-04 fresh-account provisioning.
 Resume file: .planning/phases/04-portable-purchase-infrastructure/04-CONTEXT.md
