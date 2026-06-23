@@ -152,7 +152,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-02: Implement concurrency-safe activate/validate/deactivate policy and D1 repository operations.
+- [x] 05-02: Implement concurrency-safe activate/validate/deactivate policy and D1 repository operations.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -213,6 +213,6 @@ Plans:
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
 | 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
-| 5. One-Machine Activation Service | 1/3 | In Progress|  |
+| 5. One-Machine Activation Service | 2/3 | In Progress|  |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

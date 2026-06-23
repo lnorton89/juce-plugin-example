@@ -52,10 +52,10 @@
 - [x] **CLOUD-01**: Worker verifies Lemon Squeezy webhook `X-Signature` with HMAC-SHA256 over exact raw request bytes before parsing or storing the event.
 - [x] **CLOUD-02**: Worker processes relevant purchase, subscription, expiry, refund, and disablement events idempotently and rejects events for unconfigured stores/products/variants.
 - [x] **CLOUD-03**: D1 migrations create versioned license, activation, webhook-idempotency, and audit data with indexes and constraints required by query and policy paths.
-- [ ] **CLOUD-04**: Client can activate a valid entitlement for one derived machine identifier and receive a canonical Ed25519-signed entitlement token.
-- [ ] **CLOUD-05**: Concurrent activation requests cannot create more than one active machine for a one-seat license.
-- [ ] **CLOUD-06**: Client can validate its current activation and receive a refreshed signed entitlement when server entitlement remains valid.
-- [ ] **CLOUD-07**: Client can deactivate its matching activation so the license can be activated on another machine.
+- [x] **CLOUD-04**: Client can activate a valid entitlement for one derived machine identifier and receive a canonical Ed25519-signed entitlement token.
+- [x] **CLOUD-05**: Concurrent activation requests cannot create more than one active machine for a one-seat license.
+- [x] **CLOUD-06**: Client can validate its current activation and receive a refreshed signed entitlement when server entitlement remains valid.
+- [x] **CLOUD-07**: Client can deactivate its matching activation so the license can be activated on another machine.
 - [ ] **CLOUD-08**: Activation endpoints use request validation, generic non-leaking errors, rate limiting, bounded payloads, redacted logs, and structured audit events.
 - [ ] **CLOUD-09**: Signing supports key identifiers and public-key rotation without invalidating every still-supported token immediately.
 - [ ] **CLOUD-10**: Worker tests cover valid and invalid webhooks, retries, activation races, deactivation, expiry/revocation, rate limits, and database failures.
@@ -161,10 +161,10 @@ Roadmap phase mappings are populated during roadmap creation.
 | CLOUD-01 | Phase 4 | Complete (04-03: Webhook verification) |
 | CLOUD-02 | Phase 4 | Complete (04-03: Event processing and idempotency) |
 | CLOUD-03 | Phase 4 | Complete (04-03: Repository and schema implementation) |
-| CLOUD-04 | Phase 5 | Pending |
-| CLOUD-05 | Phase 5 | Pending |
-| CLOUD-06 | Phase 5 | Pending |
-| CLOUD-07 | Phase 5 | Pending |
+| CLOUD-04 | Phase 5 | Complete |
+| CLOUD-05 | Phase 5 | Complete |
+| CLOUD-06 | Phase 5 | Complete |
+| CLOUD-07 | Phase 5 | Complete |
 | CLOUD-08 | Phase 5 | Pending |
 | CLOUD-09 | Phase 5 | Pending |
 | CLOUD-10 | Phase 5 | Pending |
