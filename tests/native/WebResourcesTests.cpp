@@ -7,6 +7,7 @@ int runEditorSnapshotPollingTests();
 int runPluginProcessorTests();
 int runRealtimeHandoffTests();
 int runSpectrumAnalyzerTests();
+int runStandaloneSourceControllerTests();
 
 namespace
 {
@@ -36,5 +37,6 @@ int main()
     failures += runPluginProcessorTests();
     failures += runRealtimeHandoffTests();
     failures += runSpectrumAnalyzerTests();
+    failures += runStandaloneSourceControllerTests();
     return failures == 0 ? 0 : 1;
 }

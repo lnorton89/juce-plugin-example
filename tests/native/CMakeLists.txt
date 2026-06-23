@@ -3,7 +3,7 @@ file(GLOB WEB_FIXTURE_FILES RELATIVE "${CMAKE_SOURCE_DIR}/tests/fixtures/web" "$
 file(ARCHIVE_CREATE OUTPUT "${WEB_FIXTURE_ARCHIVE}" PATHS ${WEB_FIXTURE_FILES} FORMAT zip MTIME "2020-01-01" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/fixtures/web")
 juce_add_binary_data(TestWebResources HEADER_NAME TestWebResources.h NAMESPACE TestWebResourcesData SOURCES "${WEB_FIXTURE_ARCHIVE}")
 
-add_executable(LumaScopeNativeTests EditorSnapshotPollingTests.cpp HostBridgeTests.cpp PluginProcessorTests.cpp RealtimeHandoffTests.cpp SpectrumAnalyzerTests.cpp WebResourcesTests.cpp
+add_executable(LumaScopeNativeTests EditorSnapshotPollingTests.cpp HostBridgeTests.cpp PluginProcessorTests.cpp RealtimeHandoffTests.cpp SpectrumAnalyzerTests.cpp StandaloneSourceControllerTests.cpp WebResourcesTests.cpp
   "${CMAKE_SOURCE_DIR}/plugin/source/HostBridge.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Analyzer/AnalyzerConfig.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Analyzer/SpectrumAnalyzer.cpp"
