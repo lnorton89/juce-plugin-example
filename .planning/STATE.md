@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-06-23T07:04:45.006Z"
+status: verifying
+last_updated: "2026-06-23T16:38:07.008Z"
 last_activity: 2026-06-23
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
-  percent: 86
+  completed_plans: 7
+  percent: 29
 ---
 
 # Project State
@@ -26,10 +26,10 @@ See: .planning/PROJECT.md (updated 2026-06-22)
 
 Phase: 02 (end-to-end-vst3-analyzer) - EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-23
 
-Progress: [█████████░] 86%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [█████████░] 86%
 | Phase 02 P01 | 9 min | 3 tasks | 10 files |
 | Phase 02 P02 | 12 min | 3 tasks | 7 files |
 | Phase 02 P03 | 12 min | 3 tasks | 17 files |
+| Phase 02 P04 | 9h 28m | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -72,13 +73,16 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 01]: Keep native failure simulation and smoke-result diagnostics Debug-only. - Release builds cannot expose diagnostic test hooks.
 - [Phase 02]: Measurement and Fast are real native profile configs now; user-facing analyzer controls remain v2 scope. - Preserves extension points without adding out-of-scope controls.
 - [Phase 02]: Later UI and bridge work consumes display-ready bounded logarithmic snapshot bins instead of raw FFT bins. - Keeps payloads bounded and UI code independent of FFT internals.
-- [Phase 02]: Keep Musical as the default analyzer profile with 4096 FFT, Hann window, 20 Hz to 20 kHz range, 30 Hz snapshot cadence, and moderate smoothing. - Matches the visible Phase 2 default and keeps DSP tests deterministic.
+- [Phase 02]: Keep Musical as the default analyzer profile with 4096 FFT, Hann window, 20 Hz to 20 kHz range, overlapping 1024-sample hops, 45 Hz snapshot cadence, and responsive smoothing. - The original 30 Hz non-overlapped default failed Ableton smoke as laggy/inaccurate; repair commit 5c95579 passed retest.
 - [Phase 02]: Use a fixed two-slot atomic mailbox where the latest complete snapshot wins and stale snapshots are dropped rather than queued. - Preserves realtime bounded handoff without UI backlog.
 - [Phase 02]: Keep analyzer ownership in LumaScopeAudioProcessor so analysis continues while editors are closed or recreated. - Allows the UI to catch up later from processor-owned state.
 - [Phase 02]: Have processBlock observe the actual callback buffer shape and leave samples untouched. - Preserves passthrough while handling mono and malformed edge blocks robustly.
 - [Phase 02]: Keep spectrum.snapshot as a closed protocol-v1 event with bounded bins and explicit parser rejection for malformed payloads. - Preserves typed native/web compatibility and malformed payload resistance.
 - [Phase 02]: Poll processor-owned snapshots from the editor/message timer after bridge readiness, with latest complete snapshot winning and stale frames dropped. - Keeps WebView work off the audio thread and avoids UI backlog.
 - [Phase 02]: Render analyzer data with one filled-curve canvas in the existing stage rather than DOM or MUI elements per FFT bin. - Satisfies UI-02 with bounded renderer nodes.
+- [Phase 02]: Treat pluginval absence as unavailable/skipped, never passed — Keeps VST3-04 evidence honest when pluginval is not installed.
+- [Phase 02]: Use Ableton Live as the preferred real-host smoke target — Fallback hosts are recorded only when Ableton cannot be used, preserving the approved manual DAW proof path.
+- [Phase 02]: Repair failed Ableton smoke through responsive Musical defaults — The fix stayed inside Phase 2 analyzer validation scope without adding standalone capture, licensing, or v2 controls.
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-23T07:04:13.667Z
+Last session: 2026-06-23T16:37:40.562Z
 Stopped at: Completed 02-03-PLAN.md
 Resume file: None

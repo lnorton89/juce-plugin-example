@@ -27,7 +27,7 @@
 - [x] **VST3-01**: User can load the VST3 as an audio effect in a compatible Windows host and see the spectrum for audio routed through it.
 - [x] **VST3-02**: Plug-in output is sample-equivalent to its input within floating-point tolerance for supported layouts.
 - [x] **VST3-03**: Plug-in remains stable when its editor is closed, repeatedly opened, resized, or destroyed while audio processing continues.
-- [ ] **VST3-04**: Plug-in passes automated VST3 validation and documented smoke tests in at least one real Windows DAW.
+- [x] **VST3-04**: Plug-in passes automated VST3 validation and documented smoke tests in at least one real Windows DAW.
 
 ### Standalone Audio Capture
 
@@ -145,7 +145,7 @@ Roadmap phase mappings are populated during roadmap creation.
 | VST3-01 | Phase 2 | Complete |
 | VST3-02 | Phase 2 | Complete |
 | VST3-03 | Phase 2 | Complete |
-| VST3-04 | Phase 2 | Pending |
+| VST3-04 | Phase 2 | Complete |
 | CAP-01 | Phase 3 | Pending |
 | CAP-02 | Phase 3 | Pending |
 | CAP-03 | Phase 3 | Pending |

@@ -7,7 +7,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 ## Phases
 
 - [x] **Phase 1: Reproducible Product Shell** - Build both Windows targets and display a packaged, typed React/MUI WebView shell. (completed 2026-06-23)
-- [ ] **Phase 2: End-to-End VST3 Analyzer** - Analyze host audio correctly and render it smoothly without changing the signal.
+- [x] **Phase 2: End-to-End VST3 Analyzer** - Analyze host audio correctly and render it smoothly without changing the signal. (completed 2026-06-23)
 - [ ] **Phase 3: Standalone Windows Monitoring** - Analyze selectable input devices and system output through WASAPI loopback.
 - [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
 - [ ] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency.
@@ -76,7 +76,7 @@ Plans:
 
 **Wave 4** *(blocked on 02-03)*
 
-- [ ] 02-04-PLAN.md: Verify lifecycle, host behavior, pluginval, and DAW smoke criteria.
+- [x] 02-04-PLAN.md: Verify lifecycle, host behavior, pluginval, and DAW smoke criteria.
 
 ### Phase 3: Standalone Windows Monitoring
 
@@ -197,7 +197,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
-| 2. End-to-End VST3 Analyzer | 3/4 | In Progress|  |
+| 2. End-to-End VST3 Analyzer | 4/4 | Complete   | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |
