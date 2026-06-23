@@ -109,3 +109,48 @@ Example:
 ```
 
 `tests/worker/fixtures/entitlement-v1.json` locks the v1 canonical payload, canonical string, key material format, signature, and public key ring for cross-language Phase 6 verification.
+
+## Abuse Controls
+
+Activation endpoints apply controls before activation state changes:
+
+- Request validation rejects wrong method, missing JSON content type, oversized bodies, malformed JSON, overlong fields, stale timestamps, and malformed request IDs.
+- Replay protection records accepted request IDs and returns `replay_detected` for repeated IDs.
+- Rate limiting uses the `ACTIVATION_RATE_LIMIT` Cloudflare binding when configured. Keys are layered by route plus IP, route plus license-key hash, and route plus machine-ID hash.
+- Audit records store structured redacted details only: action, outcome, route, request ID, activation ID when known, app version, coarse client family, license-key hash, and machine-ID hash.
+
+Audit records must never include raw license keys, raw machine IDs, signing secrets, full request bodies, or customer PII.
+
+## Local Smoke
+
+Automated local coverage is the smoke substitute that requires no Cloudflare account or Lemon Squeezy fixture account:
+
+```powershell
+npm.cmd --prefix worker run typecheck
+npm.cmd --prefix worker run test -- activation-routes.test.ts abuse.test.ts
+```
+
+Those tests cover activate, same-machine retry, validate, deactivate, second-machine rejection, inactive license rejection, malformed request rejection, replay detection, rate-limit behavior, and audit redaction.
+
+## Deployed Smoke
+
+Deployed smoke requires a real Cloudflare environment, D1 database, signing secrets, and at least one active test license stored through the Lemon Squeezy webhook path. Do not claim deployed activation smoke passed unless those account-specific prerequisites are available.
+
+After deploy and migrations, use a non-production test license:
+
+```powershell
+$base = "https://api.example.com"
+$body = @{
+  licenseKey = "TEST-LICENSE-FROM-LEMON"
+  machineId = "test-machine-derived-id"
+  requestId = "req_$(New-Guid)"
+  timestamp = (Get-Date).ToUniversalTime().ToString("o")
+  appVersion = "smoke"
+} | ConvertTo-Json -Compress
+
+Invoke-RestMethod -Uri "$base/api/v1/activate" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "$base/api/v1/validate" -Method POST -ContentType "application/json" -Body $body
+Invoke-RestMethod -Uri "$base/api/v1/deactivate" -Method POST -ContentType "application/json" -Body $body
+```
+
+Repeat activation with the same machine and a fresh `requestId` to confirm idempotent success. Use a different `machineId` before deactivation to confirm `activation_limit_reached`. Reuse the same `requestId` to confirm `replay_detected`. Send an empty `machineId` to confirm `invalid_request`. Rate-limit behavior is feasible only when the deployed `ACTIVATION_RATE_LIMIT` binding is configured and the smoke can safely exceed the configured threshold.

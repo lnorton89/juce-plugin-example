@@ -1,5 +1,6 @@
 export interface Env {
   ACTIVATION_DB: D1Database;
+  ACTIVATION_RATE_LIMIT?: RateLimit;
   LEMON_WEBHOOK_SECRET: string;
   LEMON_STORE_ID: string;
   LEMON_PRODUCT_ID: string;

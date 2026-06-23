@@ -1,5 +1,11 @@
 export type LicenseStatus = 'active' | 'expired' | 'refunded' | 'disabled' | 'pending';
 export type IdempotencyStatus = 'completed' | 'failed' | 'skipped';
+export type ActivationRequestStatus =
+  | 'accepted'
+  | 'replay_detected'
+  | 'rate_limited'
+  | 'invalid_request'
+  | 'failed';
 
 export interface License {
   id: number;
@@ -59,6 +65,16 @@ export interface AuditLogEntry {
   ip_address: string | null;
   timestamp: string;
   request_id: string | null;
+}
+
+export interface ActivationRequestIdempotency {
+  id: number;
+  request_id: string;
+  route: string;
+  license_key_hash: string | null;
+  machine_id_hash: string | null;
+  requested_at: string;
+  status: ActivationRequestStatus;
 }
 
 export interface RepositoryConfig {

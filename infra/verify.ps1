@@ -76,7 +76,14 @@ Add-Check -Name 'worker/package.json exists' -Condition {
     Test-Path -LiteralPath (Join-Path $RepoRoot 'worker/package.json')
 }
 
-# 6. Cloudflare authentication
+# 6. Rate-limit binding configured
+Add-Check -Name 'Activation rate-limit binding configured' -Condition {
+    $wranglerToml = Get-Content -Raw -LiteralPath (Join-Path $RepoRoot 'worker/wrangler.toml')
+    $wranglerToml -match '\[\[ratelimits\]\]' -and
+    $wranglerToml -match 'name\s*=\s*"ACTIVATION_RATE_LIMIT"'
+}
+
+# 7. Cloudflare authentication
 Add-Check -Name 'Cloudflare authentication' -Condition {
     Test-CloudflareToken
 }

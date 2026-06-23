@@ -133,6 +133,7 @@ Write-Host '=== Deploy Summary ==='
 Write-Host "  Environment: $Environment"
 Write-Host "  Worker:      $($envConfig.worker.name)"
 Write-Host "  D1 binding:  $($envConfig.worker.d1_binding)"
+Write-Host "  Rate limit:  $($envConfig.worker.rate_limit_binding)"
 Write-Host "  Secrets:     $secretsInjected injected"
 Write-Host ''
 Write-Host 'Deploy complete.'

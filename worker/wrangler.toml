@@ -6,6 +6,13 @@ name = "lumascope-activation"
 main = "src/index.ts"
 compatibility_date = "2026-04-01"
 
+[[ratelimits]]
+name = "ACTIVATION_RATE_LIMIT"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 60
+  period = 60
+
 # Default environment (local development)
 [env.local]
 name = "lumascope-activation-local"

@@ -14,9 +14,12 @@ Lemon Squeezy --> Webhook (signed HMAC-SHA256) --> Cloudflare Worker
                                                   idempotency, audit)
 ```
 
-The Worker exposes two HTTP endpoints:
+The Worker exposes these HTTP endpoints:
 - `POST /api/webhook/lemon-squeezy` — Receives and verifies Lemon Squeezy webhook events
 - `GET /api/health` — Health check returning `{ status: "ok", version: 1 }`
+- `POST /api/v1/activate` — Activates or refreshes the one active machine for a license
+- `POST /api/v1/validate` — Refreshes an existing active activation only
+- `POST /api/v1/deactivate` — Deactivates the matching active machine for transfer
 
 ## Prerequisites
 
@@ -34,6 +37,9 @@ The bootstrap and deploy scripts read these environment variables. Never commit 
 | `CLOUDFLARE_API_TOKEN` | Cloudflare Dashboard > My Profile > API Tokens > Create Token (Edit Cloudflare Workers template) | Yes |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Dashboard > Workers & Pages > Account ID (32-hex-char identifier) | Yes |
 | `LEMON_WEBHOOK_SECRET` | Lemon Squeezy Store Settings > Webhooks > signing secret | Yes (for production) |
+| `SIGNING_PRIVATE_KEY` | Operator-generated Ed25519 PKCS#8 private key, unpadded base64url | Yes for activation endpoints |
+| `SIGNING_KEY_ID` | Operator-selected active key ID matching the public key ring | Yes for activation endpoints |
+| `SIGNING_PUBLIC_KEYS` | JSON public key ring for native/offline verification | Yes for activation endpoints |
 
 Create a Cloudflare API token with `Workers:Edit` and `D1:Edit` permissions.
 
@@ -44,7 +50,8 @@ Create a Cloudflare API token with `Workers:Edit` and `D1:Edit` permissions.
 - **Three environments**: `local`, `preview`, `production`
 - **Per-environment**: Worker name, route pattern, D1 database binding and name, required secrets
 - **Lemon Squeezy configuration**: Supported event types, webhook secret reference
-- **Signing configuration**: Public/private key secret names (allocated for Phase 5)
+- **Signing configuration**: Active key ID, public key ring, and private key secret names
+- **Rate limiting configuration**: `ACTIVATION_RATE_LIMIT` binding, namespace ID, limit, and period
 
 The manifest contains **zero account IDs, resource UUIDs, or secret values**. It is safe to commit.
 
@@ -102,6 +109,8 @@ powershell.exe -NoProfile -File infra/deploy.ps1 -Environment production
 
 Expected output includes the deployment URL where the Worker is accessible.
 
+The Worker declares an `ACTIVATION_RATE_LIMIT` binding in `worker/wrangler.toml` using Wrangler's `[[ratelimits]]` syntax. The namespace ID is a portable placeholder and can be changed per account if a distinct counter namespace is needed.
+
 ## Step 4: Verify Deployment
 
 ```powershell
@@ -119,6 +128,7 @@ The verification script performs these checks:
 | Cloudflare authentication | `npx wrangler whoami` succeeds |
 | D1 database exists | Database listed in `npx wrangler d1 list` |
 | Migration status | Migrations are applied or pending |
+| Rate limit config | `ACTIVATION_RATE_LIMIT` is present in `worker/wrangler.toml` |
 
 All checks must return `[PASS]` for a successful verification.
 
@@ -193,6 +203,10 @@ Worker tests use an in-memory MockD1Database and require no external infrastruct
 - Unsupported event types and unconfigured products
 - Expired event replay rejection
 - D1 repository CRUD operations (licenses, idempotency, audit, activations)
+- Activation lifecycle endpoints: activate, same-machine retry, validate, deactivate, second-machine rejection, inactive license rejection
+- Abuse controls: malformed request rejection, replay detection, rate-limit behavior, and redacted audit records
+
+For deployed activation smoke instructions, see `docs/activation-api.md`. Deployed activation smoke requires real Cloudflare credentials, signing secrets, D1 migrations, and an active test license. Local automated tests are the honest substitute when those account-specific prerequisites are unavailable.
 
 ## Security Notes
 
@@ -200,13 +214,16 @@ Worker tests use an in-memory MockD1Database and require no external infrastruct
 - **Constant-time signature verification**: Webhook X-Signature is verified using `crypto.subtle.verify` (constant-time HMAC-SHA256)
 - **Parameterized queries**: All D1 queries use `prepare().bind()` — no SQL injection possible
 - **Replay protection**: Webhook events with `event_created_at` older than 5 minutes are rejected
+- **Activation replay protection**: Client request IDs are recorded and repeated IDs return `replay_detected`
+- **Rate limiting**: Activation endpoints use route/IP, route/license-hash, and route/machine-hash keys through `ACTIVATION_RATE_LIMIT` when configured
+- **Redacted audit records**: Activation audit entries store hashes and coarse client details, never raw license keys, machine IDs, request bodies, or signing secrets
 - **Idempotency**: Each `event_id` is processed at most once; duplicates return 200 without mutating state
 - **Unconfigured products**: Events for unconfigured store/product/variant IDs are silently skipped
 - **Generic errors**: Error responses do not leak internal state, database contents, or configuration values
 
-## Next: Phase 5 — One-Machine Activation Service
+## Phase 5 Activation Service
 
-Phase 5 will build on this infrastructure to implement:
+Phase 5 builds on this infrastructure with a one-machine activation service:
 
 - Activation endpoint: validate license key + machine identifier, issue Ed25519-signed entitlement token
 - Validation endpoint: refresh and re-sign existing entitlements

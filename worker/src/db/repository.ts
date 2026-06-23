@@ -6,6 +6,8 @@ import type {
   LicenseStatus,
   IdempotencyStatus,
   ActivationPolicyResult,
+  ActivationRequestIdempotency,
+  ActivationRequestStatus,
 } from './schema';
 
 export class Repository {
@@ -127,6 +129,42 @@ export class Repository {
       .bind(licenseId)
       .all<Activation>();
     return result.results;
+  }
+
+  async findActivationRequest(
+    requestId: string
+  ): Promise<ActivationRequestIdempotency | null> {
+    const row = await this.db
+      .prepare('SELECT * FROM activation_request_idempotency WHERE request_id = ?')
+      .bind(requestId)
+      .first<ActivationRequestIdempotency>();
+    return row ?? null;
+  }
+
+  async markActivationRequest(data: {
+    requestId: string;
+    route: string;
+    licenseKeyHash?: string | null;
+    machineIdHash?: string | null;
+    requestedAt: string;
+    status: ActivationRequestStatus;
+  }): Promise<void> {
+    await this.db
+      .prepare(
+        `INSERT INTO activation_request_idempotency
+           (request_id, route, license_key_hash, machine_id_hash, requested_at, status)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(request_id) DO NOTHING`
+      )
+      .bind(
+        data.requestId,
+        data.route,
+        data.licenseKeyHash ?? null,
+        data.machineIdHash ?? null,
+        data.requestedAt,
+        data.status
+      )
+      .run();
   }
 
   async findActivationByMachine(

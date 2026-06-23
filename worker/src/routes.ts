@@ -19,13 +19,13 @@ export async function handleRequest(
       return handleLemonWebhook(request, env, ctx);
 
     case method === 'POST' && path === '/api/v1/activate':
-      return handleActivate(request, env);
+      return handleActivate(request, env, ctx);
 
     case method === 'POST' && path === '/api/v1/validate':
-      return handleValidate(request, env);
+      return handleValidate(request, env, ctx);
 
     case method === 'POST' && path === '/api/v1/deactivate':
-      return handleDeactivate(request, env);
+      return handleDeactivate(request, env, ctx);
 
     default:
       return new Response(JSON.stringify({ error: 'Not Found' }), {

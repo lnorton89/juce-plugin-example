@@ -22,9 +22,12 @@ $required = @(
     'worker/package.json', 'worker/wrangler.toml', 'worker/src/index.ts',
     'worker/src/env.ts', 'worker/src/db/schema.ts', 'worker/src/webhook.ts',
     'worker/src/db/repository.ts',
+    'worker/src/api/activationRoutes.ts', 'worker/src/api/rateLimit.ts',
+    'worker/src/api/audit.ts', 'worker/src/db/migrations/0002_activation_policy.sql',
+    'worker/src/db/migrations/0003_activation_request_idempotency.sql',
     'infra/manifest.yaml', 'infra/common.ps1', 'infra/bootstrap.ps1',
     'infra/deploy.ps1', 'infra/verify.ps1', 'infra/teardown.ps1',
-    'docs/cloud-infrastructure.md'
+    'docs/cloud-infrastructure.md', 'docs/activation-api.md'
 )
 foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $root $path))) { $errors.Add("Missing required artifact: $path") } }
 
@@ -61,6 +64,13 @@ if ($errors.Count -eq 0) {
     Require-Text 'worker/src/db/repository.ts' 'Repository' 'Repository module missing Repository class'
     Require-Text 'docs/cloud-infrastructure.md' 'bootstrap\.ps1' 'Cloud infra docs missing bootstrap reference'
     Require-Text 'docs/cloud-infrastructure.md' 'Lemon Squeezy' 'Cloud infra docs missing Lemon Squeezy'
+    Require-Text 'docs/cloud-infrastructure.md' 'ACTIVATION_RATE_LIMIT' 'Cloud infra docs missing activation rate limit binding'
+    Require-Text 'docs/activation-api.md' '/api/v1/activate' 'Activation API docs missing activate endpoint'
+    Require-Text 'docs/activation-api.md' 'Deployed Smoke' 'Activation API docs missing deployed smoke guidance'
+    Require-Text 'worker/wrangler.toml' '\[\[ratelimits\]\]' 'Wrangler config missing rate limit binding'
+    Require-Text 'worker/src/api/activationRoutes.ts' 'checkActivationRateLimit' 'Activation routes missing rate limit check'
+    Require-Text 'worker/src/api/activationRoutes.ts' 'findActivationRequest' 'Activation routes missing replay check'
+    Require-Text 'worker/src/api/audit.ts' 'machineIdHash' 'Activation audit missing machine hash redaction'
     Require-Text 'scripts/test-all.ps1' 'worker run test' 'test-all missing Worker test step'
     $gitignore = Get-Content -Raw -LiteralPath (Join-Path $root '.gitignore')
     if ($gitignore -notmatch 'generated-state\.json') { $errors.Add('Generated state file is not gitignored (.gitignore)') }

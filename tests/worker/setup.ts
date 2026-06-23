@@ -39,6 +39,7 @@ export class MockD1Database {
   licenses: Record<string, any>[] = [];
   activations: Record<string, any>[] = [];
   webhook_idempotency: Record<string, any>[] = [];
+  activation_request_idempotency: Record<string, any>[] = [];
   audit_log: Record<string, any>[] = [];
   rejectNextActivationInsert = false;
   activationInsertRaceWinner: Record<string, any> | null = null;
@@ -47,6 +48,7 @@ export class MockD1Database {
     licenses: 1,
     activations: 1,
     webhook_idempotency: 1,
+    activation_request_idempotency: 1,
     audit_log: 1,
   };
 
@@ -59,10 +61,17 @@ export class MockD1Database {
     this.licenses = [];
     this.activations = [];
     this.webhook_idempotency = [];
+    this.activation_request_idempotency = [];
     this.audit_log = [];
     this.rejectNextActivationInsert = false;
     this.activationInsertRaceWinner = null;
-    this.sequences = { licenses: 1, activations: 1, webhook_idempotency: 1, audit_log: 1 };
+    this.sequences = {
+      licenses: 1,
+      activations: 1,
+      webhook_idempotency: 1,
+      activation_request_idempotency: 1,
+      audit_log: 1,
+    };
   }
 }
 
@@ -102,6 +111,14 @@ class MockPreparedStatement {
     if (normalized.includes('from webhook_idempotency')) {
       const row = this.db.webhook_idempotency.find(
         (w) => w.event_id === this.bindValues[0]
+      );
+      return (row ? { ...row } : null) as T | null;
+    }
+
+    // SELECT * FROM activation_request_idempotency WHERE request_id = ?
+    if (normalized.includes('from activation_request_idempotency')) {
+      const row = this.db.activation_request_idempotency.find(
+        (w) => w.request_id === this.bindValues[0]
       );
       return (row ? { ...row } : null) as T | null;
     }
@@ -162,6 +179,14 @@ class MockPreparedStatement {
     // INSERT INTO webhook_idempotency
     if (normalized.includes('insert') && normalized.includes('into webhook_idempotency')) {
       return this.handleInsertIdempotency();
+    }
+
+    // INSERT INTO activation_request_idempotency
+    if (
+      normalized.includes('insert') &&
+      normalized.includes('into activation_request_idempotency')
+    ) {
+      return this.handleInsertActivationRequest();
     }
 
     // INSERT INTO audit_log
@@ -285,6 +310,49 @@ class MockPreparedStatement {
     row.id = this.db.sequences.webhook_idempotency++;
     row.processed_at = row.processed_at || '2026-06-23T12:00:00Z';
     this.db.webhook_idempotency.push(row);
+
+    return {
+      success: true,
+      results: [],
+      meta: { duration: 0, changes: 1, last_row_id: row.id },
+    };
+  }
+
+  private handleInsertActivationRequest(): D1Result<any> {
+    const colMatch = this.sql.match(/\(([^)]+)\)\s*VALUES/i);
+    if (!colMatch) {
+      return {
+        success: false,
+        results: [],
+        meta: { duration: 0 },
+        error: 'Could not parse columns',
+      };
+    }
+
+    const columns = colMatch[1]
+      .split(',')
+      .map((c) => c.trim().replace(/"/g, '').toLowerCase());
+
+    const row: Record<string, any> = {};
+    columns.forEach((col, i) => {
+      if (i < this.bindValues.length) {
+        row[col] = this.bindValues[i];
+      }
+    });
+
+    const existing = this.db.activation_request_idempotency.find(
+      (w) => w.request_id === row.request_id
+    );
+    if (existing) {
+      return {
+        success: true,
+        results: [],
+        meta: { duration: 0, changes: 0 },
+      };
+    }
+
+    row.id = this.db.sequences.activation_request_idempotency++;
+    this.db.activation_request_idempotency.push(row);
 
     return {
       success: true,
