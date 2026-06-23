@@ -1,0 +1,16 @@
+{
+  "protocolVersion": 1,
+  "sequence": 42,
+  "profile": "Musical",
+  "sampleRate": 48000,
+  "fftSize": 4096,
+  "minFrequencyHz": 20,
+  "maxFrequencyHz": 20000,
+  "minDecibels": -96,
+  "maxDecibels": 0,
+  "bins": [
+    { "frequencyHz": 20, "decibels": -96, "normalisedValue": 0 },
+    { "frequencyHz": 1000, "decibels": -12, "normalisedValue": 0.875 },
+    { "frequencyHz": 20000, "decibels": -48, "normalisedValue": 0.5 }
+  ]
+}

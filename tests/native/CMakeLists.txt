@@ -22,6 +22,7 @@ target_compile_definitions(LumaScopeNativeTests PRIVATE
   LUMASCOPE_BUILD_MARKER="0.1.0-test"
   LUMASCOPE_FIXTURE_UI_READY="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/ui-ready-v1.json"
   LUMASCOPE_FIXTURE_HOST_INFO="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/host-info-v1.json"
+  LUMASCOPE_FIXTURE_SPECTRUM_SNAPSHOT="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/spectrum-snapshot-v1.json"
   LUMASCOPE_FIXTURE_UNSUPPORTED="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/unsupported-version.json"
   LUMASCOPE_FIXTURE_MALFORMED="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/malformed.json")
 target_link_libraries(LumaScopeNativeTests PRIVATE TestWebResources juce::juce_audio_processors juce::juce_dsp juce::juce_gui_extra)
