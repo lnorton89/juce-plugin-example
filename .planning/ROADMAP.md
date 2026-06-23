@@ -148,7 +148,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 05-01: Define canonical token/API contracts, key rotation, request validation, and error model.
+- [x] 05-01: Define canonical token/API contracts, key rotation, request validation, and error model.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -213,6 +213,6 @@ Plans:
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
 | 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
-| 5. One-Machine Activation Service | 0/3 | Not started | - |
+| 5. One-Machine Activation Service | 1/3 | In Progress|  |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |
