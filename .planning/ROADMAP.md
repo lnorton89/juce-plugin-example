@@ -10,7 +10,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 - [x] **Phase 2: End-to-End VST3 Analyzer** - Analyze host audio correctly and render it smoothly without changing the signal. (completed 2026-06-23)
 - [ ] **Phase 3: Standalone Windows Monitoring** - Analyze selectable input devices and system output through WASAPI loopback.
 - [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
-- [ ] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency.
+- [x] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency. (completed 2026-06-23)
 - [ ] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets.
 - [ ] **Phase 7: Release and Handoff Proof** - Validate hosts, devices, security, CI, diagnostics, and clean-account deployment end to end.
 
@@ -156,7 +156,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 05-03: Add rate limits, audit/redaction, signing fixtures, integration tests, and deployed smoke tests.
+- [x] 05-03: Add rate limits, audit/redaction, signing fixtures, integration tests, and deployed smoke tests.
 
 ### Phase 6: Native Offline Licensing
 
@@ -213,6 +213,6 @@ Plans:
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
 | 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
-| 5. One-Machine Activation Service | 2/3 | In Progress|  |
+| 5. One-Machine Activation Service | 3/3 | Complete   | 2026-06-23 |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

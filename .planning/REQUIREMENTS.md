@@ -56,9 +56,9 @@
 - [x] **CLOUD-05**: Concurrent activation requests cannot create more than one active machine for a one-seat license.
 - [x] **CLOUD-06**: Client can validate its current activation and receive a refreshed signed entitlement when server entitlement remains valid.
 - [x] **CLOUD-07**: Client can deactivate its matching activation so the license can be activated on another machine.
-- [ ] **CLOUD-08**: Activation endpoints use request validation, generic non-leaking errors, rate limiting, bounded payloads, redacted logs, and structured audit events.
-- [ ] **CLOUD-09**: Signing supports key identifiers and public-key rotation without invalidating every still-supported token immediately.
-- [ ] **CLOUD-10**: Worker tests cover valid and invalid webhooks, retries, activation races, deactivation, expiry/revocation, rate limits, and database failures.
+- [x] **CLOUD-08**: Activation endpoints use request validation, generic non-leaking errors, rate limiting, bounded payloads, redacted logs, and structured audit events.
+- [x] **CLOUD-09**: Signing supports key identifiers and public-key rotation without invalidating every still-supported token immediately.
+- [x] **CLOUD-10**: Worker tests cover valid and invalid webhooks, retries, activation races, deactivation, expiry/revocation, rate limits, and database failures.
 
 ### Native Licensing
 
@@ -165,9 +165,9 @@ Roadmap phase mappings are populated during roadmap creation.
 | CLOUD-05 | Phase 5 | Complete |
 | CLOUD-06 | Phase 5 | Complete |
 | CLOUD-07 | Phase 5 | Complete |
-| CLOUD-08 | Phase 5 | Pending |
-| CLOUD-09 | Phase 5 | Pending |
-| CLOUD-10 | Phase 5 | Pending |
+| CLOUD-08 | Phase 5 | Complete |
+| CLOUD-09 | Phase 5 | Complete |
+| CLOUD-10 | Phase 5 | Complete |
 | LIC-01 | Phase 6 | Pending |
 | LIC-02 | Phase 6 | Pending |
 | LIC-03 | Phase 6 | Pending |
