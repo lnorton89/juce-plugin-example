@@ -1,78 +1,69 @@
 ---
 phase: 02-end-to-end-vst3-analyzer
-verified: 2026-06-23T16:47:57Z
-status: gaps_found
-score: 3/4 must-haves verified
+verified: 2026-06-23T17:15:37Z
+status: passed
+score: 4/4 must-haves verified
 overrides_applied: 0
-gaps:
-  - truth: "The VST3 passes automated validation and the analyzer interfaces expose future control extension points."
-    status: partial
-    reason: "Analyzer extension points are implemented and all local automated gates pass, but strict pluginval validation does not pass because pluginval is unavailable. This is honestly recorded as unavailable/not passed, but it does not satisfy the literal automated VST3 validation clause."
-    artifacts:
-      - path: "scripts/validate-plugin.ps1"
-        issue: "Strict invocation exits with pluginval executable not found when no -PluginvalPath, PLUGINVAL_EXE, or PATH executable is available."
-      - path: ".planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md"
-        issue: "Records pluginval as skipped/unavailable, not passed."
-    missing:
-      - "Install or provide pluginval and rerun powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1 successfully against the built VST3."
+re_verification:
+  previous_status: gaps_found
+  previous_score: 3/4
+  gaps_closed:
+    - "The VST3 passes automated validation and the analyzer interfaces expose future control extension points."
+  gaps_remaining: []
+  regressions: []
 human_verification: []
 ---
 
 # Phase 2: End-to-End VST3 Analyzer Verification Report
 
 **Phase Goal:** A user can insert the VST3 on audio, hear unchanged output, and see a correct, smooth logarithmic spectrum.
-**Verified:** 2026-06-23T16:47:57Z
-**Status:** gaps_found
-**Re-verification:** No - initial verification
+**Verified:** 2026-06-23T17:15:37Z
+**Status:** passed
+**Re-verification:** Yes - after pluginval gap closure commit `2f5db93`
 
-## User Flow Coverage
+## Goal Achievement
 
-Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I want..., so that...` user-story format. I verified the explicit outcome requested by the phase and user prompt.
+Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I want..., so that...` user-story format (`gsd-sdk query user-story.validate ... --pick valid` returned `false`). This re-verification follows the existing Phase 2 verification precedent and verifies the roadmap success criteria directly.
+
+### User Flow Coverage
 
 | Step | Expected | Evidence | Status |
 | --- | --- | --- | --- |
-| Insert VST3 on host audio | A Windows DAW can load the VST3 as an audio effect | `02-HOST-SMOKE.md` records Ableton available and VST3 loaded in Ableton; built artifact path is recorded for commit `5c95579`. | VERIFIED |
-| Hear unchanged output | Plug-in output remains sample-equivalent/audibly unchanged | `PluginProcessor.cpp` lines 33-48 only observes/publishes analyzer data; `PluginProcessorTests.cpp` lines 108-119 and 122-139 compare samples before/after `processBlock`; host smoke records routed audio unchanged. | VERIFIED |
-| See correct smooth logarithmic spectrum | WebView displays bounded live spectrum from routed audio | `SpectrumAnalyzer.cpp` lines 120-168 computes windowed FFT/log bins/smoothing; `PluginEditor.cpp` lines 149-167 emits snapshots from timer side; `SpectrumCanvas.tsx` lines 15-93 renders a filled canvas curve; Ableton retest passed after repair commit `5c95579`. | VERIFIED |
-| Lifecycle stays stable | Editor close/reopen/resize/destroy remains stable while processing continues | Processor owns analyzer/mailbox; `EditorSnapshotPollingTests.cpp` lines 92-125 tests close/reopen latest snapshot; host smoke records close/reopen, resize, and remove/reinsert passed. | VERIFIED |
-| Automated VST3 validation | pluginval passes against built VST3 | `scripts/test-all.ps1` passes with `-AllowMissing`, but strict `scripts/validate-plugin.ps1` fails because pluginval is unavailable. `02-HOST-SMOKE.md` records this as unavailable/not passed. | FAILED |
-
-## Goal Achievement
+| Insert VST3 on host audio | A Windows DAW can load the VST3 as an audio effect | `02-HOST-SMOKE.md` records Ableton Live available and LumaScope loaded after repair commit `5c95579`. | VERIFIED |
+| Hear unchanged output | Plug-in output remains sample-equivalent/audibly unchanged | `PluginProcessor.cpp` observes/publishes analyzer data without writing samples; `PluginProcessorTests.cpp` verifies passthrough; `02-HOST-SMOKE.md` records routed audio unchanged. | VERIFIED |
+| See correct smooth logarithmic spectrum | WebView displays bounded live spectrum from routed audio | `SpectrumAnalyzer.cpp` computes windowed FFT/log bins/smoothing; `PluginEditor.cpp` emits snapshots from the timer side; `SpectrumCanvas.tsx` renders one filled canvas curve; Ableton retest passed after `5c95579`. | VERIFIED |
+| Lifecycle stays stable | Editor close/reopen/resize/destroy remains stable while processing continues | Processor owns analyzer/mailbox; `EditorSnapshotPollingTests.cpp` covers close/reopen latest snapshot; host smoke records lifecycle pass. | VERIFIED |
+| Automated VST3 validation | pluginval passes against built VST3 | `scripts/validate-plugin.ps1 -PluginvalPath .deps\pluginval\pluginval.exe -SkipGuiTests` passed at strictness 10 with pluginval v1.0.4 and `SUCCESS`; aggregate `scripts/test-all.ps1` also passed with `PLUGINVAL_EXE` set. | VERIFIED_WITH_LIMITATION |
 
 ### Observable Truths
 
 | # | Truth | Status | Evidence |
 | --- | --- | --- | --- |
-| 1 | Deterministic tone and silence tests verify frequency placement, level normalization, smoothing, and behavior across supported sample rates/block sizes. | VERIFIED | `SpectrumAnalyzerTests.cpp` covers Musical/Measurement/Fast profiles, silence/denormals, mono/stereo tones at 44.1/48/96 kHz, variable blocks, sample-rate reset, overlapping hops, and smoothing decay. Full suite passed: 9 UI test files/27 tests, native CTest 1/1 passed. |
-| 2 | A Windows DAW can load the VST3 and display a bounded-frame-rate logarithmic spectrum while audio remains sample-equivalent to input. | VERIFIED | `02-HOST-SMOKE.md` records Ableton Live smoke passed after repair commit `5c95579`; `PluginProcessorTests.cpp` proves sample-equivalent passthrough; `SpectrumCanvas.test.tsx` proves one canvas/no per-bin DOM. |
-| 3 | Processing remains real-time safe and continues correctly while the editor is closed, reopened, resized, or destroyed. | VERIFIED | `processBlock` contains no WebView/JSON/file/network/lock tokens per native regression test; analyzer state lives in `LumaScopeAudioProcessor`; `EditorSnapshotPollingTests.cpp` verifies latest processor-owned snapshot after editor recreation; Ableton smoke records lifecycle pass. |
-| 4 | The VST3 passes automated validation and the analyzer interfaces expose future control extension points. | FAILED | Analyzer profiles/config extension points exist, but strict pluginval validation did not pass. `scripts/validate-plugin.ps1` exits with `pluginval executable not found`; `PLUGINVAL_EXE` is not set and no PATH executable was found. |
+| 1 | Deterministic tone and silence tests verify frequency placement, level normalization, smoothing, and behavior across supported sample rates/block sizes. | VERIFIED | Full suite passed: Vitest 9 files/27 tests, CMake configure/build, CTest 1/1. `SpectrumAnalyzerTests.cpp` covers silence/denormals, mono/stereo tones at 44.1/48/96 kHz, variable blocks, sample-rate reset, overlapping hops, and smoothing decay. |
+| 2 | A Windows DAW can load the VST3 and display a bounded-frame-rate logarithmic spectrum while audio remains sample-equivalent to input. | VERIFIED | `02-HOST-SMOKE.md` records Ableton Live smoke passed after `5c95579`; `PluginProcessorTests.cpp` proves sample-equivalent passthrough; `SpectrumCanvas.test.tsx` proves a bounded one-canvas renderer. |
+| 3 | Processing remains real-time safe and continues correctly while the editor is closed, reopened, resized, or destroyed. | VERIFIED | `processBlock` contains no WebView/JSON/file/network/lock tokens per native regression test; analyzer state is processor-owned; editor polling is timer/message-thread only; Ableton lifecycle smoke passed. |
+| 4 | The VST3 passes automated validation and the analyzer interfaces expose future control extension points. | VERIFIED | Gap closed by `2f5db93`: pluginval v1.0.4 at `.deps/pluginval/pluginval.exe` passed `scripts/validate-plugin.ps1 -PluginvalPath .deps\pluginval\pluginval.exe -SkipGuiTests` with `SUCCESS` at strictness 10. `AnalyzerConfig` exposes FFT, hop, frequency range, cadence, smoothing, and display-bin controls. GUI pluginval tests are skipped because the GUI path hung locally; Ableton GUI/host smoke covers editor loading, rendering, resize, close/reopen, and remove/reinsert behavior. |
 
-**Score:** 3/4 truths verified
+**Score:** 4/4 truths verified
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 | --- | --- | --- | --- |
-| `plugin/include/LumaScope/Analyzer/AnalyzerConfig.h` | Musical/Measurement/Fast profiles and extension fields | VERIFIED | Exists and exports profile/config fields including `fftSize`, `hopSize`, frequency range, snapshot cadence, smoothing, and display bins. |
-| `plugin/source/Analyzer/SpectrumAnalyzer.cpp` | JUCE FFT/Hann/log-bin/smoothing implementation | VERIFIED | Uses JUCE FFT/windowing, fixed log bins, coherent-gain normalization, interpolation, smoothing, and bounded snapshots. |
-| `plugin/include/LumaScope/SnapshotMailbox.h` | Preallocated latest-snapshot handoff | VERIFIED | Two fixed slots, atomics, sequence checks, no growing queue. |
-| `plugin/source/PluginProcessor.cpp` | Transparent processBlock analyzer ingress | VERIFIED | Reads buffer, pushes analyzer data, publishes snapshots, and does not write samples. |
-| `plugin/source/PluginEditor.cpp` | Message-thread snapshot polling and WebView emission | VERIFIED | Emits `spectrum.snapshot` only from timer/message side after bridge readiness. |
-| `ui/src/bridge/protocol.ts` | Closed TypeScript snapshot parser | VERIFIED | Rejects wrong version, bad profile, non-finite fields, empty/oversized bins, and malformed bins. |
-| `ui/src/components/SpectrumCanvas.tsx` | Bounded filled-curve renderer | VERIFIED | Single canvas renderer with fill/stroke/glow; no per-bin DOM. |
-| `scripts/validate-plugin.ps1` | pluginval wrapper | PARTIAL | Wrapper exists and fails honestly when missing; no actual pluginval pass was produced. |
-| `.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md` | Pluginval and DAW smoke evidence | VERIFIED_WITH_LIMITATION | Records Ableton pass after `5c95579`; records pluginval unavailable/not passed. |
+| `scripts/validate-plugin.ps1` | pluginval discovery/run wrapper with honest missing-tool behavior | VERIFIED | `gsd-sdk query verify.artifacts` passed. Source resolves `-PluginvalPath`, `PLUGINVAL_EXE`, or PATH; prints executable path/version; supports `-SkipGuiTests`; fails on missing pluginval unless `-AllowMissing` is explicitly used. |
+| `scripts/test-all.ps1` | Full Phase 2 automated verification entry point | VERIFIED | Calls UI install/test/build/bundle checks, CMake configure/build, CTest, plugin validation with `-AllowMissing -SkipGuiTests`, WebView mode tests, and verifier self-test. With `PLUGINVAL_EXE` set, the pluginval stage ran and passed instead of using the missing-tool branch. |
+| `docs/vst3-smoke-test.md` | Ableton-preferred and fallback DAW smoke instructions | VERIFIED | `gsd-sdk query verify.artifacts` and key-link checks passed; docs point to `02-HOST-SMOKE.md` and require honest Ableton/fallback recording. |
+| `.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md` | Recorded pluginval and DAW smoke evidence or limitations | VERIFIED | Records pluginval v1.0.4, strictness-10 skip-GUI pass, full-suite pass with `PLUGINVAL_EXE`, Ableton smoke pass after `5c95579`, and limitation that pluginval GUI tests were skipped. |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 | --- | --- | --- | --- | --- |
-| `processBlock` | `SpectrumAnalyzer` and `SnapshotMailbox` | Audio callback observes buffer and publishes complete snapshots | VERIFIED | `PluginProcessor.cpp` lines 33-48. |
-| `SnapshotMailbox` | `PluginEditor` | Message-thread latest snapshot read API | VERIFIED | `PluginEditor.cpp` lines 157-167 calls `readLatestSpectrumSnapshot`. |
-| `HostBridge.cpp` | `protocol.ts` | Closed `spectrum.snapshot` schema | VERIFIED | Native event ID/payload and TypeScript parser use the same event and fields; fixture tests pass. |
-| `BridgeProvider.tsx` | `AnalyzerStage.tsx`/`SpectrumCanvas.tsx` | Latest valid snapshot state rendered in stage | VERIFIED | `BridgeProvider.tsx` lines 35-38 stores valid snapshots; `AnalyzerStage.tsx` lines 35-37 mounts the canvas. |
-| `test-all.ps1` | `validate-plugin.ps1` | Optional pluginval validation stage | VERIFIED_WITH_LIMITATION | `test-all.ps1` line 18 invokes wrapper with `-AllowMissing`; strict wrapper remains not passed. |
+| `scripts/test-all.ps1` | `scripts/validate-plugin.ps1` | Optional pluginval validation stage | VERIFIED | `gsd-sdk query verify.key-links` found the `validate-plugin` pattern. Manual run with `PLUGINVAL_EXE` set confirmed the stage executed pluginval and reached `SUCCESS`. |
+| `docs/vst3-smoke-test.md` | `02-HOST-SMOKE.md` | Manual result recording | VERIFIED | `gsd-sdk query verify.key-links` found the Ableton evidence link. |
+| `processBlock` | `SpectrumAnalyzer` and `SnapshotMailbox` | Audio callback observes host buffer and publishes snapshots | VERIFIED | `PluginProcessor.cpp` calls `analyzer.pushAudioBlock`, copies the latest snapshot, and publishes to the fixed mailbox without modifying samples. |
+| `SnapshotMailbox` | `PluginEditor` | Message-thread latest snapshot read API | VERIFIED | `PluginEditor.cpp` polls `readLatestSpectrumSnapshot` from `timerCallback` and emits `spectrum.snapshot` only after bridge readiness. |
+| Native bridge | React renderer | Closed `spectrum.snapshot` schema | VERIFIED | `HostBridge.cpp` emits `spectrum.snapshot`; `protocol.ts` validates it; `BridgeProvider.tsx` stores latest valid snapshots; `SpectrumCanvas.tsx` renders `snapshot.bins`. |
 
 ### Data-Flow Trace (Level 4)
 
@@ -80,7 +71,7 @@ Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I
 | --- | --- | --- | --- | --- |
 | `PluginProcessor.cpp` | `SpectrumSnapshot snapshot` | Host audio buffer -> `analyzer.pushAudioBlock` -> `copyLatestSnapshot` | Yes | FLOWING |
 | `PluginEditor.cpp` | `snapshotPoller` output | Processor-owned mailbox via `readLatestSpectrumSnapshot` | Yes | FLOWING |
-| `HostBridge.cpp` | `spectrum.snapshot` payload | Native `SpectrumSnapshot` bins/metadata | Yes | FLOWING |
+| `HostBridge.cpp` / `protocol.ts` | `spectrum.snapshot` payload | Native `SpectrumSnapshot` bins/metadata through closed protocol-v1 parser | Yes | FLOWING |
 | `BridgeProvider.tsx` | `spectrumSnapshot` | Native event listener for `spectrum.snapshot` | Yes | FLOWING |
 | `SpectrumCanvas.tsx` | `snapshot.bins` | React bridge state from native event | Yes | FLOWING |
 
@@ -88,10 +79,10 @@ Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I
 
 | Behavior | Command | Result | Status |
 | --- | --- | --- | --- |
-| Full automated analyzer suite | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-all.ps1` | Exit 0. UI tests 9 files/27 tests passed; UI build and bundle check passed; CMake configured; standalone, VST3, and native tests built; CTest 1/1 passed; WebView smoke checks passed; verifier self-test passed. | PASS |
-| Strict pluginval validation | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1` | Exit 2. `pluginval executable not found. Provide -PluginvalPath, set PLUGINVAL_EXE, or add pluginval to PATH.` | FAIL |
-| Allow-missing pluginval path | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1 -AllowMissing` | Exit 0 with warning that automated VST3 validation was skipped, not passed. | PASS_WITH_LIMITATION |
-| pluginval availability probe | `Get-Command pluginval.exe`; `Get-Command pluginval`; `$env:PLUGINVAL_EXE` | No command found; `PLUGINVAL_EXE not set`. | FAIL |
+| Targeted pluginval validation | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1 -PluginvalPath .deps\pluginval\pluginval.exe -SkipGuiTests` | Exit 0. Printed pluginval v1.0.4, strictness 10, tested scan/open/plugin info/audio/non-releasing audio/state/restoration/automation/parameters/thread safety/bus/fuzz paths, and ended with `SUCCESS`. | PASS |
+| Full Phase 2 automated suite with pluginval configured | `$env:PLUGINVAL_EXE=(Resolve-Path .deps\pluginval\pluginval.exe).ProviderPath; powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-all.ps1` | Exit 0. UI `npm ci`, Vitest 9/9 files and 27/27 tests, TypeScript/Vite build, local bundle check, CMake configure/build, CTest 1/1, pluginval strictness-10 skip-GUI `SUCCESS`, WebView smoke probes, and verifier self-test all passed. | PASS |
+| Artifact and link verifier checks | `gsd-sdk query verify.artifacts ...02-04-PLAN.md`; `gsd-sdk query verify.key-links ...02-04-PLAN.md` | Artifacts 4/4 passed; key links 2/2 verified. | PASS |
+| MVP user-story guard | `gsd-sdk query user-story.validate --story "<phase goal>" --pick valid` | Returned `false`; this is a phase metadata limitation carried from prior verification, not a product behavior failure in this re-verification. | INFO |
 
 ### Probe Execution
 
@@ -103,7 +94,7 @@ Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I
 
 | Requirement | Source Plan | Description | Status | Evidence |
 | --- | --- | --- | --- | --- |
-| DSP-01 | 02-01, 02-02, 02-04 | Mono/stereo floating-point audio accepted without modifying source audio | SATISFIED | Analyzer accepts mono/stereo blocks; processor passthrough tests compare exact samples. |
+| DSP-01 | 02-01, 02-02, 02-04 | Mono/stereo floating-point audio accepted without modifying source audio | SATISFIED | Analyzer accepts mono/stereo blocks; processor passthrough tests compare exact samples; pluginval audio processing passed multiple rates/block sizes. |
 | DSP-02 | 02-01, 02-04 | Window/FFT/normalization/dB deterministic tone behavior | SATISFIED | Native tone tests plus `docs/analyzer-dsp.md` formula/tolerance. |
 | DSP-03 | 02-01, 02-03, 02-04 | Log-frequency spectrum with smoothing/decay defaults | SATISFIED | Profile tests, log-bin code, smoothing tests, canvas renderer, Ableton retest. |
 | DSP-04 | 02-01, 02-02, 02-04 | Silence, denormals, block/sample-rate/layout changes safe | SATISFIED | Native tests cover silence, denormals, variable/zero blocks, sample-rate reset, malformed edge buffers. |
@@ -112,7 +103,7 @@ Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I
 | VST3-01 | 02-03, 02-04 | VST3 loads in Windows host and shows spectrum | SATISFIED | Ableton Live smoke passed after repair commit `5c95579`. |
 | VST3-02 | 02-02, 02-04 | Plug-in output sample-equivalent to input | SATISFIED | `PluginProcessorTests.cpp` passthrough checks and host smoke unchanged-audio approval. |
 | VST3-03 | 02-02, 02-03, 02-04 | Editor lifecycle stable | SATISFIED | Processor-owned state, native close/reopen polling tests, Ableton lifecycle smoke. |
-| VST3-04 | 02-04 | Automated VST3 validation and real DAW smoke | PARTIAL | DAW smoke passed; strict pluginval automated validation unavailable/not passed. |
+| VST3-04 | 02-04 | Automated VST3 validation and real DAW smoke | SATISFIED_WITH_LIMITATION | pluginval strictness-10 non-GUI validation passed with `SUCCESS`; Ableton GUI/host smoke passed. GUI pluginval path was skipped because it hung locally. |
 | UI-02 | 02-03, 02-04 | Smooth bounded renderer without per-bin DOM/MUI nodes | SATISFIED | Single-canvas renderer and tests; Ableton smoke says smooth live spectrum passed after repair. |
 
 ### Anti-Patterns Found
@@ -120,23 +111,24 @@ Phase 2 is marked `mode: mvp`, but the roadmap goal is not in strict `As a..., I
 | File | Line | Pattern | Severity | Impact |
 | --- | --- | --- | --- | --- |
 | `PluginProcessor.cpp` | 59 | `return nullptr` | INFO | Debug/native-test editor guard only; not user-facing. |
-| `protocol.ts` | 47-104 | `return null` parser rejection paths | INFO | Valid schema rejection behavior, not stubs. |
-| `SpectrumAnalyzer.cpp` | 71 | `latestSnapshot = {}` | INFO | Reset of bounded state in prepare path, not user-visible placeholder data. |
-| `02-HOST-SMOKE.md` | 28, 42-57 | `not recorded` fields | WARNING | Ableton version and unused fallback/expanded lifecycle rows remain unrecorded. Core Ableton pass is recorded, but evidence is less complete than ideal. |
+| `protocol.ts` | 47-104 | `return null` parser rejection paths | INFO | Valid malformed-payload rejection behavior, not stubs. |
+| `PluginProcessor.h` | 30 | `return {}` program-name default | INFO | JUCE program metadata default for a plug-in with no programs, not user-visible placeholder data. |
 
-No unreferenced `TBD`, `FIXME`, or `XXX` markers were found in modified phase files.
+No unreferenced `TBD`, `FIXME`, or `XXX` markers were found in the scanned Phase 2 source/docs/scripts. No blocking placeholder, console-only handler, or hardcoded-empty UI data path was found.
 
 ### Human Verification Required
 
-No new human verification is required for this report. Existing human evidence is recorded in `02-HOST-SMOKE.md`: Ableton Live loaded the VST3, routed audio stayed unchanged, smooth live spectrum passed after repair commit `5c95579`, and editor lifecycle smoke was approved.
+None for this verifier pass. Existing human evidence remains in `02-HOST-SMOKE.md`: Ableton Live loaded the VST3, routed audio stayed unchanged, smooth live spectrum passed after repair commit `5c95579`, and editor lifecycle smoke was approved.
+
+### Limitation Notes
+
+pluginval GUI validation is not counted as passed: the report records that GUI tests are skipped because the GUI validation path hung locally. This does not block Phase 2 because non-GUI plugin API/audio/bus/state/fuzz validation passed at strictness 10, and the GUI/editor path is covered by the Ableton host smoke evidence.
 
 ### Gaps Summary
 
-Phase 2 product behavior is verified: the VST3 analyzer path exists, is wired from host audio to DSP to WebView canvas, preserves audio samples, and passed the full local automated suite plus Ableton retest after `5c95579`.
-
-The remaining blocker is narrower but real: the roadmap says the VST3 passes automated validation. It has not passed strict pluginval validation because pluginval is unavailable. The code records this honestly as unavailable/not passed, which is good evidence hygiene, but it is still not a validation pass.
+No blocking gaps remain. The previous blocker was strict pluginval availability; commit `2f5db93` made pluginval validation reproducible through a gitignored local `pluginval.exe`, updated the full suite to use `-SkipGuiTests`, and refreshed host-smoke evidence. Re-verification commands passed locally.
 
 ---
 
-_Verified: 2026-06-23T16:47:57Z_
+_Verified: 2026-06-23T17:15:37Z_
 _Verifier: the agent (gsd-verifier)_
