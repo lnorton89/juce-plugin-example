@@ -184,8 +184,8 @@ Roadmap phase mappings are populated during roadmap creation.
 | INFRA-04 | Phase 4 | Complete |
 | INFRA-05 | Phase 4 | Complete |
 | INFRA-06 | Phase 4 | Complete |
-| INFRA-07 | Phase 4 | Pending |
-| INFRA-08 | Phase 4 | Pending |
+| INFRA-07 | Phase 4 | Complete (04-04: Cloud infrastructure docs) |
+| INFRA-08 | Phase 4 | Complete (04-04: Webhook registration guide) |
 | QUAL-01 | Phase 7 | Pending |
 | QUAL-02 | Phase 7 | Pending |
 | QUAL-03 | Phase 7 | Pending |

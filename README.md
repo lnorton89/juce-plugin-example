@@ -13,10 +13,13 @@
 | 1 | ✅ Complete | Reproducible Windows build shell, embedded React/MUI WebView, typed native/web bridge |
 | 2 | ✅ Complete | End-to-end VST3 spectrum analyzer — windowed FFT, log-mapped bins, smoothing, canvas renderer |
 | 3 | ✅ Complete | Standalone Windows device capture (input + WASAPI loopback) |
-| 4–6 | 🔜 Planned | Lemon Squeezy cloud activation, one-machine licensing, offline grace |
+| 4 | ✅ Complete | Cloudflare Worker + D1, Lemon Squeezy webhook ingestion |
+| 5–6 | 🔜 Planned | Lemon Squeezy cloud activation, one-machine licensing, offline grace |
 | 7 | 🔜 Planned | Release hardening, CI, documentation, handoff proof |
 
-Both the VST3 plug-in and standalone application are fully functional. The VST3 analyzes host audio with passthrough; the standalone monitors selectable input devices or Windows system output through WASAPI loopback. A compact source strip lets you choose between `Input Device` and `System Output` modes. Licensing support is the next major effort.
+Both the VST3 plug-in and standalone application are fully functional. The VST3 analyzes host audio with passthrough; the standalone monitors selectable input devices or Windows system output through WASAPI loopback. A compact source strip lets you choose between `Input Device` and `System Output` modes.
+
+The Cloudflare-based activation infrastructure is fully implemented and documented. See [cloud infrastructure](docs/cloud-infrastructure.md) for provisioning and deployment instructions. Licensing support (Phases 5–6) is the next major effort.
 
 ---
 
@@ -210,7 +213,7 @@ For implementation details see [analyzer DSP contract](docs/analyzer-dsp.md), [b
 | 1 | Reproducible build shell, embedded WebView2, typed bridge | — | ✅ Complete |
 | 2 | End-to-end VST3 spectrum analyzer | Phase 1 | ✅ Complete |
 | 3 | Standalone Windows device capture (input + WASAPI loopback) | Phase 2 | ✅ Complete |
-| 4 | Cloudflare Worker + D1 provisioning, Lemon webhook ingestion | Phase 1 | 🔜 Planned |
+| 4 | Cloudflare Worker + D1 provisioning, Lemon webhook ingestion | Phase 1 | ✅ Complete |
 | 5 | One-machine activation service (signed entitlements) | Phase 4 | 🔜 Planned |
 | 6 | Native offline licensing with 7-day grace | Phase 5 | 🔜 Planned |
 | 7 | Release hardening, CI, documentation, handoff proof | Phases 3, 6 | 🔜 Planned |

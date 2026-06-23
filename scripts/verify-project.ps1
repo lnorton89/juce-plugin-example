@@ -20,9 +20,11 @@ $required = @(
     '.codex/config.toml', 'AGENTS.md', 'README.md', 'docs/development.md',
     'docs/bridge-protocol.md', 'docs/troubleshooting.md',
     'worker/package.json', 'worker/wrangler.toml', 'worker/src/index.ts',
-    'worker/src/env.ts', 'worker/src/db/schema.ts',
+    'worker/src/env.ts', 'worker/src/db/schema.ts', 'worker/src/webhook.ts',
+    'worker/src/db/repository.ts',
     'infra/manifest.yaml', 'infra/common.ps1', 'infra/bootstrap.ps1',
-    'infra/deploy.ps1', 'infra/verify.ps1', 'infra/teardown.ps1'
+    'infra/deploy.ps1', 'infra/verify.ps1', 'infra/teardown.ps1',
+    'docs/cloud-infrastructure.md'
 )
 foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $root $path))) { $errors.Add("Missing required artifact: $path") } }
 
@@ -53,6 +55,11 @@ if ($errors.Count -eq 0) {
     # Phase 4 — Cloudflare deployment infrastructure
     Require-Text 'infra/manifest.yaml' 'environments' 'Manifest missing environments section'
     Require-Text 'infra/manifest.yaml' 'lemon_squeezy' 'Manifest missing lemon_squeezy section'
+    Require-Text 'worker/src/webhook.ts' 'verifyLemonSignature' 'Webhook module missing verifyLemonSignature'
+    Require-Text 'worker/src/db/repository.ts' 'Repository' 'Repository module missing Repository class'
+    Require-Text 'docs/cloud-infrastructure.md' 'bootstrap\.ps1' 'Cloud infra docs missing bootstrap reference'
+    Require-Text 'docs/cloud-infrastructure.md' 'Lemon Squeezy' 'Cloud infra docs missing Lemon Squeezy'
+    Require-Text 'scripts/test-all.ps1' 'worker run test' 'test-all missing Worker test step'
     $gitignore = Get-Content -Raw -LiteralPath (Join-Path $root '.gitignore')
     if ($gitignore -notmatch 'generated-state\.json') { $errors.Add('Generated state file is not gitignored (.gitignore)') }
 }
