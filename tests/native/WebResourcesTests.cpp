@@ -3,6 +3,7 @@
 #include <iostream>
 
 int runHostBridgeTests();
+int runRealtimeHandoffTests();
 int runSpectrumAnalyzerTests();
 
 namespace
@@ -29,6 +30,7 @@ int main()
     expect (! resources.get ("/unknown.bin"), "rejects unknown MIME type");
     expect (! resources.get ("/missing.js"), "rejects missing resources");
     failures += runHostBridgeTests();
+    failures += runRealtimeHandoffTests();
     failures += runSpectrumAnalyzerTests();
     return failures == 0 ? 0 : 1;
 }
