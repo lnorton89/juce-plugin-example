@@ -37,6 +37,7 @@ target_sources(LumaScope PRIVATE
   include/LumaScope/HostBridge.h
   include/LumaScope/Standalone/SourceModel.h
   include/LumaScope/Standalone/StandaloneSourceController.h
+  include/LumaScope/Standalone/WasapiLoopbackSourceAdapter.h
   include/LumaScope/WebResources.h
   source/Analyzer/AnalyzerConfig.cpp
   source/Analyzer/SpectrumAnalyzer.cpp
@@ -45,6 +46,8 @@ target_sources(LumaScope PRIVATE
   source/PluginProcessor.cpp
   source/Standalone/StandaloneSourceController.cpp
   source/Standalone/windows/WasapiEndpointEnumerator.cpp
+  source/Standalone/windows/WasapiLoopbackSourceAdapter.cpp
+  source/Standalone/windows/WasapiDeviceNotifications.cpp
   source/WebResources.cpp)
 
 target_include_directories(LumaScope PUBLIC include)

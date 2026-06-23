@@ -1,5 +1,6 @@
 #include "LumaScope/Standalone/StandaloneSourceController.h"
 #include "LumaScope/Standalone/SourceModel.h"
+#include "LumaScope/Standalone/WasapiLoopbackSourceAdapter.h"
 #include "LumaScope/PluginProcessor.h"
 
 #include <juce_audio_devices/juce_audio_devices.h>
@@ -151,15 +152,6 @@ public:
         // Stop any existing adapter first
         stop();
 
-        if (selection.mode != SourceMode::inputDevice)
-        {
-            stateSnapshot.mode = SourceMode::systemOutput;
-            stateSnapshot.state = SourceState::error;
-            stateSnapshot.code = "not_implemented";
-            stateSnapshot.message = "System output capture is not yet available.";
-            return stateSnapshot;
-        }
-
         if (selection.id.isEmpty())
         {
             stateSnapshot.mode = selection.mode;
@@ -177,34 +169,59 @@ public:
         stateSnapshot.code = {};
         stateSnapshot.message = {};
 
-        // Try to open the JUCE input device
-        juce::String errorResult = deviceManager.initialise (
-            2,     // max input channels
-            0,     // max output channels (capture only)
-            nullptr,
-            true); // select default device on failure
-
-        if (errorResult.isNotEmpty())
+        if (selection.mode == SourceMode::inputDevice)
         {
-            stateSnapshot.mode = selection.mode;
-            stateSnapshot.state = SourceState::error;
-            stateSnapshot.code = "device_init_failed";
-            stateSnapshot.message = "Could not open input device: " + errorResult.substring (0, 128);
-            return stateSnapshot;
+            // Try to open the JUCE input device
+            juce::String errorResult = deviceManager.initialise (
+                2,     // max input channels
+                0,     // max output channels (capture only)
+                nullptr,
+                true); // select default device on failure
+
+            if (errorResult.isNotEmpty())
+            {
+                stateSnapshot.state = SourceState::error;
+                stateSnapshot.code = "device_init_failed";
+                stateSnapshot.message = "Could not open input device: " + errorResult.substring (0, 128);
+                return stateSnapshot;
+            }
+
+            // Create and register the input adapter
+            juceAdapter = std::make_unique<JuceInputSourceAdapter> (processor, 8192);
+            deviceManager.addAudioCallback (juceAdapter.get());
+
+            if (deviceManager.getCurrentAudioDevice() != nullptr
+                && deviceManager.getCurrentAudioDevice()->isOpen())
+            {
+                stateSnapshot.state = SourceState::active;
+            }
+            else
+            {
+                stateSnapshot.state = SourceState::starting;
+            }
         }
-
-        // Create and register the input adapter
-        currentAdapter = std::make_unique<JuceInputSourceAdapter> (processor, 8192);
-        deviceManager.addAudioCallback (currentAdapter.get());
-
-        if (deviceManager.getCurrentAudioDevice() != nullptr
-            && deviceManager.getCurrentAudioDevice()->isOpen())
+        else if (selection.mode == SourceMode::systemOutput)
         {
+            // Start WASAPI loopback capture
+            wasapiAdapter = std::make_unique<WasapiLoopbackSourceAdapter> (processor);
+            juce::String errorResult = wasapiAdapter->start (selection.id);
+
+            if (errorResult.isNotEmpty())
+            {
+                stateSnapshot.state = SourceState::error;
+                stateSnapshot.code = "endpoint_start_failed";
+                stateSnapshot.message = errorResult.substring (0, 256);
+                wasapiAdapter.reset();
+                return stateSnapshot;
+            }
+
             stateSnapshot.state = SourceState::active;
         }
         else
         {
-            stateSnapshot.state = SourceState::starting;
+            stateSnapshot.state = SourceState::error;
+            stateSnapshot.code = "unknown_mode";
+            stateSnapshot.message = "Unknown source mode.";
         }
 
         return stateSnapshot;
@@ -212,13 +229,19 @@ public:
 
     SourceStateSnapshot stop() override
     {
-        if (currentAdapter != nullptr)
+        if (juceAdapter != nullptr)
         {
-            deviceManager.removeAudioCallback (currentAdapter.get());
-            currentAdapter.reset();
+            deviceManager.removeAudioCallback (juceAdapter.get());
+            juceAdapter.reset();
         }
 
         deviceManager.closeAudioDevice();
+
+        if (wasapiAdapter != nullptr)
+        {
+            wasapiAdapter->stop();
+            wasapiAdapter.reset();
+        }
 
         stateSnapshot = {};
         stateSnapshot.state = SourceState::stopped;
@@ -228,6 +251,17 @@ public:
 
     SourceStateSnapshot currentStateSnapshot() const override
     {
+        // For WASAPI adapter, poll the live capture state for active/silent transitions
+        if (wasapiAdapter != nullptr && wasapiAdapter->isRunning())
+        {
+            const auto captureState = wasapiAdapter->currentCaptureState();
+            if (captureState != stateSnapshot.state
+                && (captureState == SourceState::active || captureState == SourceState::silent))
+            {
+                stateSnapshot.state = captureState;
+            }
+        }
+
         return stateSnapshot;
     }
 
@@ -237,8 +271,9 @@ public:
 private:
     LumaScopeAudioProcessor& processor;
     juce::AudioDeviceManager deviceManager;
-    std::unique_ptr<JuceInputSourceAdapter> currentAdapter;
-    SourceStateSnapshot stateSnapshot;
+    std::unique_ptr<JuceInputSourceAdapter> juceAdapter;
+    std::unique_ptr<WasapiLoopbackSourceAdapter> wasapiAdapter;
+    mutable SourceStateSnapshot stateSnapshot;
 };
 
 // Factory function

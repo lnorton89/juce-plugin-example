@@ -10,6 +10,7 @@ add_executable(LumaScopeNativeTests AudioConversionTests.cpp EditorSnapshotPolli
   "${CMAKE_SOURCE_DIR}/plugin/source/PluginProcessor.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Standalone/StandaloneSourceController.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Standalone/windows/WasapiEndpointEnumerator.cpp"
+  "${CMAKE_SOURCE_DIR}/plugin/source/Standalone/windows/WasapiLoopbackSourceAdapter.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/WebResources.cpp")
 target_include_directories(LumaScopeNativeTests PRIVATE "${CMAKE_SOURCE_DIR}/plugin/include")
 target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
