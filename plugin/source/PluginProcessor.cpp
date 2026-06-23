@@ -47,6 +47,24 @@ void LumaScopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
 }
 
+void LumaScopeAudioProcessor::pushStandaloneAudioBlock (const juce::AudioBuffer<float>& block) noexcept
+{
+    // Reuses the same analyzer ingress contract used by processBlock.
+    // Must be called from a non-audio-thread context, or from a JUCE capture
+    // callback that is already real-time safe.
+    if (block.getNumChannels() <= 0 || block.getNumSamples() <= 0)
+        return;
+
+    analyzer.pushAudioBlock (block);
+
+    lumascope::SpectrumSnapshot snapshot;
+    if (analyzer.copyLatestSnapshot (snapshot) && snapshot.sequence != lastPublishedAnalyzerSequence)
+    {
+        if (snapshotMailbox.publish (snapshot))
+            lastPublishedAnalyzerSequence = snapshot.sequence;
+    }
+}
+
 bool LumaScopeAudioProcessor::readLatestSpectrumSnapshot (lumascope::SpectrumSnapshot& snapshot,
                                                           std::uint32_t& lastSeenSequence) const noexcept
 {

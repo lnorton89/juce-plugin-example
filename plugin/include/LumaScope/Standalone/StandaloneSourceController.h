@@ -2,6 +2,10 @@
 
 #include "LumaScope/Standalone/SourceModel.h"
 
+#include <memory>
+
+class LumaScopeAudioProcessor;
+
 namespace lumascope
 {
 
@@ -30,5 +34,10 @@ public:
     // Get the current source state snapshot without side effects.
     virtual SourceStateSnapshot currentStateSnapshot() const = 0;
 };
+
+// Factory function: creates a standalone source controller that owns
+// JUCE AudioDeviceManager and JuceInputSourceAdapter.
+std::unique_ptr<StandaloneSourceController> createStandaloneSourceController (
+    LumaScopeAudioProcessor& processor);
 
 } // namespace lumascope

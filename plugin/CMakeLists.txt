@@ -35,12 +35,15 @@ target_sources(LumaScope PRIVATE
   include/LumaScope/Analyzer/SpectrumAnalyzer.h
   include/LumaScope/Analyzer/SpectrumSnapshot.h
   include/LumaScope/HostBridge.h
+  include/LumaScope/Standalone/SourceModel.h
+  include/LumaScope/Standalone/StandaloneSourceController.h
   include/LumaScope/WebResources.h
   source/Analyzer/AnalyzerConfig.cpp
   source/Analyzer/SpectrumAnalyzer.cpp
   source/HostBridge.cpp
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
+  source/Standalone/StandaloneSourceController.cpp
   source/WebResources.cpp)
 
 target_include_directories(LumaScope PUBLIC include)

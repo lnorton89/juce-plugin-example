@@ -2,6 +2,7 @@
 #include "TestWebResources.h"
 #include <iostream>
 
+int runAudioConversionTests();
 int runHostBridgeTests();
 int runEditorSnapshotPollingTests();
 int runPluginProcessorTests();
@@ -32,6 +33,7 @@ int main()
     expect (! resources.get ("C:/index.html"), "rejects absolute paths");
     expect (! resources.get ("/unknown.bin"), "rejects unknown MIME type");
     expect (! resources.get ("/missing.js"), "rejects missing resources");
+    failures += runAudioConversionTests();
     failures += runHostBridgeTests();
     failures += runEditorSnapshotPollingTests();
     failures += runPluginProcessorTests();

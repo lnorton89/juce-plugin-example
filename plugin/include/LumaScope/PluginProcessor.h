@@ -15,6 +15,7 @@ public:
     void releaseResources() override;
     bool isBusesLayoutSupported (const BusesLayout&) const override;
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void pushStandaloneAudioBlock (const juce::AudioBuffer<float>& block) noexcept;
     bool readLatestSpectrumSnapshot (lumascope::SpectrumSnapshot&, std::uint32_t&) const noexcept;
 
     juce::AudioProcessorEditor* createEditor() override;
