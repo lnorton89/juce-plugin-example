@@ -3,6 +3,7 @@
 #include <iostream>
 
 int runHostBridgeTests();
+int runPluginProcessorTests();
 int runRealtimeHandoffTests();
 int runSpectrumAnalyzerTests();
 
@@ -30,6 +31,7 @@ int main()
     expect (! resources.get ("/unknown.bin"), "rejects unknown MIME type");
     expect (! resources.get ("/missing.js"), "rejects missing resources");
     failures += runHostBridgeTests();
+    failures += runPluginProcessorTests();
     failures += runRealtimeHandoffTests();
     failures += runSpectrumAnalyzerTests();
     return failures == 0 ? 0 : 1;
