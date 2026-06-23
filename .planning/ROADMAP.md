@@ -62,10 +62,21 @@ Plans:
 
 Plans:
 
-- [ ] 02-01: Implement and test windowed FFT, normalization, log mapping, smoothing, and snapshot model.
-- [ ] 02-02: Implement preallocated real-time ingress and worker-to-UI snapshot handoff.
-- [ ] 02-03: Integrate transparent VST3 buses/processing and efficient web spectrum renderer.
-- [ ] 02-04: Verify lifecycle, host behavior, pluginval, and DAW smoke criteria.
+**Wave 1**
+
+- [ ] 02-01-PLAN.md: Implement and test windowed FFT, normalization, log mapping, smoothing, and snapshot model.
+
+**Wave 2** *(blocked on 02-01)*
+
+- [ ] 02-02-PLAN.md: Implement preallocated real-time ingress and worker-to-UI snapshot handoff.
+
+**Wave 3** *(blocked on 02-01 and 02-02)*
+
+- [ ] 02-03-PLAN.md: Integrate transparent VST3 buses/processing and efficient web spectrum renderer.
+
+**Wave 4** *(blocked on 02-03)*
+
+- [ ] 02-04-PLAN.md: Verify lifecycle, host behavior, pluginval, and DAW smoke criteria.
 
 ### Phase 3: Standalone Windows Monitoring
 
