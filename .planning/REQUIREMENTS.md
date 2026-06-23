@@ -24,7 +24,7 @@
 
 ### VST3 Plug-in
 
-- [ ] **VST3-01**: User can load the VST3 as an audio effect in a compatible Windows host and see the spectrum for audio routed through it.
+- [x] **VST3-01**: User can load the VST3 as an audio effect in a compatible Windows host and see the spectrum for audio routed through it.
 - [x] **VST3-02**: Plug-in output is sample-equivalent to its input within floating-point tolerance for supported layouts.
 - [x] **VST3-03**: Plug-in remains stable when its editor is closed, repeatedly opened, resized, or destroyed while audio processing continues.
 - [ ] **VST3-04**: Plug-in passes automated VST3 validation and documented smoke tests in at least one real Windows DAW.
@@ -40,7 +40,7 @@
 ### WebView User Interface
 
 - [x] **UI-01**: User sees a responsive React/TypeScript Material UI application hosted by JUCE WebView2 in both VST3 and standalone targets.
-- [ ] **UI-02**: Spectrum renders smoothly at a bounded display frame rate without creating a DOM/MUI element per FFT bin.
+- [x] **UI-02**: Spectrum renders smoothly at a bounded display frame rate without creating a DOM/MUI element per FFT bin.
 - [x] **UI-03**: Native and web layers communicate through a versioned, typed protocol with validated message shapes, request identifiers, and stable error envelopes.
 - [ ] **UI-04**: UI exposes source selection and source/error state in standalone while omitting standalone-only controls in VST3.
 - [ ] **UI-05**: UI exposes activation, activated, offline-grace, revalidation-required, deactivation, and actionable failure states.
@@ -142,7 +142,7 @@ Roadmap phase mappings are populated during roadmap creation.
 | DSP-04 | Phase 2 | Complete |
 | DSP-05 | Phase 2 | Complete |
 | DSP-06 | Phase 2 | Complete |
-| VST3-01 | Phase 2 | Pending |
+| VST3-01 | Phase 2 | Complete |
 | VST3-02 | Phase 2 | Complete |
 | VST3-03 | Phase 2 | Complete |
 | VST3-04 | Phase 2 | Pending |
@@ -152,7 +152,7 @@ Roadmap phase mappings are populated during roadmap creation.
 | CAP-04 | Phase 3 | Pending |
 | CAP-05 | Phase 3 | Pending |
 | UI-01 | Phase 1 | Complete |
-| UI-02 | Phase 2 | Pending |
+| UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 1 | Complete |
 | UI-04 | Phase 3 | Pending |
 | UI-05 | Phase 6 | Pending |

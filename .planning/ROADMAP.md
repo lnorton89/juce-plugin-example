@@ -72,7 +72,7 @@ Plans:
 
 **Wave 3** *(blocked on 02-01 and 02-02)*
 
-- [ ] 02-03-PLAN.md: Integrate transparent VST3 buses/processing and efficient web spectrum renderer.
+- [x] 02-03-PLAN.md: Integrate transparent VST3 buses/processing and efficient web spectrum renderer.
 
 **Wave 4** *(blocked on 02-03)*
 
@@ -197,7 +197,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
-| 2. End-to-End VST3 Analyzer | 2/4 | In Progress|  |
+| 2. End-to-End VST3 Analyzer | 3/4 | In Progress|  |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |
