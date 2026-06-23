@@ -64,7 +64,7 @@ Plans:
 
 **Wave 1**
 
-- [ ] 02-01-PLAN.md: Implement and test windowed FFT, normalization, log mapping, smoothing, and snapshot model.
+- [x] 02-01-PLAN.md: Implement and test windowed FFT, normalization, log mapping, smoothing, and snapshot model.
 
 **Wave 2** *(blocked on 02-01)*
 
@@ -197,7 +197,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
-| 2. End-to-End VST3 Analyzer | 0/4 | Not started | - |
+| 2. End-to-End VST3 Analyzer | 1/4 | In Progress|  |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |

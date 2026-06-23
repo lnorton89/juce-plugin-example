@@ -15,12 +15,12 @@
 
 ### Spectrum Analysis
 
-- [ ] **DSP-01**: Analyzer accepts mono or stereo floating-point audio at host/device sample rates without modifying source audio.
-- [ ] **DSP-02**: Analyzer applies a documented window, FFT, single-sided magnitude normalization, and decibel conversion that place deterministic test tones at the expected frequency and level tolerance.
-- [ ] **DSP-03**: Analyzer publishes a logarithmic-frequency spectrum with sensible fixed FFT size, visible range, smoothing, and decay defaults.
-- [ ] **DSP-04**: Analyzer handles silence, denormals, changing block sizes, sample-rate changes, and channel-layout changes without invalid output or crashes.
+- [x] **DSP-01**: Analyzer accepts mono or stereo floating-point audio at host/device sample rates without modifying source audio.
+- [x] **DSP-02**: Analyzer applies a documented window, FFT, single-sided magnitude normalization, and decibel conversion that place deterministic test tones at the expected frequency and level tolerance.
+- [x] **DSP-03**: Analyzer publishes a logarithmic-frequency spectrum with sensible fixed FFT size, visible range, smoothing, and decay defaults.
+- [x] **DSP-04**: Analyzer handles silence, denormals, changing block sizes, sample-rate changes, and channel-layout changes without invalid output or crashes.
 - [ ] **DSP-05**: Audio callbacks perform no dynamic allocation, blocking synchronization, file access, network access, JSON work, or WebView calls.
-- [ ] **DSP-06**: Analyzer configuration and snapshot interfaces allow future FFT, range, smoothing, decay, and display controls without replacing the DSP core.
+- [x] **DSP-06**: Analyzer configuration and snapshot interfaces allow future FFT, range, smoothing, decay, and display controls without replacing the DSP core.
 
 ### VST3 Plug-in
 
@@ -136,12 +136,12 @@ Roadmap phase mappings are populated during roadmap creation.
 | BUILD-03 | Phase 1 | Complete |
 | BUILD-04 | Phase 1 | Complete |
 | BUILD-05 | Phase 1 | Complete |
-| DSP-01 | Phase 2 | Pending |
-| DSP-02 | Phase 2 | Pending |
-| DSP-03 | Phase 2 | Pending |
-| DSP-04 | Phase 2 | Pending |
+| DSP-01 | Phase 2 | Complete |
+| DSP-02 | Phase 2 | Complete |
+| DSP-03 | Phase 2 | Complete |
+| DSP-04 | Phase 2 | Complete |
 | DSP-05 | Phase 2 | Pending |
-| DSP-06 | Phase 2 | Pending |
+| DSP-06 | Phase 2 | Complete |
 | VST3-01 | Phase 2 | Pending |
 | VST3-02 | Phase 2 | Pending |
 | VST3-03 | Phase 2 | Pending |
