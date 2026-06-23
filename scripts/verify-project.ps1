@@ -18,7 +18,11 @@ $required = @(
     'CMakePresets.json', 'plugin/CMakeLists.txt', 'scripts/bootstrap.ps1', 'scripts/test-web-modes.ps1',
     'scripts/validate-plugin.ps1',
     '.codex/config.toml', 'AGENTS.md', 'README.md', 'docs/development.md',
-    'docs/bridge-protocol.md', 'docs/troubleshooting.md'
+    'docs/bridge-protocol.md', 'docs/troubleshooting.md',
+    'worker/package.json', 'worker/wrangler.toml', 'worker/src/index.ts',
+    'worker/src/env.ts', 'worker/src/db/schema.ts',
+    'infra/manifest.yaml', 'infra/common.ps1', 'infra/bootstrap.ps1',
+    'infra/deploy.ps1', 'infra/verify.ps1', 'infra/teardown.ps1'
 )
 foreach ($path in $required) { if (-not (Test-Path -LiteralPath (Join-Path $root $path))) { $errors.Add("Missing required artifact: $path") } }
 
@@ -45,6 +49,12 @@ if ($errors.Count -eq 0) {
     Require-Text 'docs/troubleshooting.md' 'skipped, not passed' 'Troubleshooting docs do not distinguish skipped pluginval validation from pass'
     Require-Text 'README.md' 'VST3 validation and host smoke' 'README does not point to VST3 validation smoke'
     Require-Text 'docs/bridge-protocol.md' 'spectrum\.snapshot' 'Bridge protocol does not document spectrum.snapshot'
+
+    # Phase 4 — Cloudflare deployment infrastructure
+    Require-Text 'infra/manifest.yaml' 'environments' 'Manifest missing environments section'
+    Require-Text 'infra/manifest.yaml' 'lemon_squeezy' 'Manifest missing lemon_squeezy section'
+    $gitignore = Get-Content -Raw -LiteralPath (Join-Path $root '.gitignore')
+    if ($gitignore -notmatch 'generated-state\.json') { $errors.Add('Generated state file is not gitignored (.gitignore)') }
 }
 
 $scanFiles = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {
@@ -88,4 +98,4 @@ if ($SelfTest) {
     }
     Write-Host 'All five negative verifier probes failed as expected.'
 }
-Write-Host 'Project verification passed: artifacts, Context7, identity, secrets, remote assets, and release-mode controls.'
+Write-Host 'Project verification passed: artifacts, Context7, identity, secrets, remote assets, release-mode controls, and Phase 4 infrastructure.'

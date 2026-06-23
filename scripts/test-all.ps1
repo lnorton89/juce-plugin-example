@@ -9,6 +9,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & npm.cmd --prefix ui run check:bundle
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& npm.cmd --prefix worker ci
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& npm.cmd --prefix worker run typecheck
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& npm.cmd --prefix worker run test
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cmake --preset vs2019-debug
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cmake --build --preset vs2019-debug --target LumaScope_Standalone LumaScope_VST3 LumaScopeNativeTests --parallel 4
