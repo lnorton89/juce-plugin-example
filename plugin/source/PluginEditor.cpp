@@ -127,6 +127,12 @@ void LumaScopeAudioProcessorEditor::handleUiReady (const juce::var& payload)
     const auto response = bridge.handleUiReady (payload);
     browser.emitEventIfBrowserIsVisible (response.eventId, response.payload);
 
+    if (response.ready)
+    {
+        bridgeReady = true;
+        startTimerHz (60);
+    }
+
     writeSmokeResult (response.ready ? "ready" : "error",
                       response.ready ? juce::String {} : response.payload["code"].toString());
 }
@@ -142,7 +148,23 @@ void LumaScopeAudioProcessorEditor::handleBrowserNetworkError (const juce::Strin
 
 void LumaScopeAudioProcessorEditor::timerCallback()
 {
-    showFallback ("handshake_timeout", "The interface did not complete protocol v1 startup. Rebuild the native app and UI from the same checkout.");
+    if (! bridgeReady)
+    {
+        showFallback ("handshake_timeout", "The interface did not complete protocol v1 startup. Rebuild the native app and UI from the same checkout.");
+        return;
+    }
+
+    auto& audioProcessor = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    snapshotPoller.poll (juce::Time::getMillisecondCounterHiRes(),
+                         [&audioProcessor] (lumascope::SpectrumSnapshot& snapshot, std::uint32_t& lastSeenSequence)
+                         {
+                             return audioProcessor.readLatestSpectrumSnapshot (snapshot, lastSeenSequence);
+                         },
+                         [this] (const lumascope::SpectrumSnapshot& snapshot)
+                         {
+                             browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::spectrumSnapshotEvent,
+                                                                  lumascope::HostBridge::makeSpectrumSnapshot (snapshot));
+                         });
 }
 
 void LumaScopeAudioProcessorEditor::showFallback (juce::String code, juce::String message)

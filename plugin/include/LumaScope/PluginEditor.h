@@ -2,9 +2,46 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_gui_extra/juce_gui_extra.h>
+#include <limits>
 #include "LumaScope/HostBridge.h"
 #include "LumaScope/PluginProcessor.h"
 #include "LumaScope/WebResources.h"
+
+namespace lumascope
+{
+class EditorSnapshotPoller
+{
+public:
+    EditorSnapshotPoller() = default;
+
+    template <typename Reader, typename Emitter>
+    bool poll (double nowMilliseconds, Reader&& readLatestSnapshot, Emitter&& emitSnapshot)
+    {
+        if (nowMilliseconds - lastEmitMilliseconds < minIntervalMilliseconds)
+            return false;
+
+        SpectrumSnapshot snapshot;
+        if (! readLatestSnapshot (snapshot, lastSeenSequence))
+            return false;
+
+        minIntervalMilliseconds = intervalForProfile (snapshot.profile);
+        lastEmitMilliseconds = nowMilliseconds;
+        emitSnapshot (snapshot);
+        return true;
+    }
+
+private:
+    static double intervalForProfile (AnalyzerProfile profile) noexcept
+    {
+        const auto config = makeAnalyzerConfig (profile);
+        return 1000.0 / config.snapshotRateHz;
+    }
+
+    std::uint32_t lastSeenSequence = 0;
+    double lastEmitMilliseconds = -std::numeric_limits<double>::infinity();
+    double minIntervalMilliseconds = intervalForProfile (AnalyzerProfile::Musical);
+};
+}
 
 class LumaScopeAudioProcessorEditor final : public juce::AudioProcessorEditor,
                                              private juce::Timer
@@ -35,8 +72,10 @@ private:
 
     lumascope::WebResources resources;
     lumascope::HostBridge bridge;
+    lumascope::EditorSnapshotPoller snapshotPoller;
     Browser browser;
     juce::String uiSource;
     juce::String fallbackCode;
     juce::String fallbackMessage;
+    bool bridgeReady = false;
 };
