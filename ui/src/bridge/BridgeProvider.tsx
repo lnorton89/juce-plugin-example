@@ -1,5 +1,5 @@
 import { createContext, type PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { bridgeErrorEvent, hostInfoEvent, parseBridgeError, parseHostInfo, protocolVersion, uiReadyEvent, type BridgeStatus } from './protocol';
+import { bridgeErrorEvent, hostInfoEvent, parseBridgeError, parseHostInfo, parseSpectrumSnapshot, protocolVersion, spectrumSnapshotEvent, uiReadyEvent, type BridgeStatus } from './protocol';
 
 export interface BridgeBackend {
   addEventListener(eventId: string, listener: (payload: unknown) => void): unknown;
@@ -32,8 +32,16 @@ export function BridgeProvider({ children, initialStatus, backend }: BridgeProvi
       const error = parseBridgeError(payload);
       setStatus(error ? { state: 'error', code: error.code, message: error.message } : { state: 'error', code: 'malformed_error', message: 'Native bridge error was invalid.' });
     });
+    const snapshotToken = transport.addEventListener(spectrumSnapshotEvent, (payload) => {
+      const snapshot = parseSpectrumSnapshot(payload);
+      if (snapshot) setStatus((current) => ({ ...current, spectrumSnapshot: snapshot }));
+    });
     transport.emitEvent(uiReadyEvent, { protocolVersion });
-    return () => { transport.removeEventListener(hostToken); transport.removeEventListener(errorToken); };
+    return () => {
+      transport.removeEventListener(hostToken);
+      transport.removeEventListener(errorToken);
+      transport.removeEventListener(snapshotToken);
+    };
   }, [initialStatus, transport]);
 
   return <BridgeContext.Provider value={status}>{children}</BridgeContext.Provider>;

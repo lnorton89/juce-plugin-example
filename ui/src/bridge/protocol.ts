@@ -39,9 +39,9 @@ export interface SpectrumSnapshot {
 }
 
 export type BridgeStatus =
-  | { state: 'connecting' }
-  | { state: 'ready'; hostInfo: HostInfo }
-  | { state: 'error'; code: string; message: string };
+  | { state: 'connecting'; spectrumSnapshot?: SpectrumSnapshot }
+  | { state: 'ready'; hostInfo: HostInfo; spectrumSnapshot?: SpectrumSnapshot }
+  | { state: 'error'; code: string; message: string; spectrumSnapshot?: SpectrumSnapshot };
 
 export function parseHostInfo(value: unknown): HostInfo | null {
   if (!value || typeof value !== 'object') return null;

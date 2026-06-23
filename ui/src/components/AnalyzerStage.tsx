@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import type { BridgeStatus as BridgeState } from '../bridge/protocol';
 import { BridgeStatus } from './BridgeStatus';
+import { SpectrumCanvas } from './SpectrumCanvas';
 import '../styles/spectral-motif.css';
 
 export interface AnalyzerStageProps { bridge: BridgeState; onRetry?: () => void }
@@ -31,9 +32,11 @@ export function AnalyzerStage({ bridge, onRetry }: AnalyzerStageProps) {
       }}
     >
       <div className="spectral-motif" aria-hidden="true"><span /></div>
-      <Box id="spectrum-renderer-mount" data-phase="renderer-mount" sx={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
+      <Box id="spectrum-renderer-mount" data-phase="renderer-mount" sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1 }}>
+        {bridge.spectrumSnapshot ? <SpectrumCanvas snapshot={bridge.spectrumSnapshot} /> : null}
+      </Box>
       <Box sx={{ position: 'relative', zIndex: 1, width: 'min(100%, 560px)', textAlign: 'center' }}>
-        {bridge.state === 'ready' ? (
+        {bridge.state === 'ready' && !bridge.spectrumSnapshot ? (
           <>
             <Typography component="h2" variant="h2">Analyzer surface ready</Typography>
             <Typography color="text.secondary" sx={{ mt: 2 }}>
