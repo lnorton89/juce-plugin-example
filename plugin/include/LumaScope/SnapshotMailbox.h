@@ -18,6 +18,12 @@ public:
     SnapshotMailbox (SnapshotMailbox&&) = delete;
     SnapshotMailbox& operator= (SnapshotMailbox&&) = delete;
 
+    void clear() noexcept
+    {
+        activeSlot.store (0, std::memory_order_release);
+        publishedSequence.store (0, std::memory_order_release);
+    }
+
     bool publish (const SpectrumSnapshot& snapshot) noexcept
     {
         if (! isValidSnapshot (snapshot))
