@@ -46,9 +46,13 @@ int runHostBridgeTests()
     expect (! malformed.ready && malformed.payload["code"] == "malformed_payload", "malformed payload is typed error");
 
     const auto spectrumPayload = lumascope::HostBridge::makeSpectrumSnapshot (makeSnapshot());
+    const auto expectedSpectrumPayload = readFixture (LUMASCOPE_FIXTURE_SPECTRUM_SNAPSHOT);
     expect (lumascope::HostBridge::spectrumSnapshotEvent.toString() == "spectrum.snapshot", "spectrum event id is stable");
-    expect (juce::JSON::toString (spectrumPayload, true)
-            == juce::JSON::toString (readFixture (LUMASCOPE_FIXTURE_SPECTRUM_SNAPSHOT), true),
-            "spectrum.snapshot matches fixture");
+    const auto actualSpectrumJson = juce::JSON::toString (spectrumPayload, true);
+    const auto expectedSpectrumJson = juce::JSON::toString (expectedSpectrumPayload, true);
+    if (actualSpectrumJson != expectedSpectrumJson)
+        std::cerr << "Actual spectrum JSON:\n" << actualSpectrumJson << "\nExpected spectrum JSON:\n"
+                  << expectedSpectrumJson << '\n';
+    expect (actualSpectrumJson == expectedSpectrumJson, "spectrum.snapshot matches fixture");
     return failures;
 }

@@ -5,6 +5,7 @@ namespace lumascope
 const juce::Identifier HostBridge::uiReadyEvent { "ui.ready" };
 const juce::Identifier HostBridge::hostInfoEvent { "host.info" };
 const juce::Identifier HostBridge::bridgeErrorEvent { "bridge.error" };
+const juce::Identifier HostBridge::spectrumSnapshotEvent { "spectrum.snapshot" };
 
 HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn,
                         juce::String buildMarkerIn)
@@ -44,6 +45,39 @@ juce::var HostBridge::makeHostInfo() const
     object->setProperty ("hostMode", hostMode);
     object->setProperty ("uiSource", uiSource);
     object->setProperty ("buildMarker", buildMarker);
+    return result;
+}
+
+juce::var HostBridge::makeSpectrumSnapshot (const SpectrumSnapshot& snapshot)
+{
+    auto result = juce::var (new juce::DynamicObject());
+    auto* object = result.getDynamicObject();
+    object->setProperty ("protocolVersion", protocolVersion);
+    object->setProperty ("sequence", static_cast<int> (snapshot.sequence));
+    object->setProperty ("profile", toString (snapshot.profile));
+    object->setProperty ("sampleRate", snapshot.sampleRate);
+    object->setProperty ("fftSize", static_cast<int> (snapshot.fftSize));
+    object->setProperty ("minFrequencyHz", snapshot.minFrequencyHz);
+    object->setProperty ("maxFrequencyHz", snapshot.maxFrequencyHz);
+    object->setProperty ("minDecibels", snapshot.minDecibels);
+    object->setProperty ("maxDecibels", snapshot.maxDecibels);
+
+    juce::Array<juce::var> bins;
+    const auto boundedBinCount = std::min (snapshot.binCount, SpectrumSnapshot::maxBins);
+    bins.ensureStorageAllocated (static_cast<int> (boundedBinCount));
+
+    for (std::size_t index = 0; index < boundedBinCount; ++index)
+    {
+        const auto& source = snapshot.bins[index];
+        auto bin = juce::var (new juce::DynamicObject());
+        auto* binObject = bin.getDynamicObject();
+        binObject->setProperty ("frequencyHz", source.frequencyHz);
+        binObject->setProperty ("decibels", source.decibels);
+        binObject->setProperty ("normalisedValue", source.normalisedValue);
+        bins.add (std::move (bin));
+    }
+
+    object->setProperty ("bins", juce::var (bins));
     return result;
 }
 
