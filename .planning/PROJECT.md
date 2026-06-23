@@ -17,12 +17,12 @@ A developer can clone the project and build, understand, provision, and run the 
 - [x] Phase 1 validated a reproducible Windows build shell for VST3 and standalone targets using JUCE 8, CMake presets, pinned dependencies, and automated checks.
 - [x] Phase 1 validated the embedded React/TypeScript Material UI WebView2 shell with a typed protocol-v1 bridge and accessible bridge-state UX.
 - [x] Phase 1 validated project-level Context7 MCP configuration and recorded JUCE master, Jan Wilczek's JUCE WebView tutorial, and Material UI source identifiers.
+- [x] Phase 2 validated a responsive, stable, non-mutating VST3 spectrum analyzer path from host audio through native FFT/smoothing analysis to the React/WebView canvas renderer.
+- [x] Phase 2 validated analyzer defaults behind extensible DSP, snapshot, bridge, and UI contracts so FFT size, smoothing, decay, and display controls can expand later without redesigning the real-time path.
 
 ### Active
 
-- [ ] Analyze live audio without altering it and display a responsive, stable frequency spectrum.
 - [ ] Let the standalone application monitor both selectable input devices and Windows system output through WASAPI loopback.
-- [ ] Keep the analyzer architecture extensible for future FFT, smoothing, decay, and display controls while shipping appropriate defaults initially.
 - [ ] Activate Lemon Squeezy purchases through a Cloudflare Worker backed by D1.
 - [ ] Restrict each license to one active machine while supporting self-service deactivation and transfer.
 - [ ] Store a signed machine-bound license locally and permit seven days of offline use before requiring successful online revalidation.
@@ -49,6 +49,7 @@ A developer can clone the project and build, understand, provision, and run the 
 - Transfer flow: the user can deactivate the current machine, freeing the single activation for another machine. Replay, concurrency, and lost-machine recovery need explicit treatment during licensing design.
 - Cloudflare deployment should be portable between accounts: declarative configuration, D1 migrations, secret-name contracts, setup scripts, verification, and teardown guidance belong in the repository.
 - Context7 should be configured once as a project MCP server; the three requested Context7 library URLs are recorded as authoritative source identifiers for research and implementation.
+- Current analyzer state: the VST3 path has passed unit/integration checks, strict non-GUI pluginval validation, and an approved Ableton host smoke test after lag/accuracy tuning.
 
 ## Constraints
 
@@ -68,10 +69,10 @@ A developer can clone the project and build, understand, provision, and run the 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Target Windows, VST3, and standalone first | Keeps the example focused while covering host and device-capture use cases | Validated in Phase 1 for shell/build artifacts; audio capture behavior remains active |
+| Target Windows, VST3, and standalone first | Keeps the example focused while covering host and device-capture use cases | Validated in Phase 1 for shell/build artifacts and Phase 2 for VST3 analyzer behavior; standalone audio capture remains active |
 | Use React/TypeScript and Material UI in a JUCE WebView2 editor | Enables modern UI development while demonstrating JUCE 8 native integration | Validated in Phase 1 as the embedded shell and Vite development workflow |
 | Support WASAPI input and loopback capture in standalone | Covers microphones/interfaces and system-output monitoring | — Pending |
-| Ship analyzer defaults behind an extensible DSP/UI model | Produces a useful v1 without prematurely designing every control | — Pending |
+| Ship analyzer defaults behind an extensible DSP/UI model | Produces a useful v1 without prematurely designing every control | Validated in Phase 2 through native analyzer profiles, snapshots, bridge events, and canvas rendering |
 | Use Lemon Squeezy, Cloudflare Workers, and D1 for activation | Matches the requested purchase and serverless deployment model | — Pending |
 | Enforce one active machine with self-service transfer | Provides a clear commercial policy without permanent lock-in | — Pending |
 | Verify Ed25519-signed machine-bound entitlements locally | Allows offline verification without embedding server secrets | — Pending |
@@ -97,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-23 after Phase 1 completion*
+*Last updated: 2026-06-23 after Phase 2 completion*
