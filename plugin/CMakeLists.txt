@@ -31,8 +31,13 @@ juce_add_plugin(LumaScope
 target_sources(LumaScope PRIVATE
   include/LumaScope/PluginEditor.h
   include/LumaScope/PluginProcessor.h
+  include/LumaScope/Analyzer/AnalyzerConfig.h
+  include/LumaScope/Analyzer/SpectrumAnalyzer.h
+  include/LumaScope/Analyzer/SpectrumSnapshot.h
   include/LumaScope/HostBridge.h
   include/LumaScope/WebResources.h
+  source/Analyzer/AnalyzerConfig.cpp
+  source/Analyzer/SpectrumAnalyzer.cpp
   source/HostBridge.cpp
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
@@ -50,6 +55,7 @@ target_compile_definitions(LumaScope PUBLIC
 target_link_libraries(LumaScope PRIVATE
   LumaScopeWebBundle
   juce::juce_audio_utils
+  juce::juce_dsp
   juce::juce_gui_extra
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 add_dependencies(LumaScope LumaScopeWebBundle)

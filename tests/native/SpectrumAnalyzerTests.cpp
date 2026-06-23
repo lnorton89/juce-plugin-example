@@ -106,7 +106,8 @@ void pushConstantBlock (lumascope::SpectrumAnalyzer& analyzer,
     buffer.clear();
 
     for (int channel = 0; channel < channels; ++channel)
-        buffer.fill (channel, 0, samples, value);
+        for (int sample = 0; sample < samples; ++sample)
+            buffer.setSample (channel, sample, value);
 
     analyzer.pushAudioBlock (buffer);
 }
