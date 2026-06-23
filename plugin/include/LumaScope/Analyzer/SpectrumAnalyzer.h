@@ -26,6 +26,7 @@ private:
     void buildLogBins();
     float sanitizeSample (float sample) const noexcept;
     float rawMagnitudeToDecibels (float magnitude, std::size_t fftBin) const noexcept;
+    float interpolateMagnitudeAtFrequency (float frequencyHz) const noexcept;
     float smoothDecibels (std::size_t displayBin, float decibels) noexcept;
 
     AnalyzerConfig config;
@@ -41,6 +42,7 @@ private:
     std::unique_ptr<juce::dsp::WindowingFunction<float>> window;
     std::vector<float> fifo;
     std::vector<float> fftData;
+    std::vector<float> fftMagnitudes;
     std::vector<float> smoothedDecibels;
     std::vector<std::size_t> logBinStarts;
     std::vector<std::size_t> logBinEnds;

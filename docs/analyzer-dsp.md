@@ -9,21 +9,27 @@ user controls.
 
 `AnalyzerProfile::Musical` is the default visible profile for Phase 2.
 
-| Profile | FFT size | Window | Range | Snapshot target | Floor | Smoothing |
-| --- | ---: | --- | --- | ---: | ---: | --- |
-| Musical | 4096 | Hann | 20 Hz to 20 kHz | 30 Hz | -96 dB | attack 0.45, release 0.12 |
-| Measurement | 8192 | Hann | 20 Hz to 20 kHz | 20 Hz | -120 dB | attack 0.30, release 0.06 |
-| Fast | 2048 | Hann | 20 Hz to 20 kHz | 45 Hz | -90 dB | attack 0.72, release 0.25 |
+| Profile | FFT size | Hop size | Window | Range | Snapshot target | Floor | Smoothing |
+| --- | ---: | ---: | --- | --- | ---: | ---: | --- |
+| Musical | 4096 | 1024 | Hann | 20 Hz to 20 kHz | 45 Hz | -96 dB | attack 0.72, release 0.32 |
+| Measurement | 8192 | 2048 | Hann | 20 Hz to 20 kHz | 20 Hz | -120 dB | attack 0.30, release 0.06 |
+| Fast | 2048 | 512 | Hann | 20 Hz to 20 kHz | 60 Hz | -90 dB | attack 0.85, release 0.25 |
 
 All profiles currently use 160 logarithmic display bins and a 0 dB ceiling. The
-profile/config model intentionally exposes FFT size, window, display range,
-snapshot cadence, dB bounds, smoothing attack/release, and display bin count so
-future controls can reuse the same DSP core. User-facing controls remain v2
-scope.
+profile/config model intentionally exposes FFT size, hop size, window, display
+range, snapshot cadence, dB bounds, smoothing attack/release, and display bin
+count so future controls can reuse the same DSP core. User-facing controls
+remain v2 scope.
 
 ## FFT And Normalization
 
-The analyzer uses JUCE `juce::dsp::WindowingFunction<float>` with a Hann window,
+The analyzer uses overlapping FFT windows. `hopSize` controls how many new input
+samples advance between frames; the retained tail of the previous window is
+reused for the next analysis frame. The Musical default keeps a 4096-point FFT
+for useful low-frequency resolution while publishing a new analysis frame every
+1024 samples when the host provides enough audio.
+
+Each frame uses JUCE `juce::dsp::WindowingFunction<float>` with a Hann window,
 then `juce::dsp::FFT::performFrequencyOnlyForwardTransform` on a zero-padded
 buffer sized at twice the FFT size.
 
@@ -44,10 +50,14 @@ log bins aggregate FFT bins and smoothing is part of the snapshot contract.
 
 Snapshots are display-ready. They do not expose raw FFT bins. Each configured
 display bin covers a logarithmic span between the profile minimum and the lower
-of the profile maximum or Nyquist. The bin stores:
+of the profile maximum or Nyquist. Very narrow display bins interpolate the FFT
+magnitude at the logarithmic center frequency so the low end does not repeat the
+same FFT bin across several visible points. Wider display bins use the maximum
+FFT-bin magnitude inside their span so narrow peaks remain visible. The bin
+stores:
 
 - `frequencyHz`: the logarithmic center frequency.
-- `decibels`: the maximum clamped dB value found in that span.
+- `decibels`: the interpolated or span-maximum clamped dB value for that bin.
 - `normalisedValue`: the dB value mapped to 0..1 between the profile floor and
   ceiling.
 
@@ -80,7 +90,8 @@ Native tests cover:
 - Full-scale sine level within +/-1.5 dB of 0 dBFS.
 - Zero-sized, small, changing, and larger-than-FFT block sequences.
 - Sample-rate reset behavior.
-- Monotonic decay after signal stops.
+- Overlapping hop publication after the first full FFT window.
+- Monotonic responsive decay after signal stops.
 
 These tolerances document DSP-02 and DSP-03 behavior without requiring another
 developer to reverse-engineer the implementation.

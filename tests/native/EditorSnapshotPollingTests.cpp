@@ -61,7 +61,7 @@ void testMusicalCadenceIsBounded()
         mailbox.publish (makeSnapshot (static_cast<std::uint32_t> (tick + 2)));
     }
 
-    expect (emitted.size() <= 31, "poller emits at most about 30 FPS over one second of timer ticks");
+    expect (emitted.size() <= 46, "poller emits at most the bounded Musical cadence over one second of timer ticks");
     expect (! emitted.empty() && emitted.front() == 1, "first poll emits first available snapshot");
 }
 

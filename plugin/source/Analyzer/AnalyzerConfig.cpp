@@ -21,14 +21,16 @@ AnalyzerConfig makeAnalyzerConfig (AnalyzerProfile profile) noexcept
     {
         case AnalyzerProfile::Musical:
             config.fftSize = 4096;
-            config.snapshotRateHz = 30.0;
+            config.hopSize = 1024;
+            config.snapshotRateHz = 45.0;
             config.minDecibels = -96.0f;
-            config.smoothingAttack = 0.45f;
-            config.smoothingRelease = 0.12f;
+            config.smoothingAttack = 0.72f;
+            config.smoothingRelease = 0.32f;
             break;
 
         case AnalyzerProfile::Measurement:
             config.fftSize = 8192;
+            config.hopSize = 2048;
             config.snapshotRateHz = 20.0;
             config.minDecibels = -120.0f;
             config.smoothingAttack = 0.30f;
@@ -37,9 +39,10 @@ AnalyzerConfig makeAnalyzerConfig (AnalyzerProfile profile) noexcept
 
         case AnalyzerProfile::Fast:
             config.fftSize = 2048;
-            config.snapshotRateHz = 45.0;
+            config.hopSize = 512;
+            config.snapshotRateHz = 60.0;
             config.minDecibels = -90.0f;
-            config.smoothingAttack = 0.72f;
+            config.smoothingAttack = 0.85f;
             config.smoothingRelease = 0.25f;
             break;
     }
@@ -52,6 +55,8 @@ bool isValidAnalyzerConfig (const AnalyzerConfig& config) noexcept
     return isPowerOfTwo (config.fftSize)
         && config.fftSize >= 512
         && config.fftSize <= 16384
+        && config.hopSize > 0
+        && config.hopSize <= config.fftSize
         && config.window == WindowFunction::Hann
         && std::isfinite (config.minFrequencyHz)
         && std::isfinite (config.maxFrequencyHz)

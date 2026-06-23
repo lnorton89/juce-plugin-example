@@ -64,6 +64,7 @@ void SpectrumAnalyzer::prepare (double newSampleRate)
 
     fifo.assign (config.fftSize, 0.0f);
     fftData.assign (config.fftSize * 2, 0.0f);
+    fftMagnitudes.assign ((config.fftSize / 2) + 1, 0.0f);
     smoothedDecibels.assign (config.displayBinCount, config.minDecibels);
     buildLogBins();
 
@@ -99,7 +100,10 @@ void SpectrumAnalyzer::pushAudioBlock (const juce::AudioBuffer<float>& block) no
         if (fifoPosition == config.fftSize)
         {
             processFrame();
-            fifoPosition = 0;
+            const auto retainedSamples = config.fftSize - config.hopSize;
+            if (retainedSamples > 0)
+                std::move (fifo.end() - static_cast<std::ptrdiff_t> (retainedSamples), fifo.end(), fifo.begin());
+            fifoPosition = retainedSamples;
         }
     }
 }
@@ -121,6 +125,9 @@ void SpectrumAnalyzer::processFrame() noexcept
     window->multiplyWithWindowingTable (fftData.data(), config.fftSize);
     fft->performFrequencyOnlyForwardTransform (fftData.data(), true);
 
+    for (std::size_t fftBin = 0; fftBin < fftMagnitudes.size(); ++fftBin)
+        fftMagnitudes[fftBin] = fftData[fftBin];
+
     latestSnapshot.sequence = nextSequence++;
     latestSnapshot.profile = config.profile;
     latestSnapshot.sampleRate = sampleRate;
@@ -136,9 +143,17 @@ void SpectrumAnalyzer::processFrame() noexcept
         auto decibels = config.minDecibels;
         const auto start = logBinStarts[displayBin];
         const auto end = std::max (start + 1, logBinEnds[displayBin]);
+        const auto binWidth = end - start;
 
-        for (auto fftBin = start; fftBin < end; ++fftBin)
-            decibels = std::max (decibels, rawMagnitudeToDecibels (fftData[fftBin], fftBin));
+        if (binWidth <= 2)
+        {
+            decibels = rawMagnitudeToDecibels (interpolateMagnitudeAtFrequency (logBinFrequencies[displayBin]), start);
+        }
+        else
+        {
+            for (auto fftBin = start; fftBin < end; ++fftBin)
+                decibels = std::max (decibels, rawMagnitudeToDecibels (fftMagnitudes[fftBin], fftBin));
+        }
 
         decibels = smoothDecibels (displayBin, decibels);
         latestSnapshot.bins[displayBin] = {
@@ -199,6 +214,21 @@ float SpectrumAnalyzer::rawMagnitudeToDecibels (float magnitude, std::size_t) co
     const auto normalised = (2.0f * magnitude) / (static_cast<float> (config.fftSize) * coherentGain);
     const auto decibels = 20.0f * std::log10 (std::max (normalised, 1.0e-12f));
     return clamp (decibels, config.minDecibels, config.maxDecibels);
+}
+
+float SpectrumAnalyzer::interpolateMagnitudeAtFrequency (float frequencyHz) const noexcept
+{
+    const auto binPosition = static_cast<double> (frequencyHz) * static_cast<double> (config.fftSize) / sampleRate;
+    if (! std::isfinite (binPosition) || binPosition <= 0.0)
+        return 0.0f;
+
+    const auto lowerBin = static_cast<std::size_t> (std::floor (binPosition));
+    const auto upperBin = std::min (lowerBin + 1, fftMagnitudes.size() - 1);
+    if (lowerBin >= fftMagnitudes.size())
+        return fftMagnitudes.back();
+
+    const auto blend = static_cast<float> (binPosition - static_cast<double> (lowerBin));
+    return fftMagnitudes[lowerBin] + blend * (fftMagnitudes[upperBin] - fftMagnitudes[lowerBin]);
 }
 
 float SpectrumAnalyzer::smoothDecibels (std::size_t displayBin, float decibels) noexcept

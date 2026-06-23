@@ -21,6 +21,7 @@ struct AnalyzerConfig
 {
     AnalyzerProfile profile = AnalyzerProfile::Musical;
     std::size_t fftSize = 4096;
+    std::size_t hopSize = 1024;
     WindowFunction window = WindowFunction::Hann;
     double minFrequencyHz = 20.0;
     double maxFrequencyHz = 20000.0;

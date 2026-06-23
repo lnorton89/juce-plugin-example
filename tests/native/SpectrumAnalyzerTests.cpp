@@ -46,11 +46,12 @@ void testAnalyzerProfiles()
 
     expect (defaultConfig.profile == AnalyzerProfile::Musical, "Musical is the default profile");
     expect (musical.fftSize == 4096, "Musical uses a 4096-point FFT");
+    expect (musical.hopSize == 1024, "Musical publishes overlapping FFT hops for responsive host display");
     expect (musical.window == WindowFunction::Hann, "Musical uses a Hann window");
     expectNear (musical.minFrequencyHz, 20.0, 0.001, "Musical minimum frequency is 20 Hz");
     expectNear (musical.maxFrequencyHz, 20000.0, 0.001, "Musical maximum frequency is 20 kHz");
-    expectNear (musical.snapshotRateHz, 30.0, 0.001, "Musical snapshot cadence is about 30 FPS");
-    expect (musical.smoothingAttack > musical.smoothingRelease, "Musical has moderate attack/release smoothing");
+    expectNear (musical.snapshotRateHz, 45.0, 0.001, "Musical snapshot cadence is bounded but responsive");
+    expect (musical.smoothingAttack > musical.smoothingRelease, "Musical has responsive attack/release smoothing");
     expect (musical.displayBinCount > 0, "Musical exposes a display bin count");
 
     expect (measurement.profile == AnalyzerProfile::Measurement, "Measurement profile exists");
@@ -225,6 +226,24 @@ void testBinCenteredTonePlacement()
     }
 }
 
+void testOverlappingHopPublishesResponsiveSnapshots()
+{
+    const auto config = lumascope::makeAnalyzerConfig (lumascope::AnalyzerProfile::Musical);
+    lumascope::SpectrumAnalyzer analyzer (config);
+    analyzer.prepare (48000.0);
+
+    pushSineBlocks (analyzer, 48000.0, 984.375, 2, static_cast<int> (config.fftSize), { 256 });
+
+    lumascope::SpectrumSnapshot firstSnapshot;
+    expect (pullSnapshot (analyzer, firstSnapshot), "first full FFT window produces a snapshot");
+
+    pushSineBlocks (analyzer, 48000.0, 984.375, 2, static_cast<int> (config.hopSize), { 128 });
+
+    lumascope::SpectrumSnapshot secondSnapshot;
+    expect (pullSnapshot (analyzer, secondSnapshot), "one hop after the first window produces another snapshot");
+    expect (secondSnapshot.sequence == firstSnapshot.sequence + 1, "overlapping hop avoids waiting for another full FFT window");
+}
+
 void testVariableBlocksAndSampleRateChanges()
 {
     auto config = lumascope::makeAnalyzerConfig (lumascope::AnalyzerProfile::Fast);
@@ -279,6 +298,7 @@ int runSpectrumAnalyzerTests()
     testSpectrumSnapshotContract();
     testSilenceAndDenormals();
     testBinCenteredTonePlacement();
+    testOverlappingHopPublishesResponsiveSnapshots();
     testVariableBlocksAndSampleRateChanges();
     testSmoothingDecay();
     return failures;
