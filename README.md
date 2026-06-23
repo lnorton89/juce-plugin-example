@@ -1,6 +1,6 @@
 # LumaScope
 
-LumaScope is a Windows JUCE 8 example that builds a VST3 and standalone application with the same embedded React/TypeScript/Material UI interface. Phase 1 contains the product shell and bridge handshake only; analyzer DSP, audio-device capture, and licensing arrive in later phases.
+LumaScope is a Windows JUCE 8 example that builds a VST3 and standalone application with the same embedded React/TypeScript/Material UI interface. The current VST3 slice analyzes routed host audio, preserves audio passthrough, and renders a bounded live spectrum in the WebView UI. Standalone device capture and licensing remain later phases.
 
 ## Quick start
 
@@ -35,3 +35,15 @@ cmake --build --preset vs2019-vite --target LumaScope_Standalone --parallel 4
 ```
 
 See [development](docs/development.md), [bridge protocol](docs/bridge-protocol.md), and [troubleshooting](docs/troubleshooting.md) for complete commands and diagnostics.
+
+## VST3 validation and host smoke
+
+Phase 2 VST3 validation uses the automated suite plus pluginval when available:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-all.ps1
+cmake --build --preset vs2019-debug --target LumaScope_VST3 --parallel 4
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1
+```
+
+`scripts/test-all.ps1` allows missing pluginval for local development but prints that validation was skipped, not passed. For release evidence, provide pluginval with `-PluginvalPath` or `PLUGINVAL_EXE`, then complete the Ableton-preferred smoke in [VST3 smoke test](docs/vst3-smoke-test.md).

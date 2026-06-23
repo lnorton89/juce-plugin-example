@@ -38,6 +38,12 @@ if ($errors.Count -eq 0) {
     Require-Text 'scripts/validate-plugin.ps1' 'PLUGINVAL_EXE' 'pluginval wrapper does not support PLUGINVAL_EXE'
     Require-Text 'scripts/validate-plugin.ps1' 'Automated VST3 validation was SKIPPED, not passed' 'pluginval wrapper does not clearly distinguish skipped validation from pass'
     Require-Text 'docs/development.md' 'validate-plugin\.ps1' 'Development docs do not mention plugin validation'
+    Require-Text 'docs/vst3-smoke-test.md' 'Ableton Live is the preferred host' 'VST3 smoke docs do not preserve Ableton preference'
+    Require-Text 'docs/vst3-smoke-test.md' 'fallback' 'VST3 smoke docs do not document fallback host behavior'
+    Require-Text '.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md' 'pluginval executable' 'Host smoke evidence does not include pluginval executable field'
+    Require-Text '.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md' 'Limitations versus Ableton' 'Host smoke evidence does not require fallback limitations'
+    Require-Text 'docs/troubleshooting.md' 'skipped, not passed' 'Troubleshooting docs do not distinguish skipped pluginval validation from pass'
+    Require-Text 'README.md' 'VST3 validation and host smoke' 'README does not point to VST3 validation smoke'
     Require-Text 'docs/bridge-protocol.md' 'spectrum\.snapshot' 'Bridge protocol does not document spectrum.snapshot'
 }
 

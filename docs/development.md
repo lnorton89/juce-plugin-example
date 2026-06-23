@@ -56,4 +56,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.
 
 If pluginval is not on `PATH`, pass `-PluginvalPath C:\path\to\pluginval.exe` or set `PLUGINVAL_EXE` to the absolute executable path. The wrapper prints the resolved executable and VST3 artifact path before validation so the recorded result is auditable.
 
+Manual host proof is separate from the automated suite. Use [VST3 smoke test](vst3-smoke-test.md), prefer Ableton Live, and record the pluginval and Ableton-or-fallback result in `.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md`. Do not claim Ableton passed unless Ableton loaded the built VST3 and completed the smoke.
+
 Codex uses exactly one Context7 MCP server from `.codex/config.toml`. Use `/websites/juce_master`, `/janwilczek/juce-webview-tutorial`, and `/websites/mui_material-ui`; an optional Context7 API key belongs only in the user's environment.

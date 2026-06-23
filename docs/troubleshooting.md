@@ -22,6 +22,30 @@ If port 5174 is occupied, stop the owning process only if it belongs to you; the
 
 Rebuild the matching native target so the deterministic UI archive is regenerated. `host.info.buildMarker` and `uiSource` identify the loaded build. A protocol mismatch means native and UI came from different contracts; rebuild both from one checkout.
 
+## pluginval unavailable or failing
+
+Run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1
+```
+
+If the script reports that pluginval is missing, install or provide a trusted local pluginval executable outside Git, then rerun with `-PluginvalPath C:\path\to\pluginval.exe` or set `PLUGINVAL_EXE`. `scripts/test-all.ps1` uses `-AllowMissing` so day-to-day local verification can continue, but the output means automated plugin validation was skipped, not passed.
+
+If pluginval cannot find the VST3, build it first:
+
+```powershell
+cmake --build --preset vs2019-debug --target LumaScope_VST3 --parallel 4
+```
+
+If validation fails, keep the command output and record the failure in `.planning/phases/02-end-to-end-vst3-analyzer/02-HOST-SMOKE.md`; do not replace it with a DAW smoke pass.
+
+## DAW smoke issues
+
+Ableton Live is the preferred Phase 2 host. If Ableton cannot scan the Debug artifact directly, copy the built `LumaScope.vst3` into a user VST3 folder that Ableton scans, rescan plug-ins, then insert it as an audio effect on a track with audible audio.
+
+If Ableton is unavailable, use the best available Windows VST3 host and record the fallback host, version, reason, and limitations. A fallback result must not be described as an Ableton pass.
+
 ## Native fallback check
 
 To inspect the last-resort panel without changing source, build Debug and launch with the documented diagnostic hook:
