@@ -6,7 +6,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 
 ## Phases
 
-- [ ] **Phase 1: Reproducible Product Shell** - Build both Windows targets and display a packaged, typed React/MUI WebView shell.
+- [x] **Phase 1: Reproducible Product Shell** - Build both Windows targets and display a packaged, typed React/MUI WebView shell. (completed 2026-06-23)
 - [ ] **Phase 2: End-to-End VST3 Analyzer** - Analyze host audio correctly and render it smoothly without changing the signal.
 - [ ] **Phase 3: Standalone Windows Monitoring** - Analyze selectable input devices and system output through WASAPI loopback.
 - [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
@@ -42,7 +42,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03: Integrate WebView2 in both targets with versioned bridge handshake and Context7 project guidance.
+- [x] 01-03: Integrate WebView2 in both targets with versioned bridge handshake and Context7 project guidance.
 
 ### Phase 2: End-to-End VST3 Analyzer
 
@@ -185,7 +185,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Reproducible Product Shell | 2/3 | In Progress|  |
+| 1. Reproducible Product Shell | 3/3 | Complete   | 2026-06-23 |
 | 2. End-to-End VST3 Analyzer | 0/4 | Not started | - |
 | 3. Standalone Windows Monitoring | 0/3 | Not started | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |

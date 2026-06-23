@@ -10,8 +10,8 @@
 - [x] **BUILD-01**: Developer can configure and build Windows VST3 and standalone targets from a clean checkout using documented CMake presets.
 - [x] **BUILD-02**: Build resolves pinned JUCE, WebView2 SDK, frontend, Worker, and test dependencies without requiring globally installed project libraries.
 - [x] **BUILD-03**: Release targets embed the compiled React frontend and open it without a development server.
-- [ ] **BUILD-04**: Development mode supports rapid frontend iteration without changing release packaging behavior.
-- [ ] **BUILD-05**: Project records one Context7 MCP endpoint and the exact JUCE, JUCE WebView tutorial, and Material UI library IDs for implementation guidance.
+- [x] **BUILD-04**: Development mode supports rapid frontend iteration without changing release packaging behavior.
+- [x] **BUILD-05**: Project records one Context7 MCP endpoint and the exact JUCE, JUCE WebView tutorial, and Material UI library IDs for implementation guidance.
 
 ### Spectrum Analysis
 
@@ -134,8 +134,8 @@ Roadmap phase mappings are populated during roadmap creation.
 | BUILD-01 | Phase 1 | Complete |
 | BUILD-02 | Phase 1 | Complete |
 | BUILD-03 | Phase 1 | Complete |
-| BUILD-04 | Phase 1 | Pending |
-| BUILD-05 | Phase 1 | Pending |
+| BUILD-04 | Phase 1 | Complete |
+| BUILD-05 | Phase 1 | Complete |
 | DSP-01 | Phase 2 | Pending |
 | DSP-02 | Phase 2 | Pending |
 | DSP-03 | Phase 2 | Pending |
