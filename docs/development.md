@@ -47,4 +47,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-all.ps1
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/verify-project.ps1 -SelfTest
 ```
 
+`scripts/test-all.ps1` builds the native targets, runs native and UI tests, checks packaged WebView modes, and invokes `scripts/validate-plugin.ps1 -AllowMissing`. If pluginval is not installed, the full suite reports automated VST3 validation as skipped rather than passed. For the release-quality Phase 2 VST3 gate, run pluginval without the allow-missing flag:
+
+```powershell
+cmake --build --preset vs2019-debug --target LumaScope_VST3 --parallel 4
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-plugin.ps1
+```
+
+If pluginval is not on `PATH`, pass `-PluginvalPath C:\path\to\pluginval.exe` or set `PLUGINVAL_EXE` to the absolute executable path. The wrapper prints the resolved executable and VST3 artifact path before validation so the recorded result is auditable.
+
 Codex uses exactly one Context7 MCP server from `.codex/config.toml`. Use `/websites/juce_master`, `/janwilczek/juce-webview-tutorial`, and `/websites/mui_material-ui`; an optional Context7 API key belongs only in the user's environment.

@@ -16,6 +16,7 @@ function Require-Text([string] $Path, [string] $Pattern, [string] $Description) 
 
 $required = @(
     'CMakePresets.json', 'plugin/CMakeLists.txt', 'scripts/bootstrap.ps1', 'scripts/test-web-modes.ps1',
+    'scripts/validate-plugin.ps1',
     '.codex/config.toml', 'AGENTS.md', 'README.md', 'docs/development.md',
     'docs/bridge-protocol.md', 'docs/troubleshooting.md'
 )
@@ -33,6 +34,11 @@ if ($errors.Count -eq 0) {
     }
     Require-Text 'CMakePresets.json' '"LUMASCOPE_RELEASE_BUILD"\s*:\s*"ON"' 'Release preset does not enforce embedded mode'
     Require-Text 'plugin/CMakeLists.txt' '\$<\$<CONFIG:Debug>:\$\{LUMASCOPE_WEBVIEW_DEV_SERVER\}>' 'Dev URL is not compile-time Debug-only'
+    Require-Text 'scripts/test-all.ps1' 'validate-plugin\.ps1''\)\s+-AllowMissing' 'Full suite does not invoke pluginval wrapper with honest allow-missing behavior'
+    Require-Text 'scripts/validate-plugin.ps1' 'PLUGINVAL_EXE' 'pluginval wrapper does not support PLUGINVAL_EXE'
+    Require-Text 'scripts/validate-plugin.ps1' 'Automated VST3 validation was SKIPPED, not passed' 'pluginval wrapper does not clearly distinguish skipped validation from pass'
+    Require-Text 'docs/development.md' 'validate-plugin\.ps1' 'Development docs do not mention plugin validation'
+    Require-Text 'docs/bridge-protocol.md' 'spectrum\.snapshot' 'Bridge protocol does not document spectrum.snapshot'
 }
 
 $scanFiles = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {

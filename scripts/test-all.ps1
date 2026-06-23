@@ -15,6 +15,8 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & ctest --preset vs2019-debug --output-on-failure
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'validate-plugin.ps1') -AllowMissing
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'test-web-modes.ps1')
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'verify-project.ps1') -SelfTest
