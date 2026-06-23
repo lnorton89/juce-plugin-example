@@ -206,7 +206,7 @@ Plans:
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
-| 4. Portable Purchase Infrastructure | 3/4 | In progress | - |
+| 4. Portable Purchase Infrastructure | 3/4 | In Progress|  |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

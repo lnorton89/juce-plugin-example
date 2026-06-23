@@ -76,11 +76,11 @@
 ### Portable Cloudflare Infrastructure
 
 - [ ] **INFRA-01**: Repository contains a declarative YAML manifest describing logical Worker, D1, bindings, environments, required secrets, configured Lemon identifiers, and optional routing without account credentials.
-- [ ] **INFRA-02**: Developer can run an idempotent bootstrap command that authenticates to a chosen Cloudflare account, creates or reuses required resources, and writes account-specific IDs only to gitignored generated state.
-- [ ] **INFRA-03**: Developer can apply local and remote D1 migrations through documented package commands.
-- [ ] **INFRA-04**: Developer can inject required secrets through Wrangler or Cloudflare APIs without placing secret values in committed files or command output.
-- [ ] **INFRA-05**: Developer can deploy the Worker and bindings through a repeatable command using a least-privilege Cloudflare API token.
-- [ ] **INFRA-06**: Deployment workflow reports missing prerequisites/configuration before mutation and supports non-destructive verification plus explicitly confirmed teardown.
+- [x] **INFRA-02**: Developer can run an idempotent bootstrap command that authenticates to a chosen Cloudflare account, creates or reuses required resources, and writes account-specific IDs only to gitignored generated state.
+- [x] **INFRA-03**: Developer can apply local and remote D1 migrations through documented package commands.
+- [x] **INFRA-04**: Developer can inject required secrets through Wrangler or Cloudflare APIs without placing secret values in committed files or command output.
+- [x] **INFRA-05**: Developer can deploy the Worker and bindings through a repeatable command using a least-privilege Cloudflare API token.
+- [x] **INFRA-06**: Deployment workflow reports missing prerequisites/configuration before mutation and supports non-destructive verification plus explicitly confirmed teardown.
 - [ ] **INFRA-07**: Fresh Cloudflare account can be provisioned, migrated, deployed, and smoke-tested using only repository documentation and declared prerequisites.
 - [ ] **INFRA-08**: Documentation explains the unavoidable Lemon Squeezy webhook registration/secret exchange and outputs the deployed callback URL needed to complete it.
 
@@ -179,11 +179,11 @@ Roadmap phase mappings are populated during roadmap creation.
 | LIC-09 | Phase 6 | Pending |
 | LIC-10 | Phase 6 | Pending |
 | INFRA-01 | Phase 4 | In Progress (04-01: Manifest, wrangler config, generated-state) |
-| INFRA-02 | Phase 4 | Pending |
-| INFRA-03 | Phase 4 | Pending |
-| INFRA-04 | Phase 4 | Pending |
-| INFRA-05 | Phase 4 | Pending |
-| INFRA-06 | Phase 4 | Pending |
+| INFRA-02 | Phase 4 | Complete |
+| INFRA-03 | Phase 4 | Complete |
+| INFRA-04 | Phase 4 | Complete |
+| INFRA-05 | Phase 4 | Complete |
+| INFRA-06 | Phase 4 | Complete |
 | INFRA-07 | Phase 4 | Pending |
 | INFRA-08 | Phase 4 | Pending |
 | QUAL-01 | Phase 7 | Pending |
