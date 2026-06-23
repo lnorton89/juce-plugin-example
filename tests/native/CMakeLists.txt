@@ -5,6 +5,7 @@ juce_add_binary_data(TestWebResources HEADER_NAME TestWebResources.h NAMESPACE T
 
 add_executable(LumaScopeNativeTests HostBridgeTests.cpp SpectrumAnalyzerTests.cpp WebResourcesTests.cpp
   "${CMAKE_SOURCE_DIR}/plugin/source/HostBridge.cpp"
+  "${CMAKE_SOURCE_DIR}/plugin/source/Analyzer/AnalyzerConfig.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/WebResources.cpp")
 target_include_directories(LumaScopeNativeTests PRIVATE "${CMAKE_SOURCE_DIR}/plugin/include")
 target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
