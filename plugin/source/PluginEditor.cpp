@@ -101,6 +101,25 @@ LumaScopeAudioProcessorEditor::LumaScopeAudioProcessorEditor (LumaScopeAudioProc
     browser.goToURL (uiSource == "vite" ? configuredDevServer()
                                         : juce::WebBrowserComponent::getResourceProviderRoot());
     startTimer (simulation == "handshake" ? 250 : 10000);
+
+   #if JucePlugin_Build_Standalone
+    // SC-03-03: Log startup source state for diagnostics
+    {
+        auto& ap = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+        if (auto* sc = ap.getStandaloneSourceController())
+        {
+            const auto snapshot = sc->currentStateSnapshot();
+            juce::Logger::writeToLog ("Standalone source state on editor start: mode="
+                                      + juce::String (lumascope::toString (snapshot.mode))
+                                      + " state=" + juce::String (lumascope::toString (snapshot.state))
+                                      + " sourceId=\"" + snapshot.selectedSourceId.substring (0, 64)
+                                      + "\" sourceName=\"" + snapshot.selectedSourceName.substring (0, 64) + "\""
+                                      + (snapshot.code.isNotEmpty()
+                                            ? " code=" + snapshot.code
+                                            : juce::String()));
+        }
+    }
+   #endif
 }
 
 void LumaScopeAudioProcessorEditor::paint (juce::Graphics& graphics)
