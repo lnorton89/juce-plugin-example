@@ -32,9 +32,9 @@
 ### Standalone Audio Capture
 
 - [ ] **CAP-01**: User can select and monitor an available Windows audio input device in the standalone application.
-- [ ] **CAP-02**: User can select and monitor a Windows render endpoint through shared-mode WASAPI loopback without requiring a vendor “Stereo Mix” device.
-- [ ] **CAP-03**: Standalone converts supported device channel/sample formats into the analyzer ingress contract without changing analyzer behavior.
-- [ ] **CAP-04**: Standalone safely handles source switching, no active source, device removal, default-device changes, capture invalidation, and restart.
+- [x] **CAP-02**: User can select and monitor a Windows render endpoint through shared-mode WASAPI loopback without requiring a vendor “Stereo Mix” device.
+- [x] **CAP-03**: Standalone converts supported device channel/sample formats into the analyzer ingress contract without changing analyzer behavior.
+- [x] **CAP-04**: Standalone safely handles source switching, no active source, device removal, default-device changes, capture invalidation, and restart.
 - [ ] **CAP-05**: Standalone persists the last valid source preference and falls back visibly when that source is unavailable.
 
 ### WebView User Interface
@@ -147,9 +147,9 @@ Roadmap phase mappings are populated during roadmap creation.
 | VST3-03 | Phase 2 | Complete |
 | VST3-04 | Phase 2 | Complete |
 | CAP-01 | Phase 3 | Pending |
-| CAP-02 | Phase 3 | Pending |
-| CAP-03 | Phase 3 | Pending |
-| CAP-04 | Phase 3 | Pending |
+| CAP-02 | Phase 3 | Complete |
+| CAP-03 | Phase 3 | Complete |
+| CAP-04 | Phase 3 | Complete |
 | CAP-05 | Phase 3 | Pending |
 | UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 2 | Complete |

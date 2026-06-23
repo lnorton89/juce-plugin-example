@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-last_updated: "2026-06-23T17:41:39.915Z"
+last_updated: "2026-06-23T17:20:00.000Z"
 last_activity: 2026-06-23
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 29
+  total_plans: 10
+  completed_plans: 10
+  percent: 30
 ---
 
 # Project State
@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-06-22)
 ## Current Position
 
 Phase: 3
-Plan: Not started
-Status: Ready to plan
+Plan: 03-02 complete (02 of 03)
+Status: Next plan 03-03 ready
 Last activity: 2026-06-23
 
 Progress: [██████████] 100%
@@ -53,6 +53,9 @@ Progress: [██████████] 100%
 | Phase 02 P02 | 12 min | 3 tasks | 7 files |
 | Phase 02 P03 | 12 min | 3 tasks | 17 files |
 | Phase 02 P04 | 9h 28m | 3 tasks | 15 files |
+| Phase 03 P01 | 1h 00m | 3 tasks | 16 files |
+| Phase 03 P02 | 3h 20m | 3 tasks | 14 files |
+| Phase 03 P03 | - | - | - |
 
 ## Accumulated Context
 
@@ -84,6 +87,10 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 02]: Treat pluginval absence as unavailable/skipped, never passed — Keeps VST3-04 evidence honest when pluginval is not installed.
 - [Phase 02]: Use Ableton Live as the preferred real-host smoke target — Fallback hosts are recorded only when Ableton cannot be used, preserving the approved manual DAW proof path.
 - [Phase 02]: Repair failed Ableton smoke through responsive Musical defaults — The fix stayed inside Phase 2 analyzer validation scope without adding standalone capture, licensing, or v2 controls.
+- [Phase 03]: Use void* for COM types in public headers — Avoids Windows.h/JUCE Notification class conflict by storing WAVEFORMATEX* and HANDLE as void* with explicit static_cast in .cpp.
+- [Phase 03]: Silence detection uses exponential moving average with 20-frame hold — alpha=0.1, 1e-6 threshold, consecutiveSilentFrames=20 transition to silent state (D-08).
+- [Phase 03]: Same-source bounded retry only (maxRetryAttempts=3) with no silent fallback — The adapter tracks retryCount; controller enforces D-06 (no endpoint switch on failure) and D-07 (same endpoint retry only).
+- [Phase 03]: IMMNotificationClient registered on controller construction — Notification client creates its own COM apartment and device enumerator; flags are consumed atomically in currentStateSnapshot().
 
 ### Pending Todos
 
@@ -102,6 +109,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-23T17:41:39.901Z
-Stopped at: Phase 3 context gathered
+Last session: 2026-06-23T17:20:00.000Z
+Stopped at: Phase 3 plan 03-02 complete
 Resume file: .planning/phases/03-standalone-windows-monitoring/03-CONTEXT.md

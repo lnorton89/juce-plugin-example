@@ -96,8 +96,8 @@ Plans:
 
 Plans:
 
-- [ ] 03-01: Define shared source lifecycle and integrate selectable JUCE input capture.
-- [ ] 03-02: Implement native Windows WASAPI loopback adapter, conversion, notifications, and recovery.
+- [x] 03-01: Define shared source lifecycle and integrate selectable JUCE input capture.
+- [x] 03-02: Implement native Windows WASAPI loopback adapter, conversion, notifications, and recovery.
 - [ ] 03-03: Integrate standalone source controls, persistence, diagnostics, and device test matrix.
 
 ### Phase 4: Portable Purchase Infrastructure
@@ -198,7 +198,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
-| 3. Standalone Windows Monitoring | 0/3 | Not started | - |
+| 3. Standalone Windows Monitoring | 2/3 | In progress | - |
 | 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
