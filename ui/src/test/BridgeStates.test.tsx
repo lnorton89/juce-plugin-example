@@ -22,12 +22,18 @@ describe('approved bridge state copy', () => {
   });
 
   test.each([
-    ['Standalone', 'embedded', 'Embedded UI · Bridge ready'],
-    ['VST3', 'vite', 'Vite development · Bridge ready'],
-  ] as const)('ready %s %s', (hostMode, uiSource, copy) => {
+    ['Standalone', 'embedded', 'Embedded UI · Bridge ready', true],
+    ['VST3', 'vite', 'Vite development · Bridge ready', false],
+  ] as const)('ready %s %s', (hostMode, uiSource, copy, isStandalone) => {
     renderState(ready(hostMode, uiSource));
     expect(screen.getByLabelText('Product mode')).toHaveTextContent(hostMode);
-    expect(screen.getByRole('status')).toHaveTextContent(copy);
+    // Standalone mode has two status elements (source strip + footer);
+    // VST3 has only the footer status.
+    if (isStandalone) {
+      expect(screen.getAllByRole('status')[1]).toHaveTextContent(copy);
+    } else {
+      expect(screen.getByRole('status')).toHaveTextContent(copy);
+    }
   });
 
   test('development server unavailable is the only retryable error', () => {

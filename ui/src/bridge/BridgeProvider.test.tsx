@@ -24,7 +24,8 @@ test('valid fixture completes the protocol-v1 handshake', async () => {
   expect(backend.emitted).toContainEqual(['ui.ready', uiReady]);
   backend.reply('host.info', hostInfo);
   expect(await screen.findByText('Standalone')).toBeInTheDocument();
-  expect(screen.getByRole('status')).toHaveTextContent('Embedded UI · Bridge ready');
+  // Index 1: footer status; index 0 is source strip status
+  expect(screen.getAllByRole('status')[1]).toHaveTextContent('Embedded UI · Bridge ready');
 });
 
 test('unsupported and malformed fixtures never reach ready state', async () => {

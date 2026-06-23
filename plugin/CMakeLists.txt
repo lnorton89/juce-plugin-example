@@ -44,6 +44,7 @@ target_sources(LumaScope PRIVATE
   source/HostBridge.cpp
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
+  source/Standalone/SourcePreferenceStore.cpp
   source/Standalone/StandaloneSourceController.cpp
   source/Standalone/windows/WasapiEndpointEnumerator.cpp
   source/Standalone/windows/WasapiLoopbackSourceAdapter.cpp

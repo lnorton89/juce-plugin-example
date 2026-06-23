@@ -1,5 +1,6 @@
 #include "LumaScope/Standalone/StandaloneSourceController.h"
 #include "LumaScope/Standalone/SourceModel.h"
+#include "LumaScope/Standalone/SourcePreferenceStore.h"
 #include "LumaScope/Standalone/WasapiLoopbackSourceAdapter.h"
 #include "LumaScope/Standalone/WasapiDeviceNotifications.h"
 #include "LumaScope/PluginProcessor.h"
@@ -105,10 +106,14 @@ class StandaloneSourceControllerImpl final : public StandaloneSourceController
 {
 public:
     explicit StandaloneSourceControllerImpl (LumaScopeAudioProcessor& proc)
-        : processor (proc)
+        : processor (proc),
+          prefs (juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory))
     {
         // Register render endpoint notifications on construction
         notificationHandle = registerEndpointNotifications();
+
+        // D-13: Try to restore the last valid source on startup
+        tryRestoreSavedSource();
     }
 
     ~StandaloneSourceControllerImpl() override
@@ -229,6 +234,14 @@ public:
             stateSnapshot.message = "Unknown source mode.";
         }
 
+        // Persist the successful source selection (CAP-05)
+        if (stateSnapshot.state == SourceState::active
+            || stateSnapshot.state == SourceState::starting
+            || stateSnapshot.state == SourceState::silent)
+        {
+            prefs.save ({ selection.mode, selection.id, selection.displayName });
+        }
+
         return stateSnapshot;
     }
 
@@ -319,12 +332,61 @@ public:
     StandaloneSourceControllerImpl& operator= (const StandaloneSourceControllerImpl&) = delete;
 
 private:
+    // D-13: Try to restore the last valid source preference on startup.
+    // If the saved source is found in the current enumeration, auto-select it.
+    // If not found or any failure occurs, start in the stopped state with
+    // a choose-source invitation (D-14: no auto-fallback).
+    void tryRestoreSavedSource()
+    {
+        const auto saved = prefs.tryRestore();
+        if (! saved.has_value())
+        {
+            // D-14: No saved preference — start in stopped state
+            stateSnapshot.state = SourceState::stopped;
+            return;
+        }
+
+        // Check if the saved source is still available in current enumeration
+        const auto list = enumerateSources();
+
+        bool found = false;
+        for (const auto& desc : list.inputDevices)
+        {
+            if (desc.id == saved->id)
+            {
+                found = true;
+                selectSource (*saved);
+                break;
+            }
+        }
+
+        if (! found)
+        {
+            for (const auto& desc : list.systemOutputs)
+            {
+                if (desc.id == saved->id)
+                {
+                    found = true;
+                    selectSource (*saved);
+                    break;
+                }
+            }
+        }
+
+        if (! found)
+        {
+            // D-15: Saved source no longer available — start stopped
+            stateSnapshot.state = SourceState::stopped;
+        }
+    }
+
     LumaScopeAudioProcessor& processor;
     juce::AudioDeviceManager deviceManager;
     mutable std::unique_ptr<JuceInputSourceAdapter> juceAdapter;
     mutable std::unique_ptr<WasapiLoopbackSourceAdapter> wasapiAdapter;
     mutable SourceStateSnapshot stateSnapshot;
     void* notificationHandle = nullptr;
+    SourcePreferenceStore prefs;
 };
 
 // Factory function

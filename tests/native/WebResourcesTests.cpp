@@ -8,6 +8,7 @@ int runEditorSnapshotPollingTests();
 int runPluginProcessorTests();
 int runRealtimeHandoffTests();
 int runSpectrumAnalyzerTests();
+int runSourcePreferenceStoreTests();
 int runStandaloneSourceControllerTests();
 int runWasapiEndpointModelTests();
 
@@ -40,6 +41,7 @@ int main()
     failures += runPluginProcessorTests();
     failures += runRealtimeHandoffTests();
     failures += runSpectrumAnalyzerTests();
+    failures += runSourcePreferenceStoreTests();
     failures += runStandaloneSourceControllerTests();
     failures += runWasapiEndpointModelTests();
     return failures == 0 ? 0 : 1;
