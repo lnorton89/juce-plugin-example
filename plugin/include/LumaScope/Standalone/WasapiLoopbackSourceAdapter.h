@@ -105,6 +105,12 @@ public:
     // Number of consecutive silent frames before reporting 'silent' state.
     static constexpr int silentFramesThreshold = 20;
 
+    // Get the current error description (non-empty when in error state).
+    juce::String lastError() const noexcept { return errorMessage; }
+
+    // Maximum number of automatic retry attempts for bounded recovery (D-07).
+    static constexpr int maxRetryAttempts = 3;
+
 private:
     // The capture thread function.
     void captureThreadFunc (IMMDevice* device);
@@ -131,6 +137,12 @@ private:
     // Silence detection atomics (written by capture thread, read by controller)
     std::atomic<double> recentLevel { 0.0 };
     mutable std::atomic<int> consecutiveSilentFrames { 0 };
+
+    // Error state (set by capture thread on hardware failure, cleared by start())
+    mutable std::atomic<bool> hasHardwareError { false };
+    juce::String errorMessage;
+    juce::String currentEndpointId; // Stored for bounded same-source retry (D-07)
+    std::atomic<int> retryCount { 0 };
 };
 
 } // namespace lumascope

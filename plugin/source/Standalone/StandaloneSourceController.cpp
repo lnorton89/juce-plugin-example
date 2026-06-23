@@ -1,6 +1,7 @@
 #include "LumaScope/Standalone/StandaloneSourceController.h"
 #include "LumaScope/Standalone/SourceModel.h"
 #include "LumaScope/Standalone/WasapiLoopbackSourceAdapter.h"
+#include "LumaScope/Standalone/WasapiDeviceNotifications.h"
 #include "LumaScope/PluginProcessor.h"
 
 #include <juce_audio_devices/juce_audio_devices.h>
@@ -106,11 +107,15 @@ public:
     explicit StandaloneSourceControllerImpl (LumaScopeAudioProcessor& proc)
         : processor (proc)
     {
+        // Register render endpoint notifications on construction
+        notificationHandle = registerEndpointNotifications();
     }
 
     ~StandaloneSourceControllerImpl() override
     {
         stop();
+        unregisterEndpointNotifications (notificationHandle);
+        notificationHandle = nullptr;
     }
 
     SourceList enumerateSources() override
@@ -251,18 +256,63 @@ public:
 
     SourceStateSnapshot currentStateSnapshot() const override
     {
-        // For WASAPI adapter, poll the live capture state for active/silent transitions
-        if (wasapiAdapter != nullptr && wasapiAdapter->isRunning())
+        // Check WASAPI notification flags for render endpoint changes (D-05, D-07)
+        checkEndpointNotifications();
+
+        // For WASAPI adapter, poll the live capture state
+        if (wasapiAdapter != nullptr)
         {
-            const auto captureState = wasapiAdapter->currentCaptureState();
-            if (captureState != stateSnapshot.state
-                && (captureState == SourceState::active || captureState == SourceState::silent))
+            // Check hardware error state first (D-05: endpoint removed/failed)
+            if (wasapiAdapter->currentCaptureState() == SourceState::error)
             {
-                stateSnapshot.state = captureState;
+                stateSnapshot.state = SourceState::error;
+                stateSnapshot.code = "endpoint_lost";
+                stateSnapshot.message = wasapiAdapter->lastError().substring (0, 256);
+            }
+            else if (wasapiAdapter->isRunning())
+            {
+                const auto captureState = wasapiAdapter->currentCaptureState();
+                if (captureState != stateSnapshot.state
+                    && (captureState == SourceState::active || captureState == SourceState::silent))
+                {
+                    stateSnapshot.state = captureState;
+                }
             }
         }
 
         return stateSnapshot;
+    }
+
+    // Check endpoint notification flags and handle invalidation (D-05, D-07).
+    // Called from currentStateSnapshot() on message/UI thread.
+    // Modifies mutable members (wasapiAdapter, stateSnapshot) safely.
+    void checkEndpointNotifications() const noexcept
+    {
+        const int flags = consumeEndpointNotificationFlags (notificationHandle);
+        if (flags == 0)
+            return;
+
+        // If the selected endpoint was removed or its state changed, signal error
+        if ((flags & kFlagEndpointRemoved) || (flags & kFlagStateChanged))
+        {
+            if (wasapiAdapter != nullptr && stateSnapshot.state != SourceState::error)
+            {
+                // Check if our current endpoint might be affected
+                // D-06: No silent fallback — we only invalidate, never switch
+                wasapiAdapter->stop();
+                wasapiAdapter.reset();
+
+                stateSnapshot.state = SourceState::error;
+                stateSnapshot.code = "endpoint_changed";
+                stateSnapshot.message = "The selected render endpoint was removed or changed. "
+                                        "Please select a new source.";
+            }
+        }
+
+        // Default-device change: refresh source lists, but don't switch source (D-07)
+        // The UI layer can enumerateSources() again on the next source-list request.
+        // (flags & kFlagDefaultChanged) — acknowledged, no immediate action needed.
+        // (flags & kFlagEndpointAdded) — acknowledged, list will be fresh on next enumerateSources().
     }
 
     StandaloneSourceControllerImpl (const StandaloneSourceControllerImpl&) = delete;
@@ -271,9 +321,10 @@ public:
 private:
     LumaScopeAudioProcessor& processor;
     juce::AudioDeviceManager deviceManager;
-    std::unique_ptr<JuceInputSourceAdapter> juceAdapter;
-    std::unique_ptr<WasapiLoopbackSourceAdapter> wasapiAdapter;
+    mutable std::unique_ptr<JuceInputSourceAdapter> juceAdapter;
+    mutable std::unique_ptr<WasapiLoopbackSourceAdapter> wasapiAdapter;
     mutable SourceStateSnapshot stateSnapshot;
+    void* notificationHandle = nullptr;
 };
 
 // Factory function

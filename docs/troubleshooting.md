@@ -46,6 +46,16 @@ Ableton Live is the preferred Phase 2 host. If Ableton cannot scan the Debug art
 
 If Ableton is unavailable, use the best available Windows VST3 host and record the fallback host, version, reason, and limitations. A fallback result must not be described as an Ableton pass.
 
+## WASAPI loopback output — no signal or error
+
+The standalone application can monitor Windows system output through WASAPI loopback. If System Output mode is silent, check:
+
+- **No audio playing**: The loopback stream captures all output on the selected render endpoint. If nothing is producing audio, the analyzer shows `silent` — this is a valid state, not a failure.
+- **Endpoint removed or disabled**: If the selected output device is unplugged, disabled, or changes state, capture stops and the UI surfaces an error. Re-select the endpoint once it is available again.
+- **Exclusive-mode application**: Some applications take exclusive control of the audio device, blocking loopback capture. Close the conflicting application or select a different render endpoint.
+
+WASAPI loopback does not require a vendor "Stereo Mix" recording device. If no render endpoints appear in the System Output list, ensure one or more Windows audio output devices are enabled in the Sound control panel.
+
 ## Native fallback check
 
 To inspect the last-resort panel without changing source, build Debug and launch with the documented diagnostic hook:

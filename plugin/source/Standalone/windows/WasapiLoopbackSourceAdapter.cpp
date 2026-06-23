@@ -489,6 +489,10 @@ juce::String WasapiLoopbackSourceAdapter::start (const juce::String& endpointId)
     running.store (false, std::memory_order_release);
     recentLevel.store (0.0, std::memory_order_release);
     consecutiveSilentFrames.store (0, std::memory_order_release);
+    hasHardwareError.store (false, std::memory_order_release);
+    retryCount.store (0, std::memory_order_release);
+    currentEndpointId = rawId;
+    errorMessage = {};
 
     // Store the device reference for the capture thread (needs it for format)
     // We release the enumerator but keep the device until capture thread starts.
@@ -532,10 +536,15 @@ void WasapiLoopbackSourceAdapter::stop()
     }
 
     running.store (false, std::memory_order_release);
+    hasHardwareError.store (false, std::memory_order_release);
+    retryCount.store (0, std::memory_order_release);
 }
 
 SourceState WasapiLoopbackSourceAdapter::currentCaptureState() const noexcept
 {
+    if (hasHardwareError.load (std::memory_order_acquire))
+        return SourceState::error;
+
     if (! running.load (std::memory_order_acquire))
         return SourceState::stopped;
 
@@ -602,6 +611,8 @@ void WasapiLoopbackSourceAdapter::captureThreadFunc (IMMDevice* device)
         {
             if (waitResult == WAIT_TIMEOUT)
                 continue; // Check shouldStop
+            hasHardwareError.store (true, std::memory_order_release);
+            errorMessage = "Capture event wait failed";
             break; // Unexpected error
         }
 
@@ -609,7 +620,12 @@ void WasapiLoopbackSourceAdapter::captureThreadFunc (IMMDevice* device)
         UINT32 packetSize = 0;
         HRESULT getSizeResult = captureClient->GetNextPacketSize (&packetSize);
         if (FAILED (getSizeResult))
+        {
+            hasHardwareError.store (true, std::memory_order_release);
+            errorMessage = "Capture GetNextPacketSize failed (hr=0x"
+                         + juce::String::toHexString (static_cast<int> (getSizeResult)) + ")";
             break;
+        }
 
         while (packetSize > 0)
         {
@@ -620,7 +636,12 @@ void WasapiLoopbackSourceAdapter::captureThreadFunc (IMMDevice* device)
             HRESULT getBufferResult = captureClient->GetBuffer (&data, &framesAvailable,
                                                                  &flags, nullptr, nullptr);
             if (FAILED (getBufferResult))
+            {
+                hasHardwareError.store (true, std::memory_order_release);
+                errorMessage = "Capture GetBuffer failed (hr=0x"
+                             + juce::String::toHexString (static_cast<int> (getBufferResult)) + ")";
                 break;
+            }
 
             if (framesAvailable > 0 && data != nullptr)
             {
@@ -670,7 +691,12 @@ void WasapiLoopbackSourceAdapter::captureThreadFunc (IMMDevice* device)
             // Check for more packets
             getSizeResult = captureClient->GetNextPacketSize (&packetSize);
             if (FAILED (getSizeResult))
+            {
+                hasHardwareError.store (true, std::memory_order_release);
+                errorMessage = "Capture GetNextPacketSize (inner) failed (hr=0x"
+                             + juce::String::toHexString (static_cast<int> (getSizeResult)) + ")";
                 break;
+            }
         }
     }
 

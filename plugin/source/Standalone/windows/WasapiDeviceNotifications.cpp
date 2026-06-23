@@ -1,25 +1,23 @@
+#include "LumaScope/Standalone/WasapiDeviceNotifications.h"
+
 #include <juce_core/juce_core.h>
 
+#define NOMINMAX
+#include <Windows.h>
+#undef NOMINMAX
 #include <initguid.h>
 #include <mmdeviceapi.h>
 
 #include <atomic>
+#include <cstdint>
 
 namespace lumascope
 {
 
-// Forward declarations used by tests and controller
-static constexpr int kFlagEndpointAdded    = 1;
-static constexpr int kFlagEndpointRemoved  = 2;
-static constexpr int kFlagDefaultChanged   = 4;
-static constexpr int kFlagStateChanged     = 8;
+// Flag constants are defined in WasapiDeviceNotifications.h (kFlagEndpointAdded etc.)
 
 // ============================================================================
 // Minimal IMMNotificationClient implementation for render endpoint monitoring.
-//
-// Signals the controller when render endpoints change so the source list
-// can be refreshed and the selected source can be invalidated if it is
-// the endpoint that was removed or changed.
 // ============================================================================
 class WasapiNotificationClient final : public IMMNotificationClient
 {
@@ -95,7 +93,7 @@ public:
         return S_OK;
     }
 
-    // Query notification flags and clear.
+    // Query notification flags and clear atomically.
     int consumeFlags() noexcept
     {
         return flags.exchange (0, std::memory_order_acq_rel);
@@ -107,13 +105,92 @@ public:
     }
 
 private:
-    std::atomic<int> refCount;
+    std::atomic<LONG> refCount;
     std::atomic<int> flags { 0 };
 };
 
-// In a future task, the notification client will be registered with the
-// IMMDeviceEnumerator and connected to the controller to handle D-05
-// (endpoint removal stops capture), D-06 (no fallback), and D-07 (bounded
-// same-source retry).
+// ============================================================================
+// Registration state: wraps the client and enumerator in one heap struct so
+// the caller only sees an opaque void* handle.
+// ============================================================================
+struct NotificationHandle
+{
+    WasapiNotificationClient* client = nullptr;
+    IMMDeviceEnumerator* enumerator = nullptr;
+};
+
+void* registerEndpointNotifications() noexcept
+{
+    HRESULT hr = CoInitializeEx (nullptr, COINIT_APARTMENTTHREADED);
+    if (FAILED (hr) && hr != RPC_E_CHANGED_MODE)
+        return nullptr;
+
+    auto* handle = new (std::nothrow) NotificationHandle();
+    if (handle == nullptr)
+    {
+        CoUninitialize();
+        return nullptr;
+    }
+
+    // Create device enumerator
+    IMMDeviceEnumerator* enumerator = nullptr;
+    hr = CoCreateInstance (__uuidof (MMDeviceEnumerator), nullptr,
+                           CLSCTX_ALL, __uuidof (IMMDeviceEnumerator),
+                           reinterpret_cast<void**> (&enumerator));
+    if (FAILED (hr) || enumerator == nullptr)
+    {
+        delete handle;
+        CoUninitialize();
+        return nullptr;
+    }
+    handle->enumerator = enumerator;
+
+    // Create notification client
+    auto* client = new WasapiNotificationClient();
+    client->AddRef(); // Enumerator holds a reference
+    handle->client = client;
+
+    // Register
+    hr = enumerator->RegisterEndpointNotificationCallback (client);
+    if (FAILED (hr))
+    {
+        client->Release();
+        enumerator->Release();
+        delete handle;
+        CoUninitialize();
+        return nullptr;
+    }
+
+    return static_cast<void*> (handle);
+}
+
+void unregisterEndpointNotifications (void* handlePtr) noexcept
+{
+    if (handlePtr == nullptr)
+        return;
+
+    auto* handle = static_cast<NotificationHandle*> (handlePtr);
+
+    if (handle->enumerator != nullptr && handle->client != nullptr)
+        handle->enumerator->UnregisterEndpointNotificationCallback (handle->client);
+
+    if (handle->client != nullptr)
+        handle->client->Release();
+
+    if (handle->enumerator != nullptr)
+        handle->enumerator->Release();
+
+    delete handle;
+    CoUninitialize();
+}
+
+int consumeEndpointNotificationFlags (void* handlePtr) noexcept
+{
+    if (handlePtr == nullptr)
+        return 0;
+
+    auto* handle = static_cast<NotificationHandle*> (handlePtr);
+    return handle->client->consumeFlags();
+}
 
 } // namespace lumascope
