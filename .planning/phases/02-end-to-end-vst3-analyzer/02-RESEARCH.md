@@ -368,22 +368,19 @@ requestAnimationFrame(() => {
 | A4 | Double-buffered atomic mailbox is sufficient. | Pattern 3 | Implementation must be carefully reviewed for torn reads; sequence checks may need refinement. |
 | A5 | Pitfall warning signs are likely failure signatures. | Common Pitfalls | Verification matrix may need additional host-specific probes. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact dB tolerance for deterministic tones**
+1. **RESOLVED: Exact dB tolerance for deterministic tones**
    - What we know: Requirement demands expected frequency and level tolerance. [VERIFIED: .planning/REQUIREMENTS.md]
-   - What's unclear: The accepted dB tolerance is not locked. [VERIFIED: 02-CONTEXT.md]
-   - Recommendation: Start with ±1.5 dB for display bins and tighter native raw-bin tests where bin-centered tones and coherent gain allow it. [ASSUMED]
+   - Resolution: Deterministic DSP tests must document two tolerances: frequency placement must land within the selected log-display bucket/span for the tone, and displayed dB must be within +/-1.5 dB after Hann coherent-gain, single-sided normalization, log-bin mapping, and smoothing setup. Raw/native bin-centered checks may use a tighter tolerance where the implementation exposes unsmoothed raw-bin expectations. The tests own the exact formula and tolerance text so DSP-02 remains reproducible rather than implied. [RESOLVED: revision iteration 1]
 
-2. **pluginval acquisition path**
+2. **RESOLVED: pluginval acquisition path**
    - What we know: `pluginval` is missing locally, and official repo documents headless validation. [VERIFIED: environment probe] [CITED: https://github.com/Tracktion/pluginval]
-   - What's unclear: Whether the executor may install/download a binary or should require a human-provided path. [ASSUMED]
-   - Recommendation: Add a script parameter/env var for pluginval path and a human checkpoint if unavailable. [ASSUMED]
+   - Resolution: Plan 02-04 must create `scripts/validate-plugin.ps1` with documented lookup order: explicit `-PluginvalPath`, `PLUGINVAL_EXE`, then PATH. Any local tool download or manually supplied executable path remains outside Git and must use a gitignored local tools location or user-provided path. If pluginval is unavailable, the script and `02-HOST-SMOKE.md` must record that limitation clearly without claiming an automated validation pass. [RESOLVED: revision iteration 1]
 
-3. **Ableton smoke availability**
+3. **RESOLVED: Ableton smoke availability**
    - What we know: Ableton folders exist, but a real usable Ableton Live installation/session was not verified. [VERIFIED: environment probe]
-   - What's unclear: Whether the installed copy can load the VST3 and run a smoke test. [ASSUMED]
-   - Recommendation: Plan Ableton as preferred manual smoke, then fallback to any available Windows VST3 host without claiming Ableton passed. [VERIFIED: 02-CONTEXT.md]
+   - Resolution: Ableton Live is a preferred human smoke checkpoint/fallback path, not an assumed automated pass. Executors must try Ableton when available, record the exact result in `02-HOST-SMOKE.md`, and use the best available Windows VST3 host fallback only when Ableton is unavailable or cannot be verified. The record must distinguish Ableton pass, Ableton unavailable/skipped, fallback pass/fail, and limitations. [RESOLVED: revision iteration 1]
 
 ## Environment Availability
 
@@ -502,4 +499,3 @@ requestAnimationFrame(() => {
 **Valid until:** 2026-07-23 for JUCE/CMake architecture; 2026-06-30 for npm/pluginval version details.
 
 ## RESEARCH COMPLETE
-
