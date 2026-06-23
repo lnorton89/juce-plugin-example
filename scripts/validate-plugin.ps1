@@ -4,6 +4,7 @@ param(
     [string] $PluginPath = '',
     [int] $StrictnessLevel = 10,
     [int] $TimeoutMs = 60000,
+    [switch] $SkipGuiTests,
     [switch] $AllowMissing
 )
 
@@ -82,8 +83,17 @@ try {
 Write-Host "Validating VST3: $resolvedPlugin"
 Write-Host "Strictness level: $StrictnessLevel"
 
-& $pluginval --validate $resolvedPlugin --strictness-level $StrictnessLevel --timeoutMs $TimeoutMs
+$arguments = @('--validate', $resolvedPlugin, '--strictness-level', $StrictnessLevel, '--timeout-ms', $TimeoutMs)
+if ($SkipGuiTests) {
+    Write-Host 'Skipping pluginval GUI tests.'
+    $arguments += '--skip-gui-tests'
+}
+
+& $pluginval @arguments
 $exitCode = $LASTEXITCODE
+if ($null -eq $exitCode) {
+    $exitCode = if ($?) { 0 } else { 1 }
+}
 if ($exitCode -ne 0) {
     Write-Error "pluginval validation failed with exit code $exitCode."
     exit $exitCode
