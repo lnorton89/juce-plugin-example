@@ -158,9 +158,9 @@ Roadmap phase mappings are populated during roadmap creation.
 | UI-05 | Phase 6 | Pending |
 | UI-06 | Phase 7 | Pending |
 | UI-07 | Phase 7 | Pending |
-| CLOUD-01 | Phase 4 | Pending |
-| CLOUD-02 | Phase 4 | Pending |
-| CLOUD-03 | Phase 4 | Pending |
+| CLOUD-01 | Phase 4 | In Progress (04-01: D1 schema, Worker skeleton) |
+| CLOUD-02 | Phase 4 | In Progress (04-01: Worker skeleton routes) |
+| CLOUD-03 | Phase 4 | In Progress (04-01: Migration SQL, schema types) |
 | CLOUD-04 | Phase 5 | Pending |
 | CLOUD-05 | Phase 5 | Pending |
 | CLOUD-06 | Phase 5 | Pending |
@@ -178,7 +178,7 @@ Roadmap phase mappings are populated during roadmap creation.
 | LIC-08 | Phase 6 | Pending |
 | LIC-09 | Phase 6 | Pending |
 | LIC-10 | Phase 6 | Pending |
-| INFRA-01 | Phase 4 | Pending |
+| INFRA-01 | Phase 4 | In Progress (04-01: Manifest, wrangler config, generated-state) |
 | INFRA-02 | Phase 4 | Pending |
 | INFRA-03 | Phase 4 | Pending |
 | INFRA-04 | Phase 4 | Pending |

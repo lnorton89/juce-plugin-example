@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lumascope.example.com/schemas/generated-state-schema-v1.json",
+  "title": "LumaScope Generated Infrastructure State",
+  "description": "Account-specific identifiers written by the bootstrap script. This file is gitignored and never committed.",
+  "type": "object",
+  "required": ["account_id", "account_email", "bootstrap_timestamp", "wrangler_version", "environments"],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "Cloudflare account ID for the target account"
+    },
+    "account_email": {
+      "type": "string",
+      "description": "Email associated with the Cloudflare account"
+    },
+    "bootstrap_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when bootstrap was last run"
+    },
+    "wrangler_version": {
+      "type": "string",
+      "description": "Version of wrangler used during bootstrap"
+    },
+    "environments": {
+      "type": "object",
+      "description": "Per-environment resource identifiers",
+      "required": ["local", "preview", "production"],
+      "properties": {
+        "local": { "$ref": "#/definitions/environment_state" },
+        "preview": { "$ref": "#/definitions/environment_state" },
+        "production": { "$ref": "#/definitions/environment_state" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "environment_state": {
+      "type": "object",
+      "required": ["worker_id", "worker_name", "d1_database_id", "d1_database_name"],
+      "properties": {
+        "worker_id": {
+          "type": "string",
+          "description": "Cloudflare Worker ID (UUID) for this environment"
+        },
+        "worker_name": {
+          "type": "string",
+          "description": "Cloudflare Worker name for this environment"
+        },
+        "d1_database_id": {
+          "type": "string",
+          "description": "D1 database UUID for this environment"
+        },
+        "d1_database_name": {
+          "type": "string",
+          "description": "D1 database name for this environment"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

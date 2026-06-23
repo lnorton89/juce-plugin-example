@@ -1,0 +1,39 @@
+# LumaScope Activation Worker — Wrangler v4 Configuration
+# Environment-specific values (account_id, database_id) are set via
+# wrangler CLI or environment variables — not hardcoded here.
+
+name = "lumascope-activation"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+# Default environment (local development)
+[env.local]
+name = "lumascope-activation-local"
+
+[env.local.vars]
+ENVIRONMENT = "local"
+
+[[env.local.d1_databases]]
+binding = "ACTIVATION_DB"
+database_name = "lumascope-activation-db-local"
+database_id = "local"
+
+# Preview environment
+[env.preview]
+name = "lumascope-activation-preview"
+routes = ["preview-api.lumascope.example.com/*"]
+
+[[env.preview.d1_databases]]
+binding = "ACTIVATION_DB"
+database_name = "lumascope-activation-db-preview"
+database_id = "PREVIEW_D1_ID"
+
+# Production environment
+[env.production]
+name = "lumascope-activation"
+routes = ["api.lumascope.example.com/*"]
+
+[[env.production.d1_databases]]
+binding = "ACTIVATION_DB"
+database_name = "lumascope-activation-db"
+database_id = "PRODUCTION_D1_ID"

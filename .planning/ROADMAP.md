@@ -117,10 +117,17 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
+**Wave 1**
 
 - [ ] 04-01: Define logical infrastructure manifest, portable Wrangler config, generated-state boundary, and token scopes.
+
+**Wave 2** *(blocked on 04-01)*
+
 - [ ] 04-02: Build idempotent bootstrap, secret, migration, deploy, verify, and teardown command surface.
 - [ ] 04-03: Implement D1 schema/repositories and exact-raw-body Lemon webhook verification/idempotency.
+
+**Wave 3** *(blocked on 04-02 and 04-03)*
+
 - [ ] 04-04: Rehearse fresh-account provisioning and document Lemon webhook registration handoff.
 
 ### Phase 5: One-Machine Activation Service
@@ -199,7 +206,7 @@ Plans:
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
-| 4. Portable Purchase Infrastructure | 0/4 | Not started | - |
+| 4. Portable Purchase Infrastructure | 0/4 | Not started (plans created) | - |
 | 5. One-Machine Activation Service | 0/3 | Not started | - |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

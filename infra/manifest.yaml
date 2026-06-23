@@ -1,0 +1,94 @@
+# LumaScope Activation Infrastructure Manifest v1
+# This file defines logical resources only. No account IDs,
+# resource UUIDs, or secret values are contained here.
+# Bootstrap scripts read this manifest and write account-
+# specific identifiers to gitignored infra/generated-state.json.
+---
+name: lumascope-activation
+version: 1
+
+environments:
+  local:
+    worker:
+      name: lumascope-activation-local
+      route: ""
+      d1_binding: ACTIVATION_DB
+      d1_database_name: lumascope-activation-db-local
+    secrets:
+      LEMON_WEBHOOK_SECRET:
+        required: true
+        description: "HMAC-SHA256 secret for Lemon Squeezy webhook verification"
+      LEMON_STORE_ID:
+        required: true
+        description: "Lemon Squeezy store identifier"
+      LEMON_PRODUCT_ID:
+        required: true
+        description: "Lemon Squeezy product identifier"
+      LEMON_VARIANT_ID:
+        required: true
+        description: "Lemon Squeezy variant identifier"
+      SIGNING_PRIVATE_KEY:
+        required: false
+        description: "Ed25519 private key for signing entitlements (Phase 5)"
+
+  preview:
+    worker:
+      name: lumascope-activation-preview
+      route: "preview-api.lumascope.example.com/*"
+      d1_binding: ACTIVATION_DB
+      d1_database_name: lumascope-activation-db-preview
+    secrets:
+      LEMON_WEBHOOK_SECRET:
+        required: true
+        description: "HMAC-SHA256 secret for Lemon Squeezy webhook verification"
+      LEMON_STORE_ID:
+        required: true
+        description: "Lemon Squeezy store identifier"
+      LEMON_PRODUCT_ID:
+        required: true
+        description: "Lemon Squeezy product identifier"
+      LEMON_VARIANT_ID:
+        required: true
+        description: "Lemon Squeezy variant identifier"
+      SIGNING_PRIVATE_KEY:
+        required: false
+        description: "Ed25519 private key for signing entitlements (Phase 5)"
+
+  production:
+    worker:
+      name: lumascope-activation
+      route: "api.lumascope.example.com/*"
+      d1_binding: ACTIVATION_DB
+      d1_database_name: lumascope-activation-db
+    secrets:
+      LEMON_WEBHOOK_SECRET:
+        required: true
+        description: "HMAC-SHA256 secret for Lemon Squeezy webhook verification"
+      LEMON_STORE_ID:
+        required: true
+        description: "Lemon Squeezy store identifier"
+      LEMON_PRODUCT_ID:
+        required: true
+        description: "Lemon Squeezy product identifier"
+      LEMON_VARIANT_ID:
+        required: true
+        description: "Lemon Squeezy variant identifier"
+      SIGNING_PRIVATE_KEY:
+        required: false
+        description: "Ed25519 private key for signing entitlements (Phase 5)"
+
+lemon_squeezy:
+  store_id: ""
+  webhook_secret_name: LEMON_WEBHOOK_SECRET
+  supported_events:
+    - order_created
+    - subscription_created
+    - subscription_updated
+    - subscription_cancelled
+    - subscription_expired
+    - license_key_created
+    - license_key_updated
+
+signing:
+  public_key_secret_name: SIGNING_PUBLIC_KEY
+  private_key_secret_name: SIGNING_PRIVATE_KEY

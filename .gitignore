@@ -5,3 +5,8 @@
 /.vs/
 *.user
 
+# Phase 4 — Cloudflare deployment infrastructure
+/infra/generated-state.json
+/worker/node_modules/
+/worker/dist/
+
