@@ -12,29 +12,31 @@
 |-------|--------|------------------|
 | 1 | ✅ Complete | Reproducible Windows build shell, embedded React/MUI WebView, typed native/web bridge |
 | 2 | ✅ Complete | End-to-end VST3 spectrum analyzer — windowed FFT, log-mapped bins, smoothing, canvas renderer |
-| 3 | 🔜 Planned | Standalone Windows device capture (input + WASAPI loopback) |
+| 3 | ✅ Complete | Standalone Windows device capture (input + WASAPI loopback) |
 | 4–6 | 🔜 Planned | Lemon Squeezy cloud activation, one-machine licensing, offline grace |
 | 7 | 🔜 Planned | Release hardening, CI, documentation, handoff proof |
 
-The VST3 path is fully functional: insert it on an audio track, hear unchanged passthrough, and see a smooth logarithmic spectrum rendered in the WebView at a bounded frame rate. Standalone device capture and licensing remain in development.
+Both the VST3 plug-in and standalone application are fully functional. The VST3 analyzes host audio with passthrough; the standalone monitors selectable input devices or Windows system output through WASAPI loopback. A compact source strip lets you choose between `Input Device` and `System Output` modes. Licensing support is the next major effort.
 
 ---
 
 ## Architecture overview
 
 ```
-Host DAW / Standalone shell
-  │
-  └── LumaScopeAudioProcessor
-        │  Audio callback (real-time safe)
-        │    ├── Windowed FFT (juce::dsp)
-        │    ├── Log-frequency bin mapping
-        │    ├── One-pole smoothing/decay
-        │    └── Lock-free SPSC mailbox
-        │
-        └── LumaScopeAudioProcessorEditor
-              Message-thread poller ──→ WebView (React/MUI canvas)
-                    Typed JSON bridge (protocol v1)
+Host DAW ──→ LumaScopeAudioProcessor (VST3)
+Standalone ──→ SourceController ──→ LumaScopeAudioProcessor
+                  ├── JuceInputSourceAdapter (input devices)
+                  └── WasapiLoopbackSourceAdapter (system output)
+
+                  │  Audio callback (real-time safe)
+                  │    ├── Windowed FFT (juce::dsp)
+                  │    ├── Log-frequency bin mapping
+                  │    ├── One-pole smoothing/decay
+                  │    └── Lock-free SPSC mailbox
+                  │
+                  └── LumaScopeAudioProcessorEditor
+                        Message-thread poller ──→ WebView (React/MUI canvas)
+                              Typed JSON bridge (protocol v1)
 ```
 
 - **Real-time safety:** The audio callback never allocates, blocks, performs I/O, or touches the WebView. Analyzer data crosses threads through a bounded lock-free atomic mailbox.
@@ -57,7 +59,7 @@ Host DAW / Standalone shell
 | Vite | Pinned | Frontend dev/build |
 | WebView2 | Pinned SDK, Evergreen runtime | Windows WebView backend |
 
-### Future (Phases 4–6)
+### Cloud licensing (Phases 4–6)
 | Technology | Purpose |
 |------------|---------|
 | Cloudflare Workers + D1 | Webhook ingestion, activation, validation, entitlement storage |
@@ -77,8 +79,9 @@ The project uses one [Context7 MCP](https://github.com/upstash/context7) server 
 
 ```
 ├── plugin/            JUCE VST3 + Standalone target (CMakeLists.txt, sources)
-│   ├── include/       Public headers (Processor, Editor, Analyzer, Bridge, WebResources)
+│   ├── include/       Public headers (Processor, Editor, Analyzer, Bridge, Standalone, WebResources)
 │   ├── source/        Implementation files
+│   │   └── Standalone/          Standalone-only source (controller, adapters, WASAPI loopback)
 ├── ui/                React/TypeScript/Vite frontend workspace
 ├── cmake/             CMake modules (WebBundle, dependency resolution)
 ├── scripts/           Build, test, validation, and packaging scripts
@@ -108,7 +111,16 @@ Launch the authoritative embedded Debug application:
 & .\build\vs2019-debug\plugin\LumaScope_artefacts\Debug\Standalone\LumaScope.exe
 ```
 
-Expected footer: `Embedded UI · Bridge ready`.
+Expected footer: `Embedded UI · Bridge ready`. Use the source strip to select an input device or system output and start monitoring.
+
+### Standalone monitoring
+
+The standalone application supports two source modes:
+
+- **Input Device** — Monitor a microphone, audio interface, or other recording device managed by JUCE.
+- **System Output** — Monitor Windows render endpoints through shared-mode WASAPI loopback without requiring a "Stereo Mix" device.
+
+Source preferences persist between launches. If the saved source is unavailable, the app starts in a stopped state and asks you to choose a source. See [standalone startup guide](docs/standalone/startup-guide.md) for details.
 
 ### Vite hot-reload development
 
@@ -197,7 +209,7 @@ For implementation details see [analyzer DSP contract](docs/analyzer-dsp.md), [b
 |-------|-----------------|------------|--------|
 | 1 | Reproducible build shell, embedded WebView2, typed bridge | — | ✅ Complete |
 | 2 | End-to-end VST3 spectrum analyzer | Phase 1 | ✅ Complete |
-| 3 | Standalone Windows device capture (input + WASAPI loopback) | Phase 2 | 🔜 Planned |
+| 3 | Standalone Windows device capture (input + WASAPI loopback) | Phase 2 | ✅ Complete |
 | 4 | Cloudflare Worker + D1 provisioning, Lemon webhook ingestion | Phase 1 | 🔜 Planned |
 | 5 | One-machine activation service (signed entitlements) | Phase 4 | 🔜 Planned |
 | 6 | Native offline licensing with 7-day grace | Phase 5 | 🔜 Planned |
