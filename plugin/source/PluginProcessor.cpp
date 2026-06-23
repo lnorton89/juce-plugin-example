@@ -8,7 +8,12 @@ LumaScopeAudioProcessor::LumaScopeAudioProcessor()
     : AudioProcessor (BusesProperties().withInput ("Input", juce::AudioChannelSet::stereo(), true)
                                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true))
 {
+   #if JucePlugin_Build_Standalone
+    standaloneSourceController = lumascope::createStandaloneSourceController (*this);
+   #endif
 }
+
+LumaScopeAudioProcessor::~LumaScopeAudioProcessor() = default;
 
 void LumaScopeAudioProcessor::prepareToPlay (double sampleRate, int)
 {

@@ -3,6 +3,10 @@ export const uiReadyEvent = 'ui.ready' as const;
 export const hostInfoEvent = 'host.info' as const;
 export const bridgeErrorEvent = 'bridge.error' as const;
 export const spectrumSnapshotEvent = 'spectrum.snapshot' as const;
+export const sourceListEvent = 'source.list' as const;
+export const sourceStateEvent = 'source.state' as const;
+export const sourceSelectEvent = 'source.select' as const;
+export const sourceStopEvent = 'source.stop' as const;
 export const maxSpectrumBins = 256 as const;
 
 export interface UiReady { protocolVersion: typeof protocolVersion }
@@ -38,10 +42,38 @@ export interface SpectrumSnapshot {
   bins: SpectrumBin[];
 }
 
+export type SourceMode = 'InputDevice' | 'SystemOutput';
+
+export type SourceState = 'stopped' | 'starting' | 'active' | 'silent' | 'error';
+
+export interface SourceDescriptor {
+  id: string;
+  displayName: string;
+  mode: SourceMode;
+}
+
+export interface SourceListPayload {
+  protocolVersion: typeof protocolVersion;
+  event: typeof sourceListEvent;
+  inputDevices: SourceDescriptor[];
+  systemOutputs: SourceDescriptor[];
+}
+
+export interface SourceStatePayload {
+  protocolVersion: typeof protocolVersion;
+  event: typeof sourceStateEvent;
+  mode: SourceMode;
+  state: SourceState;
+  selectedSourceId: string;
+  selectedSourceName: string;
+  code: string;
+  message: string;
+}
+
 export type BridgeStatus =
   | { state: 'connecting'; spectrumSnapshot?: SpectrumSnapshot }
-  | { state: 'ready'; hostInfo: HostInfo; spectrumSnapshot?: SpectrumSnapshot }
-  | { state: 'error'; code: string; message: string; spectrumSnapshot?: SpectrumSnapshot };
+  | { state: 'ready'; hostInfo: HostInfo; spectrumSnapshot?: SpectrumSnapshot; sourceList?: SourceListPayload; sourceState?: SourceStatePayload }
+  | { state: 'error'; code: string; message: string; spectrumSnapshot?: SpectrumSnapshot }; 
 
 export function parseHostInfo(value: unknown): HostInfo | null {
   if (!value || typeof value !== 'object') return null;
@@ -60,6 +92,60 @@ export function parseBridgeError(value: unknown): BridgeError | null {
   return typeof item.code === 'string' && item.code.length <= 64
     && typeof item.message === 'string' && item.message.length <= 256
     && typeof item.protocolVersion === 'number' ? item as unknown as BridgeError : null;
+}
+
+function parseSourceMode(value: unknown): SourceMode | null {
+  return value === 'InputDevice' || value === 'SystemOutput' ? value : null;
+}
+
+function parseSourceStateEnum(value: unknown): SourceState | null {
+  return value === 'stopped' || value === 'starting' || value === 'active' || value === 'silent' || value === 'error' ? value : null;
+}
+
+function parseSourceDescriptor(value: unknown): SourceDescriptor | null {
+  if (!value || typeof value !== 'object') return null;
+  const item = value as Record<string, unknown>;
+  if (typeof item.id !== 'string' || item.id.length === 0 || item.id.length > 256) return null;
+  if (typeof item.displayName !== 'string' || item.displayName.length === 0 || item.displayName.length > 256) return null;
+  const mode = parseSourceMode(item.mode);
+  if (!mode) return null;
+  return { id: item.id, displayName: item.displayName, mode };
+}
+
+export function parseSourceList(value: unknown): SourceListPayload | null {
+  if (!value || typeof value !== 'object') return null;
+  const item = value as Record<string, unknown>;
+  if (item.protocolVersion !== protocolVersion) return null;
+  if (item.event !== sourceListEvent) return null;
+  if (!Array.isArray(item.inputDevices) || !Array.isArray(item.systemOutputs)) return null;
+  const inputDevices = item.inputDevices.map(parseSourceDescriptor);
+  const systemOutputs = item.systemOutputs.map(parseSourceDescriptor);
+  if (inputDevices.some(d => d === null) || systemOutputs.some(d => d === null)) return null;
+  return { protocolVersion, event: sourceListEvent, inputDevices: inputDevices as SourceDescriptor[], systemOutputs: systemOutputs as SourceDescriptor[] };
+}
+
+export function parseSourceState(value: unknown): SourceStatePayload | null {
+  if (!value || typeof value !== 'object') return null;
+  const item = value as Record<string, unknown>;
+  if (item.protocolVersion !== protocolVersion) return null;
+  if (item.event !== sourceStateEvent) return null;
+  const mode = parseSourceMode(item.mode);
+  const sourceStateVal = parseSourceStateEnum(item.state);
+  if (!mode || !sourceStateVal) return null;
+  if (typeof item.selectedSourceId !== 'string' || item.selectedSourceId.length > 256) return null;
+  if (typeof item.selectedSourceName !== 'string' || item.selectedSourceName.length > 256) return null;
+  if (typeof item.code !== 'string' || item.code.length > 64) return null;
+  if (typeof item.message !== 'string' || item.message.length > 256) return null;
+  return {
+    protocolVersion,
+    event: sourceStateEvent,
+    mode,
+    state: sourceStateVal,
+    selectedSourceId: item.selectedSourceId,
+    selectedSourceName: item.selectedSourceName,
+    code: item.code,
+    message: item.message,
+  };
 }
 
 function isFiniteNumber(value: unknown): value is number {

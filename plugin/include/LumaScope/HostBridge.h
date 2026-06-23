@@ -24,6 +24,8 @@ public:
     static const juce::Identifier spectrumSnapshotEvent;
     static const juce::Identifier sourceListEvent;
     static const juce::Identifier sourceStateEvent;
+    static const juce::Identifier sourceSelectEvent;
+    static const juce::Identifier sourceStopEvent;
 
     HostBridge (juce::String hostMode, juce::String uiSource, juce::String productVersion,
                 juce::String buildMarker);
@@ -32,6 +34,7 @@ public:
     static juce::var makeSpectrumSnapshot (const SpectrumSnapshot& snapshot);
     static juce::var makeSourceList (const SourceList& list);
     static juce::var makeSourceStateSnapshot (const SourceStateSnapshot& state);
+    static juce::var makeError (juce::String code, juce::String message);
 
 private:
     static BridgeResponse error (juce::String code, juce::String message);

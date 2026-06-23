@@ -52,6 +52,8 @@ public:
     void resized() override;
     void handleUiReady (const juce::var& payload);
     void handleBrowserNetworkError (const juce::String& errorInfo);
+    void handleSourceSelect (const juce::var& payload);
+    void handleSourceStop (const juce::var& payload);
 
 private:
     static juce::String hostMode();

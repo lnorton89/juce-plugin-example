@@ -3,6 +3,7 @@
 #include "LumaScope/Analyzer/SpectrumAnalyzer.h"
 #include "LumaScope/Analyzer/SpectrumSnapshot.h"
 #include "LumaScope/SnapshotMailbox.h"
+#include "LumaScope/Standalone/StandaloneSourceController.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -10,6 +11,7 @@ class LumaScopeAudioProcessor final : public juce::AudioProcessor
 {
 public:
     LumaScopeAudioProcessor();
+    ~LumaScopeAudioProcessor() override;
 
     void prepareToPlay (double, int) override;
     void releaseResources() override;
@@ -33,8 +35,11 @@ public:
     void getStateInformation (juce::MemoryBlock&) override {}
     void setStateInformation (const void*, int) override {}
 
+    lumascope::StandaloneSourceController* getStandaloneSourceController() const noexcept { return standaloneSourceController.get(); }
+
 private:
     lumascope::SpectrumAnalyzer analyzer;
     lumascope::SnapshotMailbox snapshotMailbox;
     std::uint32_t lastPublishedAnalyzerSequence = 0;
+    std::unique_ptr<lumascope::StandaloneSourceController> standaloneSourceController;
 };

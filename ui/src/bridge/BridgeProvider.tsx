@@ -1,5 +1,5 @@
-import { createContext, type PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { bridgeErrorEvent, hostInfoEvent, parseBridgeError, parseHostInfo, parseSpectrumSnapshot, protocolVersion, spectrumSnapshotEvent, uiReadyEvent, type BridgeStatus } from './protocol';
+import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { bridgeErrorEvent, hostInfoEvent, parseBridgeError, parseHostInfo, parseSourceList, parseSourceState, parseSpectrumSnapshot, protocolVersion, sourceListEvent, sourceSelectEvent, sourceStateEvent, sourceStopEvent, spectrumSnapshotEvent, uiReadyEvent, type BridgeStatus, type SourceListPayload, type SourceStatePayload } from './protocol';
 
 export interface BridgeBackend {
   addEventListener(eventId: string, listener: (payload: unknown) => void): unknown;
@@ -36,17 +36,58 @@ export function BridgeProvider({ children, initialStatus, backend }: BridgeProvi
       const snapshot = parseSpectrumSnapshot(payload);
       if (snapshot) setStatus((current) => ({ ...current, spectrumSnapshot: snapshot }));
     });
+    const sourceListToken = transport.addEventListener(sourceListEvent, (payload) => {
+      const sourceList = parseSourceList(payload);
+      if (sourceList) setStatus((current) => ({ ...current, sourceList }));
+    });
+    const sourceStateToken = transport.addEventListener(sourceStateEvent, (payload) => {
+      const sourceState = parseSourceState(payload);
+      if (sourceState) setStatus((current) => ({ ...current, sourceState }));
+    });
     transport.emitEvent(uiReadyEvent, { protocolVersion });
     return () => {
       transport.removeEventListener(hostToken);
       transport.removeEventListener(errorToken);
       transport.removeEventListener(snapshotToken);
+      transport.removeEventListener(sourceListToken);
+      transport.removeEventListener(sourceStateToken);
     };
   }, [initialStatus, transport]);
 
   return <BridgeContext.Provider value={status}>{children}</BridgeContext.Provider>;
 }
 
-export function useBridgeStatus() {
+export function useBridgeStatus(): BridgeStatus {
   return useContext(BridgeContext);
+}
+
+export function useBridgeBackend(): BridgeBackend | undefined {
+  const transport = useMemo(() => { throw new Error('not implemented'); }, []);
+  // Bridge request helpers are accessed through useBridgeRequest instead
+  return undefined;
+}
+
+export interface BridgeRequestHelpers {
+  sendSourceSelect: (mode: string, sourceId: string) => void;
+  sendSourceStop: () => void;
+}
+
+export function useBridgeRequest(): BridgeRequestHelpers | null {
+  const transport = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return (typeof window !== 'undefined') ? (window.__JUCE__?.backend ?? null) : null;
+  }, []);
+
+  const sendSourceSelect = useCallback((mode: string, sourceId: string) => {
+    if (!transport) return;
+    transport.emitEvent(sourceSelectEvent, { protocolVersion, mode, sourceId });
+  }, [transport]);
+
+  const sendSourceStop = useCallback(() => {
+    if (!transport) return;
+    transport.emitEvent(sourceStopEvent, { protocolVersion });
+  }, [transport]);
+
+  if (!transport) return null;
+  return { sendSourceSelect, sendSourceStop };
 }

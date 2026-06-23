@@ -15,6 +15,13 @@ auto makeBrowserOptions (LumaScopeAudioProcessorEditor* editor,
         .withInitialisationData ("protocolVersion", lumascope::HostBridge::protocolVersion)
         .withEventListener (lumascope::HostBridge::uiReadyEvent,
                             [editor] (const juce::var& payload) { editor->handleUiReady (payload); });
+   #if JucePlugin_Build_Standalone
+    options = options
+        .withEventListener (lumascope::HostBridge::sourceSelectEvent,
+                            [editor] (const juce::var& payload) { editor->handleSourceSelect (payload); })
+        .withEventListener (lumascope::HostBridge::sourceStopEvent,
+                            [editor] (const juce::var& payload) { editor->handleSourceStop (payload); });
+   #endif
     if (allowedOrigin.isNotEmpty())
         return options.withResourceProvider ([&resources] (const juce::String& path) { return resources.get (path); },
                                              allowedOrigin);
@@ -135,6 +142,115 @@ void LumaScopeAudioProcessorEditor::handleUiReady (const juce::var& payload)
 
     writeSmokeResult (response.ready ? "ready" : "error",
                       response.ready ? juce::String {} : response.payload["code"].toString());
+}
+
+void LumaScopeAudioProcessorEditor::handleSourceSelect (const juce::var& payload)
+{
+    auto& audioProcessor = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    auto* controller = audioProcessor.getStandaloneSourceController();
+    if (controller == nullptr)
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("unsupported_mode", "Source selection is only available in standalone mode."));
+        return;
+    }
+
+    const auto* object = payload.getDynamicObject();
+    if (object == nullptr)
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("malformed_payload", "source.select payload must be a JSON object."));
+        return;
+    }
+
+    const auto version = object->getProperty ("protocolVersion");
+    if (static_cast<int> (version) != lumascope::HostBridge::protocolVersion)
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("protocol_mismatch", "Protocol version mismatch in source.select."));
+        return;
+    }
+
+    const auto modeStr = object->getProperty ("mode").toString();
+    lumascope::SourceMode mode;
+    if (modeStr == "InputDevice")
+        mode = lumascope::SourceMode::inputDevice;
+    else if (modeStr == "SystemOutput")
+        mode = lumascope::SourceMode::systemOutput;
+    else
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("invalid_selection", "Unknown source mode: " + modeStr.substring (0, 32)));
+        return;
+    }
+
+    const auto sourceId = object->getProperty ("sourceId").toString();
+    if (sourceId.isEmpty())
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("invalid_selection", "source.select must include a non-empty sourceId."));
+        return;
+    }
+
+    lumascope::SourceSelection selection;
+    selection.mode = mode;
+    selection.id = sourceId.substring (0, 256);
+
+    // Find display name from current source list
+    const auto currentList = controller->enumerateSources();
+    const auto& inputDevices = currentList.inputDevices;
+    const auto& systemOutputs = currentList.systemOutputs;
+    bool found = false;
+    for (const auto& desc : inputDevices)
+    {
+        if (desc.id == selection.id)
+        {
+            selection.displayName = desc.displayName;
+            found = true;
+            break;
+        }
+    }
+    if (! found)
+    {
+        for (const auto& desc : systemOutputs)
+        {
+            if (desc.id == selection.id)
+            {
+                selection.displayName = desc.displayName;
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (! found)
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("source_not_found", "The selected source is not in the current device list."));
+        return;
+    }
+
+    // Emit source state event from the new state
+    const auto state = controller->selectSource (selection);
+    browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::sourceStateEvent,
+        lumascope::HostBridge::makeSourceStateSnapshot (state));
+}
+
+void LumaScopeAudioProcessorEditor::handleSourceStop (const juce::var& payload)
+{
+    juce::ignoreUnused (payload);
+    auto& audioProcessor = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    auto* controller = audioProcessor.getStandaloneSourceController();
+    if (controller == nullptr)
+    {
+        browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::bridgeErrorEvent,
+            lumascope::HostBridge::makeError ("unsupported_mode", "Source stop is only available in standalone mode."));
+        return;
+    }
+
+    const auto state = controller->stop();
+    browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::sourceStateEvent,
+        lumascope::HostBridge::makeSourceStateSnapshot (state));
 }
 
 void LumaScopeAudioProcessorEditor::handleBrowserNetworkError (const juce::String& errorInfo)

@@ -8,6 +8,8 @@ const juce::Identifier HostBridge::bridgeErrorEvent { "bridge.error" };
 const juce::Identifier HostBridge::spectrumSnapshotEvent { "spectrum.snapshot" };
 const juce::Identifier HostBridge::sourceListEvent { "source.list" };
 const juce::Identifier HostBridge::sourceStateEvent { "source.state" };
+const juce::Identifier HostBridge::sourceSelectEvent { "source.select" };
+const juce::Identifier HostBridge::sourceStopEvent { "source.stop" };
 
 HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn,
                         juce::String buildMarkerIn)
@@ -136,6 +138,16 @@ juce::var HostBridge::makeSourceList (const SourceList& list)
     }
     object->setProperty ("systemOutputs", juce::var (outputEntries));
 
+    return result;
+}
+
+juce::var HostBridge::makeError (juce::String code, juce::String message)
+{
+    auto result = juce::var (new juce::DynamicObject());
+    auto* object = result.getDynamicObject();
+    object->setProperty ("code", code.substring (0, 64));
+    object->setProperty ("message", message.substring (0, 256));
+    object->setProperty ("protocolVersion", protocolVersion);
     return result;
 }
 
