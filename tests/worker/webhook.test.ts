@@ -4,8 +4,6 @@ import {
   parseLemonEvent,
   handleLemonWebhook,
 } from '../../worker/src/webhook';
-import { Repository } from '../../worker/src/db/repository';
-import type { License, WebhookIdempotency } from '../../worker/src/db/schema';
 import {
   generateSignature,
   createMockEnv,
@@ -13,8 +11,6 @@ import {
   MockD1Database,
 } from './setup';
 import validFixture from './fixtures/lemon-webhook-valid.json';
-import invalidSignatureFixture from './fixtures/lemon-webhook-invalid-signature.json';
-import unsupportedEventFixture from './fixtures/lemon-webhook-unsupported-event.json';
 
 function mockCtx(): ExecutionContext {
   return {
