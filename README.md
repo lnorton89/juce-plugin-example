@@ -209,4 +209,6 @@ See [roadmap](.planning/ROADMAP.md) and [requirements](.planning/REQUIREMENTS.md
 
 ## License
 
-This example project is provided for educational and reference purposes. The JUCE framework is subject to its own licensing terms.
+GNU General Public License v3.0 — see [LICENSE](LICENSE).
+
+This project uses [JUCE](https://juce.com), which is available under the GPLv3 in its open-source edition. Both the example code and the linked JUCE library are GPLv3-compatible. Commercial use of the combined work requires a JUCE Pro license.
