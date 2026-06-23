@@ -14,21 +14,20 @@ A developer can clone the project and build, understand, provision, and run the 
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Phase 1 validated a reproducible Windows build shell for VST3 and standalone targets using JUCE 8, CMake presets, pinned dependencies, and automated checks.
+- [x] Phase 1 validated the embedded React/TypeScript Material UI WebView2 shell with a typed protocol-v1 bridge and accessible bridge-state UX.
+- [x] Phase 1 validated project-level Context7 MCP configuration and recorded JUCE master, Jan Wilczek's JUCE WebView tutorial, and Material UI source identifiers.
 
 ### Active
 
-- [ ] Build Windows VST3 and standalone targets using current JUCE 8 and CMake best practices.
 - [ ] Analyze live audio without altering it and display a responsive, stable frequency spectrum.
 - [ ] Let the standalone application monitor both selectable input devices and Windows system output through WASAPI loopback.
-- [ ] Build the embedded UI with React, TypeScript, Material UI, WebView2, and JUCE's native WebView integration patterns.
 - [ ] Keep the analyzer architecture extensible for future FFT, smoothing, decay, and display controls while shipping appropriate defaults initially.
 - [ ] Activate Lemon Squeezy purchases through a Cloudflare Worker backed by D1.
 - [ ] Restrict each license to one active machine while supporting self-service deactivation and transfer.
 - [ ] Store a signed machine-bound license locally and permit seven days of offline use before requiring successful online revalidation.
 - [ ] Provision and deploy Cloudflare resources from declarative, versioned infrastructure configuration and repeatable scripts using Wrangler and/or Cloudflare APIs.
 - [ ] Keep account identifiers, credentials, webhook secrets, and signing private keys out of source control while documenting setup for a new Cloudflare account.
-- [ ] Configure project-level Context7 MCP access and preserve JUCE, JUCE WebView tutorial, and Material UI Context7 sources as implementation references.
 
 ### Out of Scope
 
@@ -69,8 +68,8 @@ A developer can clone the project and build, understand, provision, and run the 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Target Windows, VST3, and standalone first | Keeps the example focused while covering host and device-capture use cases | — Pending |
-| Use React/TypeScript and Material UI in a JUCE WebView2 editor | Enables modern UI development while demonstrating JUCE 8 native integration | — Pending |
+| Target Windows, VST3, and standalone first | Keeps the example focused while covering host and device-capture use cases | Validated in Phase 1 for shell/build artifacts; audio capture behavior remains active |
+| Use React/TypeScript and Material UI in a JUCE WebView2 editor | Enables modern UI development while demonstrating JUCE 8 native integration | Validated in Phase 1 as the embedded shell and Vite development workflow |
 | Support WASAPI input and loopback capture in standalone | Covers microphones/interfaces and system-output monitoring | — Pending |
 | Ship analyzer defaults behind an extensible DSP/UI model | Produces a useful v1 without prematurely designing every control | — Pending |
 | Use Lemon Squeezy, Cloudflare Workers, and D1 for activation | Matches the requested purchase and serverless deployment model | — Pending |
@@ -78,7 +77,7 @@ A developer can clone the project and build, understand, provision, and run the 
 | Verify Ed25519-signed machine-bound entitlements locally | Allows offline verification without embedding server secrets | — Pending |
 | Use a seven-day offline grace period | Balances offline use with entitlement enforcement | — Pending |
 | Treat Cloudflare infrastructure as code and automate account provisioning | Makes the example transferable and avoids undocumented dashboard state | — Pending |
-| Configure one Context7 MCP server with three pinned source references | Context7 is the MCP provider; JUCE, tutorial, and MUI are libraries within it | — Pending |
+| Configure one Context7 MCP server with three pinned source references | Context7 is the MCP provider; JUCE, tutorial, and MUI are libraries within it | Validated in Phase 1 |
 
 ## Evolution
 
@@ -98,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-22 after initialization*
+*Last updated: 2026-06-23 after Phase 1 completion*
