@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LumaScope/Analyzer/SpectrumSnapshot.h"
+#include "LumaScope/Standalone/SourceModel.h"
 
 #include <juce_core/juce_core.h>
 
@@ -21,12 +22,16 @@ public:
     static const juce::Identifier hostInfoEvent;
     static const juce::Identifier bridgeErrorEvent;
     static const juce::Identifier spectrumSnapshotEvent;
+    static const juce::Identifier sourceListEvent;
+    static const juce::Identifier sourceStateEvent;
 
     HostBridge (juce::String hostMode, juce::String uiSource, juce::String productVersion,
                 juce::String buildMarker);
     BridgeResponse handleUiReady (const juce::var& payload) const;
     juce::var makeHostInfo() const;
     static juce::var makeSpectrumSnapshot (const SpectrumSnapshot& snapshot);
+    static juce::var makeSourceList (const SourceList& list);
+    static juce::var makeSourceStateSnapshot (const SourceStateSnapshot& state);
 
 private:
     static BridgeResponse error (juce::String code, juce::String message);

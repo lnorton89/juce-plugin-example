@@ -6,6 +6,8 @@ const juce::Identifier HostBridge::uiReadyEvent { "ui.ready" };
 const juce::Identifier HostBridge::hostInfoEvent { "host.info" };
 const juce::Identifier HostBridge::bridgeErrorEvent { "bridge.error" };
 const juce::Identifier HostBridge::spectrumSnapshotEvent { "spectrum.snapshot" };
+const juce::Identifier HostBridge::sourceListEvent { "source.list" };
+const juce::Identifier HostBridge::sourceStateEvent { "source.state" };
 
 HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn,
                         juce::String buildMarkerIn)
@@ -101,5 +103,55 @@ BridgeResponse HostBridge::handleUiReady (const juce::var& payload) const
         || ! isBoundedString (hostObject->getProperty ("buildMarker")))
         return error ("runtime_error", "Native host information is invalid.");
     return { hostInfoEvent, hostInfo, true };
+}
+
+juce::var HostBridge::makeSourceList (const SourceList& list)
+{
+    auto result = juce::var (new juce::DynamicObject());
+    auto* object = result.getDynamicObject();
+    object->setProperty ("protocolVersion", protocolVersion);
+    object->setProperty ("event", sourceListEvent.toString());
+
+    // Input devices
+    juce::Array<juce::var> inputEntries;
+    for (const auto& desc : list.inputDevices)
+    {
+        auto entry = juce::var (new juce::DynamicObject());
+        entry.getDynamicObject()->setProperty ("id", desc.id.substring (0, 256));
+        entry.getDynamicObject()->setProperty ("displayName", desc.displayName.substring (0, 256));
+        entry.getDynamicObject()->setProperty ("mode", toString (desc.mode));
+        inputEntries.add (std::move (entry));
+    }
+    object->setProperty ("inputDevices", juce::var (inputEntries));
+
+    // System outputs
+    juce::Array<juce::var> outputEntries;
+    for (const auto& desc : list.systemOutputs)
+    {
+        auto entry = juce::var (new juce::DynamicObject());
+        entry.getDynamicObject()->setProperty ("id", desc.id.substring (0, 256));
+        entry.getDynamicObject()->setProperty ("displayName", desc.displayName.substring (0, 256));
+        entry.getDynamicObject()->setProperty ("mode", toString (desc.mode));
+        outputEntries.add (std::move (entry));
+    }
+    object->setProperty ("systemOutputs", juce::var (outputEntries));
+
+    return result;
+}
+
+juce::var HostBridge::makeSourceStateSnapshot (const SourceStateSnapshot& state)
+{
+    auto result = juce::var (new juce::DynamicObject());
+    auto* object = result.getDynamicObject();
+    object->setProperty ("protocolVersion", protocolVersion);
+    object->setProperty ("event", sourceStateEvent.toString());
+    object->setProperty ("mode", toString (state.mode));
+    object->setProperty ("state", toString (state.state));
+    object->setProperty ("selectedSourceId", state.selectedSourceId.substring (0, 256));
+    object->setProperty ("selectedSourceName", state.selectedSourceName.substring (0, 256));
+    object->setProperty ("code", state.code.substring (0, 64));
+    object->setProperty ("message", state.message.substring (0, 256));
+
+    return result;
 }
 }
