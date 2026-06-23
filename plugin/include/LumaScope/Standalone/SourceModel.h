@@ -85,4 +85,18 @@ inline const char* toString (SourceState state) noexcept
     }
 }
 
+// ============================================================================
+// WASAPI render endpoint enumeration (Windows only).
+// Returns all system-output render endpoints for the SystemOutput mode.
+// ============================================================================
+
+// Enumerate all eRender endpoints via WASAPI COM.
+// Returns an empty vector on failure or when no render endpoints are available.
+std::vector<SourceDescriptor> enumerateRenderEndpoints() noexcept;
+
+// Build a single render endpoint SourceDescriptor from raw data.
+// Prepends "wasapi-loopback-" to the raw endpoint ID (T-03-02-01).
+SourceDescriptor makeRenderEndpointDescriptor (const juce::String& rawEndpointId,
+                                                const juce::String& displayName) noexcept;
+
 } // namespace lumascope

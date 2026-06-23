@@ -9,6 +9,7 @@ int runPluginProcessorTests();
 int runRealtimeHandoffTests();
 int runSpectrumAnalyzerTests();
 int runStandaloneSourceControllerTests();
+int runWasapiEndpointModelTests();
 
 namespace
 {
@@ -40,5 +41,6 @@ int main()
     failures += runRealtimeHandoffTests();
     failures += runSpectrumAnalyzerTests();
     failures += runStandaloneSourceControllerTests();
+    failures += runWasapiEndpointModelTests();
     return failures == 0 ? 0 : 1;
 }

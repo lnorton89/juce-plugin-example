@@ -44,6 +44,7 @@ target_sources(LumaScope PRIVATE
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
   source/Standalone/StandaloneSourceController.cpp
+  source/Standalone/windows/WasapiEndpointEnumerator.cpp
   source/WebResources.cpp)
 
 target_include_directories(LumaScope PUBLIC include)

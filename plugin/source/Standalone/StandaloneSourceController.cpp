@@ -115,6 +115,8 @@ public:
     SourceList enumerateSources() override
     {
         SourceList list;
+
+        // Enumerate JUCE input devices (microphones, interfaces, etc.)
         const auto& deviceTypes = deviceManager.getAvailableDeviceTypes();
 
         for (auto* type : deviceTypes)
@@ -137,6 +139,9 @@ public:
                 }
             }
         }
+
+        // Enumerate WASAPI render endpoints for SystemOutput mode
+        list.systemOutputs = enumerateRenderEndpoints();
 
         return list;
     }
