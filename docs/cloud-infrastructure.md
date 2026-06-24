@@ -2,6 +2,8 @@
 
 This document describes the cloud foundation for Lemon Squeezy purchase activation. A Cloudflare Worker ingests Lemon Squeezy webhook events, verifies their authenticity with HMAC-SHA256, processes entitlement events idempotently, and stores license data in D1.
 
+For detailed staging/testing, production deployment, promotion, and operational guidelines (including backups and key rotation), refer to the [Deployment and Operations Guide](deployment.md).
+
 This infrastructure supports Phase 5 (One-Machine Activation Service) and Phase 6 (Native Offline Licensing).
 
 ## Architecture

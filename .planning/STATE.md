@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 last_updated: "2026-06-24T01:30:00.000Z"
-last_activity: 2026-06-24 -- Phase 06 plans 06-03/06-04 completed (activation client, UI, integration)
+last_activity: 2026-06-24 -- Completed quick task 260624-dep: Add deployment documentation for staging/testing and production environments.
 progress:
   total_phases: 8
   completed_phases: 5
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-06-22)
 Phase: 06 (native-offline-licensing) — EXECUTING
 Plan: 4 of 4
 Status: Executing Phase 06
-Last activity: 2026-06-24 -- Plans 06-03/06-04 completed (activation client, UI, integration tests, bridge docs)
+Last activity: 2026-06-24 -- Completed quick task 260624-dep: Add deployment documentation for staging/testing and production environments.
 
 Progress: [████████████████████] 100%
 
@@ -105,6 +105,12 @@ None yet.
 
 - PowerShell 7 is not installed on the baseline machine; repository scripts pass under Windows PowerShell 5.1.
 - WebView2 runtime distribution policy remains to be documented before release packaging.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260624-dep | Add deployment documentation for staging/testing and production environments. | 2026-06-24 | 6fb1b2e | [20260624-deployment-documentation](./quick/20260624-deployment-documentation/) |
 
 ## Deferred Items
 
