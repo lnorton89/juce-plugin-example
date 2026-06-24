@@ -3,18 +3,24 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import type { LicenseStatusPayload } from '../bridge/protocol';
 import type { BridgeStatus as BridgeState } from '../bridge/protocol';
+import { ActivationStatus } from './ActivationStatus';
 import { boundedDiagnostics, presentationKind, ReadyStatusIcon } from './BridgeStatus';
 
-export interface StatusFooterProps { bridge: BridgeState }
+export interface StatusFooterProps {
+  bridge: BridgeState;
+  licensing?: LicenseStatusPayload | null;
+  onLicenseClick: () => void;
+}
 
-export function StatusFooter({ bridge }: StatusFooterProps) {
+export function StatusFooter({ bridge, licensing, onLicenseClick }: StatusFooterProps) {
   const [copyResult, setCopyResult] = useState('');
   const kind = presentationKind(bridge);
-  const text = bridge.state === 'connecting' ? 'Connecting to audio engine…'
-    : bridge.state === 'ready' ? `${bridge.hostInfo.uiSource === 'embedded' ? 'Embedded UI' : 'Vite development'} · Bridge ready`
-      : kind === 'development-server-unavailable' ? 'Vite development · Connection issue'
-        : 'Embedded UI · Connection issue';
+  const text = bridge.state === 'connecting' ? 'Connecting to audio engine\u2026'
+    : bridge.state === 'ready' ? `${bridge.hostInfo.uiSource === 'embedded' ? 'Embedded UI' : 'Vite development'} \u00B7 Bridge ready`
+      : kind === 'development-server-unavailable' ? 'Vite development \u00B7 Connection issue'
+        : 'Embedded UI \u00B7 Connection issue';
 
   async function copyDiagnostics() {
     if (bridge.state !== 'error') return;
@@ -34,6 +40,13 @@ export function StatusFooter({ bridge }: StatusFooterProps) {
         {bridge.state === 'error' && <Button size="small" startIcon={<ContentCopyIcon aria-hidden="true" />} onClick={copyDiagnostics} sx={{ minHeight: 32, whiteSpace: 'nowrap' }}>Copy diagnostics</Button>}
         {copyResult && <Typography role="status" aria-live="polite" variant="body2" noWrap>{copyResult}</Typography>}
       </Box>
+      {licensing && (
+        <ActivationStatus
+          state={licensing.state}
+          onClick={onLicenseClick}
+          offlineGraceRemainingDays={licensing.offlineGraceRemainingDays}
+        />
+      )}
       <Typography color="text.secondary" noWrap sx={{ '@media (max-width:719px)': { display: 'none' } }}>Signal Foundry Audio</Typography>
     </Box>
   );

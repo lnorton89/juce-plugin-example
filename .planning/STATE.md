@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-06-24T00:42:59.976Z"
-last_activity: 2026-06-24 -- Phase 06 execution started
+last_updated: "2026-06-24T01:30:00.000Z"
+last_activity: 2026-06-24 -- Phase 06 plans 06-03/06-04 completed (activation client, UI, integration)
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 24
-  completed_plans: 17
-  percent: 63
+  completed_plans: 19
+  percent: 79
 ---
 
 # Project State
@@ -25,17 +25,17 @@ See: .planning/PROJECT.md (updated 2026-06-22)
 ## Current Position
 
 Phase: 06 (native-offline-licensing) — EXECUTING
-Plan: 1 of 4
+Plan: 4 of 4
 Status: Executing Phase 06
-Last activity: 2026-06-24 -- Phase 06 execution started
+Last activity: 2026-06-24 -- Plans 06-03/06-04 completed (activation client, UI, integration tests, bridge docs)
 
-Progress: [██████████] 100%
+Progress: [████████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 13
+- Total plans completed: 15
 - Average duration: 2h 37m
 - Total execution time: 10h 55m
 
@@ -54,7 +54,7 @@ Progress: [██████████] 100%
 | Phase 04 P03 | 25 min | 3 tasks | 11 files |
 | Phase 05 P01 | 25 min | 3 tasks | 11 files |
 | Phase 05 P02 | 6 min | 3 tasks | 9 files |
-| Phase 05 P03 | 14 min | 3 tasks | 17 files |
+| Phase 05 P03 | 14 min | 3 tasks | 17 files | |
 
 ## Accumulated Context
 
@@ -90,6 +90,12 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - [Phase 03]: Silence detection uses exponential moving average with 20-frame hold.
 - [Phase 03]: Same-source bounded retry only (maxRetryAttempts=3) with no silent fallback.
 - [Phase 03]: IMMNotificationClient registered on controller construction.
+- [Phase 06]: `ActivationClient` uses `juce::TimeSliceThread` (not `std::thread`) to stay within JUCE threading conventions.
+- [Phase 06]: HTTP URL is configurable via constructor for test injection; optional `HttpFactory` for mock HTTP in tests.
+- [Phase 06]: License status events pushed from C++ to TS via existing `WebBrowserComponent::event` mechanism (no polling from TS).
+- [Phase 06]: TS-side `useLicenseRequest` hook aggregates status + request helpers from `BridgeProvider` context.
+- [Phase 06]: `LUMASCOPE_ACTIVATION_BASE_URL` compile definition set in both plugin and test CMakeLists.
+- [Phase 06]: `juce::ScopedLock` (namespace alias) used instead of `CriticalSection::ScopedLock` for JUCE 8 MSVC compatibility.
 
 ### Pending Todos
 

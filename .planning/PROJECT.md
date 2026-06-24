@@ -19,6 +19,7 @@ A developer can clone the project and build, understand, provision, and run the 
 - [x] Phase 1 validated project-level Context7 MCP configuration and recorded JUCE master, Jan Wilczek's JUCE WebView tutorial, and Material UI source identifiers.
 - [x] Phase 2 validated a responsive, stable, non-mutating VST3 spectrum analyzer path from host audio through native FFT/smoothing analysis to the React/WebView canvas renderer.
 - [x] Phase 2 validated analyzer defaults behind extensible DSP, snapshot, bridge, and UI contracts so FFT size, smoothing, decay, and display controls can expand later without redesigning the real-time path.
+- [x] Phase 6 implemented versioned Windows machine identity, Ed25519 token parser/verifier with public-key rotation, DPAPI-protected local entitlement store, 7-day grace model with clock rollback detection, atomic cross-thread licensing state machine, queue-based activation HTTP client, React/MUI activation/deactivation/grace-warning UI, and both-target integration with HostBridge protocol extension.
 
 ### Active
 

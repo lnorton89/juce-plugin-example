@@ -14,7 +14,13 @@ auto makeBrowserOptions (LumaScopeAudioProcessorEditor* editor,
         .withNativeIntegrationEnabled()
         .withInitialisationData ("protocolVersion", lumascope::HostBridge::protocolVersion)
         .withEventListener (lumascope::HostBridge::uiReadyEvent,
-                            [editor] (const juce::var& payload) { editor->handleUiReady (payload); });
+                             [editor] (const juce::var& payload) { editor->handleUiReady (payload); })
+        .withEventListener (lumascope::HostBridge::licenseActivateEvent,
+                             [editor] (const juce::var& payload) { editor->handleLicenseActivate (payload); })
+        .withEventListener (lumascope::HostBridge::licenseDeactivateEvent,
+                             [editor] (const juce::var& payload) { editor->handleLicenseDeactivate (payload); })
+        .withEventListener (lumascope::HostBridge::licenseValidateEvent,
+                             [editor] (const juce::var& payload) { editor->handleLicenseValidate (payload); });
    #if JucePlugin_Build_Standalone
     options = options
         .withEventListener (lumascope::HostBridge::sourceSelectEvent,
@@ -157,6 +163,13 @@ void LumaScopeAudioProcessorEditor::handleUiReady (const juce::var& payload)
     {
         bridgeReady = true;
         startTimerHz (60);
+
+        auto& ap = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+        if (auto* core = ap.getLicensingCore())
+        {
+            core->loadFromDisk();
+            lastSeenLicenseSequence = core->statusAtom().currentSequence();
+        }
     }
 
     writeSmokeResult (response.ready ? "ready" : "error",
@@ -290,16 +303,70 @@ void LumaScopeAudioProcessorEditor::timerCallback()
     }
 
     auto& audioProcessor = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+
+    // Poll snapshot
     snapshotPoller.poll (juce::Time::getMillisecondCounterHiRes(),
                          [&audioProcessor] (lumascope::SpectrumSnapshot& snapshot, std::uint32_t& lastSeenSequence)
                          {
                              return audioProcessor.readLatestSpectrumSnapshot (snapshot, lastSeenSequence);
                          },
-                         [this] (const lumascope::SpectrumSnapshot& snapshot)
-                         {
-                             browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::spectrumSnapshotEvent,
-                                                                  lumascope::HostBridge::makeSpectrumSnapshot (snapshot));
-                         });
+                          [this] (const lumascope::SpectrumSnapshot& snapshot)
+                          {
+                              browser.emitEventIfBrowserIsVisible (lumascope::HostBridge::spectrumSnapshotEvent,
+                                                                   lumascope::HostBridge::makeSpectrumSnapshot (snapshot));
+                          });
+
+    // Poll licensing state
+    static double lastLicenseEmit = 0;
+    const auto now = juce::Time::getMillisecondCounterHiRes();
+    if (now - lastLicenseEmit > 500.0)
+    {
+        lastLicenseEmit = now;
+
+        auto* core = audioProcessor.getLicensingCore();
+        if (core != nullptr)
+        {
+            core->checkGrace();
+            auto& state = core->statusAtom();
+            if (state.hasChanged(lastSeenLicenseSequence))
+            {
+                const auto detail = core->currentDetail();
+                browser.emitEventIfBrowserIsVisible (
+                    lumascope::HostBridge::licenseStatusEvent,
+                    lumascope::HostBridge::makeLicenseStatusPayload (
+                        detail.status,
+                        detail.activationId,
+                        detail.lastVerifiedTime,
+                        detail.offlineGraceRemainingDays,
+                        detail.errorCode,
+                        detail.message));
+            }
+        }
+    }
+}
+
+void LumaScopeAudioProcessorEditor::handleLicenseActivate (const juce::var& payload)
+{
+    auto* obj = payload.getDynamicObject();
+    if (obj == nullptr)
+        return;
+    auto key = obj->getProperty ("licenseKey").toString().toStdString();
+    if (key.empty())
+        return;
+    auto& ap = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    ap.activateLicense (key);
+}
+
+void LumaScopeAudioProcessorEditor::handleLicenseDeactivate (const juce::var&)
+{
+    auto& ap = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    ap.deactivateLicense();
+}
+
+void LumaScopeAudioProcessorEditor::handleLicenseValidate (const juce::var&)
+{
+    auto& ap = static_cast<LumaScopeAudioProcessor&> (*getAudioProcessor());
+    ap.validateLicense();
 }
 
 void LumaScopeAudioProcessorEditor::showFallback (juce::String code, juce::String message)

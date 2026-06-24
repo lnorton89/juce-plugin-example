@@ -126,6 +126,74 @@ Native emits `source.state` whenever the standalone capture lifecycle changes.
 - `selectedSourceId` and `selectedSourceName` are cleared when state is `stopped`.
 - No auto-fallback to a different source on failure (D-06). Silent sources stay active with status `silent` (D-08).
 
+## License status
+
+Native emits `license.status` whenever the licensing state changes (activation, deactivation, validation, error, grace expiry, revocation):
+
+```json
+{
+  "protocolVersion": 1,
+  "status": "activated",
+  "activationId": "act_01JZ9Z4X4Y6Q8A9B0C1D2E3F4G",
+  "errorCode": "",
+  "errorMessage": "",
+  "lastVerifiedTime": "2026-06-23T12:00:00.000Z",
+  "offlineGraceRemainingDays": 7
+}
+```
+
+### License states
+
+| Status | Meaning |
+|--------|---------|
+| `uninitialized` | Initial state before any licensing activity. |
+| `not_activated` | No valid entitlement stored. User must enter a license key. |
+| `activating` | Activation request is in progress. |
+| `activated` | Valid entitlement verified and within offline grace. |
+| `offline_grace` | Server could not be reached but cached entitlement is still within the 7-day offline window. |
+| `revalidation_required` | Offline grace has expired; online revalidation is required to continue. |
+| `revoked` | License was revoked or expired. Local entitlement cleared. |
+| `corrupt` | Stored entitlement data failed signature or integrity checks. |
+| `service_unavailable` | Server communication failed; previously verified entitlement remains cached. |
+| `deactivating` | Deactivation request is in progress. |
+
+- `status` is one of the above closed enum strings.
+- `activationId` is non-empty only when `status` is `activated`, `offline_grace`, or `revalidation_required`.
+- `errorCode` and `errorMessage` are bounded to 64 and 256 characters respectively, empty on success.
+- `lastVerifiedTime` is ISO 8601 UTC timestamp reflecting the last successful online verification.
+- `offlineGraceRemainingDays` is an integer — the number of full days remaining before grace expires.
+
+## UI license request events
+
+The UI may emit the following events to drive the activation lifecycle. These run on the message thread, never the audio callback.
+
+### `license.activate`
+
+```json
+{
+  "protocolVersion": 1,
+  "licenseKey": "LQ-XXXX-XXXX-XXXX-XXXX"
+}
+```
+
+Requests native to activate the given license key. Native sends a signed HTTPS request to the activation service with the key and derived machine identifier. The UI transitions to `activating` until a `license.status` event confirms success or failure.
+
+### `license.deactivate`
+
+```json
+{ "protocolVersion": 1 }
+```
+
+Requests native to deactivate the current machine. Native sends a signed HTTPS request and clears local entitlement only after successful server confirmation (D-11 policy). The UI transitions to `deactivating` until a `license.status` event confirms completion.
+
+### `license.validate`
+
+```json
+{ "protocolVersion": 1 }
+```
+
+Requests native to re-validate the current activation with the server. Used for explicit refresh or after grace expiry. Native sends a signed HTTPS request and emits `license.status` with the result.
+
 ## UI request events
 
 The UI may emit the following events to control standalone capture. These are not routed from any capture callback (real-time safe by design).

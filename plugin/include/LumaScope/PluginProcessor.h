@@ -2,6 +2,8 @@
 
 #include "LumaScope/Analyzer/SpectrumAnalyzer.h"
 #include "LumaScope/Analyzer/SpectrumSnapshot.h"
+#include "LumaScope/Licensing/ActivationClient.h"
+#include "LumaScope/Licensing/LicensingCore.h"
 #include "LumaScope/SnapshotMailbox.h"
 #include "LumaScope/Standalone/StandaloneSourceController.h"
 
@@ -36,10 +38,21 @@ public:
     void setStateInformation (const void*, int) override {}
 
     lumascope::StandaloneSourceController* getStandaloneSourceController() const noexcept { return standaloneSourceController.get(); }
+    lumascope::LicensingCore* getLicensingCore() const noexcept { return licensingCore.get(); }
+    lumascope::ActivationClient* getActivationClient() const noexcept { return activationClient.get(); }
+    void activateLicense (const std::string& licenseKey);
+    void deactivateLicense();
+    void validateLicense();
 
 private:
     lumascope::SpectrumAnalyzer analyzer;
     lumascope::SnapshotMailbox snapshotMailbox;
     std::uint32_t lastPublishedAnalyzerSequence = 0;
     std::unique_ptr<lumascope::StandaloneSourceController> standaloneSourceController;
+    std::unique_ptr<lumascope::LicensingCore> licensingCore;
+    std::unique_ptr<lumascope::ActivationClient> activationClient;
+    std::string storedLicenseKey_;
+    void handleActivationResult (const lumascope::ActivationResult& result,
+                                  const std::string& licenseKey,
+                                  bool isDeactivation);
 };

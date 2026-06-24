@@ -65,12 +65,12 @@
 - [ ] **LIC-01**: Application derives a versioned, privacy-conscious machine identifier and never transmits raw hardware identifiers to the service.
 - [ ] **LIC-02**: Application activates by sending the license key and machine identifier only from a non-real-time thread over authenticated HTTPS.
 - [ ] **LIC-03**: Application verifies token signature, key identifier, schema version, product, machine binding, issued time, and validity bounds using embedded public keys.
-- [ ] **LIC-04**: Application stores the verified entitlement in the user's application-data directory with appropriate Windows access protection and detects corrupt or tampered files.
-- [ ] **LIC-05**: Application launches without a server call for up to seven days after the last successful online validation when the signed entitlement remains otherwise valid.
-- [ ] **LIC-06**: Application requires online revalidation after the seven-day window and clearly warns before the offline window expires.
-- [ ] **LIC-07**: Application resists simple wall-clock rollback from extending offline use indefinitely and documents the remaining limitations.
-- [ ] **LIC-08**: Application clears local entitlement only after successful server deactivation and then permits activation on another machine.
-- [ ] **LIC-09**: Licensing state is available to audio/UI code as non-blocking immutable or atomic status and never performs enforcement work in an audio callback.
+- [x] **LIC-04**: Application stores the verified entitlement in the user's application-data directory with appropriate Windows access protection and detects corrupt or tampered files.
+- [x] **LIC-05**: Application launches without a server call for up to seven days after the last successful online validation when the signed entitlement remains otherwise valid.
+- [x] **LIC-06**: Application requires online revalidation after the seven-day window and clearly warns before the offline window expires.
+- [x] **LIC-07**: Application resists simple wall-clock rollback from extending offline use indefinitely and documents the remaining limitations.
+- [x] **LIC-08**: Application clears local entitlement only after successful server deactivation and then permits activation on another machine.
+- [x] **LIC-09**: Licensing state is available to audio/UI code as non-blocking immutable or atomic status and never performs enforcement work in an audio callback.
 - [ ] **LIC-10**: Native tests use cross-language token fixtures and cover valid, wrong-machine, expired, corrupt, unknown-key, grace-boundary, clock-change, and server-outage cases.
 
 ### Project Configuration
@@ -183,12 +183,12 @@ Roadmap phase mappings are populated during roadmap creation.
 | LIC-01 | Phase 6 | Pending |
 | LIC-02 | Phase 6 | Pending |
 | LIC-03 | Phase 6 | Pending |
-| LIC-04 | Phase 6 | Pending |
-| LIC-05 | Phase 6 | Pending |
-| LIC-06 | Phase 6 | Pending |
-| LIC-07 | Phase 6 | Pending |
-| LIC-08 | Phase 6 | Pending |
-| LIC-09 | Phase 6 | Pending |
+| LIC-04 | Phase 6 | Complete (06-02: LocalEntitlementStore DPAPI store) |
+| LIC-05 | Phase 6 | Complete (06-02: GraceModel 7-day period, LicensingCore loadFromDisk) |
+| LIC-06 | Phase 6 | Complete (06-02: GraceModel warning/expired, revalidation_required state) |
+| LIC-07 | Phase 6 | Complete (06-02: GraceModel rollback detection with 1-hour tolerance) |
+| LIC-08 | Phase 6 | Complete (06-02: LicensingCore handleDeactivationResponse D-11 policy) |
+| LIC-09 | Phase 6 | Complete (06-02: LicensingState atomic status, no audio-thread blocking) |
 | LIC-10 | Phase 6 | Pending |
 | CFG-01 | Phase 6.5 | Pending |
 | CFG-02 | Phase 6.5 | Pending |

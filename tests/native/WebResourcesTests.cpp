@@ -11,6 +11,13 @@ int runSpectrumAnalyzerTests();
 int runSourcePreferenceStoreTests();
 int runStandaloneSourceControllerTests();
 int runWasapiEndpointModelTests();
+int runMachineIdentityTests();
+int runEntitlementTokenTests();
+int runTokenVerifierTests();
+int runLocalEntitlementStoreTests();
+int runGraceModelTests();
+int runLicensingCoreTests();
+int runActivationClientTests();
 
 namespace
 {
@@ -44,5 +51,12 @@ int main()
     failures += runSourcePreferenceStoreTests();
     failures += runStandaloneSourceControllerTests();
     failures += runWasapiEndpointModelTests();
+    failures += runMachineIdentityTests();
+    failures += runEntitlementTokenTests();
+    failures += runTokenVerifierTests();
+    failures += runLocalEntitlementStoreTests();
+    failures += runGraceModelTests();
+    failures += runLicensingCoreTests();
+    failures += runActivationClientTests();
     return failures == 0 ? 0 : 1;
 }

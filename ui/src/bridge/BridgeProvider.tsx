@@ -1,5 +1,5 @@
 import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { bridgeErrorEvent, hostInfoEvent, parseBridgeError, parseHostInfo, parseSourceList, parseSourceState, parseSpectrumSnapshot, protocolVersion, sourceListEvent, sourceSelectEvent, sourceStateEvent, sourceStopEvent, spectrumSnapshotEvent, uiReadyEvent, type BridgeStatus, type SourceListPayload, type SourceStatePayload } from './protocol';
+import { bridgeErrorEvent, hostInfoEvent, licenseActivateEvent, licenseDeactivateEvent, licenseStatusEvent, licenseValidateEvent, parseBridgeError, parseHostInfo, parseLicenseStatus, parseSourceList, parseSourceState, parseSpectrumSnapshot, protocolVersion, sourceListEvent, sourceSelectEvent, sourceStateEvent, sourceStopEvent, spectrumSnapshotEvent, uiReadyEvent, type BridgeStatus, type LicenseStatusPayload, type SourceListPayload, type SourceStatePayload } from './protocol';
 
 export interface BridgeBackend {
   addEventListener(eventId: string, listener: (payload: unknown) => void): unknown;
@@ -12,6 +12,7 @@ declare global {
 }
 
 const BridgeContext = createContext<BridgeStatus>({ state: 'connecting' });
+const LicenseContext = createContext<LicenseStatusPayload | null>(null);
 
 export interface BridgeProviderProps extends PropsWithChildren {
   initialStatus?: BridgeStatus;
@@ -20,6 +21,7 @@ export interface BridgeProviderProps extends PropsWithChildren {
 
 export function BridgeProvider({ children, initialStatus, backend }: BridgeProviderProps) {
   const [status, setStatus] = useState<BridgeStatus>(initialStatus ?? { state: 'connecting' });
+  const [licenseStatus, setLicenseStatus] = useState<LicenseStatusPayload | null>(null);
   const transport = useMemo(() => backend ?? window.__JUCE__?.backend, [backend]);
 
   useEffect(() => {
@@ -44,6 +46,10 @@ export function BridgeProvider({ children, initialStatus, backend }: BridgeProvi
       const sourceState = parseSourceState(payload);
       if (sourceState) setStatus((current) => ({ ...current, sourceState }));
     });
+    const licenseToken = transport.addEventListener(licenseStatusEvent, (payload) => {
+      const status = parseLicenseStatus(payload);
+      if (status) setLicenseStatus(status);
+    });
     transport.emitEvent(uiReadyEvent, { protocolVersion });
     return () => {
       transport.removeEventListener(hostToken);
@@ -51,20 +57,25 @@ export function BridgeProvider({ children, initialStatus, backend }: BridgeProvi
       transport.removeEventListener(snapshotToken);
       transport.removeEventListener(sourceListToken);
       transport.removeEventListener(sourceStateToken);
+      transport.removeEventListener(licenseToken);
     };
   }, [initialStatus, transport]);
 
-  return <BridgeContext.Provider value={status}>{children}</BridgeContext.Provider>;
+  return (
+    <BridgeContext.Provider value={status}>
+      <LicenseContext.Provider value={licenseStatus}>
+        {children}
+      </LicenseContext.Provider>
+    </BridgeContext.Provider>
+  );
 }
 
 export function useBridgeStatus(): BridgeStatus {
   return useContext(BridgeContext);
 }
 
-export function useBridgeBackend(): BridgeBackend | undefined {
-  const transport = useMemo(() => { throw new Error('not implemented'); }, []);
-  // Bridge request helpers are accessed through useBridgeRequest instead
-  return undefined;
+export function useLicenseStatus(): LicenseStatusPayload | null {
+  return useContext(LicenseContext);
 }
 
 export interface BridgeRequestHelpers {
@@ -74,7 +85,6 @@ export interface BridgeRequestHelpers {
 
 export function useBridgeRequest(): BridgeRequestHelpers | null {
   const transport = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return (typeof window !== 'undefined') ? (window.__JUCE__?.backend ?? null) : null;
   }, []);
 
@@ -90,4 +100,34 @@ export function useBridgeRequest(): BridgeRequestHelpers | null {
 
   if (!transport) return null;
   return { sendSourceSelect, sendSourceStop };
+}
+
+export interface LicenseRequestHelpers {
+  sendActivate: (licenseKey: string) => void;
+  sendDeactivate: () => void;
+  sendValidate: () => void;
+}
+
+export function useLicenseRequest(): LicenseRequestHelpers | null {
+  const transport = useMemo(() => {
+    return (typeof window !== 'undefined') ? (window.__JUCE__?.backend ?? null) : null;
+  }, []);
+
+  const sendActivate = useCallback((licenseKey: string) => {
+    if (!transport) return;
+    transport.emitEvent(licenseActivateEvent, { protocolVersion, event: licenseActivateEvent, licenseKey });
+  }, [transport]);
+
+  const sendDeactivate = useCallback(() => {
+    if (!transport) return;
+    transport.emitEvent(licenseDeactivateEvent, { protocolVersion, event: licenseDeactivateEvent });
+  }, [transport]);
+
+  const sendValidate = useCallback(() => {
+    if (!transport) return;
+    transport.emitEvent(licenseValidateEvent, { protocolVersion, event: licenseValidateEvent });
+  }, [transport]);
+
+  if (!transport) return null;
+  return { sendActivate, sendDeactivate, sendValidate };
 }

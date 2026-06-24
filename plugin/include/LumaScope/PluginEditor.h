@@ -4,6 +4,8 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 #include <limits>
 #include "LumaScope/HostBridge.h"
+#include "LumaScope/Licensing/LicensingCore.h"
+#include "LumaScope/Licensing/LicensingState.h"
 #include "LumaScope/PluginProcessor.h"
 #include "LumaScope/WebResources.h"
 
@@ -54,6 +56,9 @@ public:
     void handleBrowserNetworkError (const juce::String& errorInfo);
     void handleSourceSelect (const juce::var& payload);
     void handleSourceStop (const juce::var& payload);
+    void handleLicenseActivate (const juce::var& payload);
+    void handleLicenseDeactivate (const juce::var& payload);
+    void handleLicenseValidate (const juce::var& payload);
 
 private:
     static juce::String hostMode();
@@ -80,4 +85,5 @@ private:
     juce::String fallbackCode;
     juce::String fallbackMessage;
     bool bridgeReady = false;
+    std::uint32_t lastSeenLicenseSequence = 0;
 };

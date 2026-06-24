@@ -10,6 +10,10 @@ const juce::Identifier HostBridge::sourceListEvent { "source.list" };
 const juce::Identifier HostBridge::sourceStateEvent { "source.state" };
 const juce::Identifier HostBridge::sourceSelectEvent { "source.select" };
 const juce::Identifier HostBridge::sourceStopEvent { "source.stop" };
+const juce::Identifier HostBridge::licenseStatusEvent { "license.status" };
+const juce::Identifier HostBridge::licenseActivateEvent { "license.activate" };
+const juce::Identifier HostBridge::licenseDeactivateEvent { "license.deactivate" };
+const juce::Identifier HostBridge::licenseValidateEvent { "license.validate" };
 
 HostBridge::HostBridge (juce::String hostModeIn, juce::String uiSourceIn, juce::String productVersionIn,
                         juce::String buildMarkerIn)
@@ -148,6 +152,28 @@ juce::var HostBridge::makeError (juce::String code, juce::String message)
     object->setProperty ("code", code.substring (0, 64));
     object->setProperty ("message", message.substring (0, 256));
     object->setProperty ("protocolVersion", protocolVersion);
+    return result;
+}
+
+juce::var HostBridge::makeLicenseStatusPayload (LicenseStatus status,
+                                                 const std::string& activationId,
+                                                 const std::string& lastVerifiedTime,
+                                                 int offlineGraceRemainingDays,
+                                                 const std::string& errorCode,
+                                                 const std::string& errorMessage)
+{
+    auto result = juce::var (new juce::DynamicObject());
+    auto* object = result.getDynamicObject();
+    object->setProperty ("protocolVersion", protocolVersion);
+    object->setProperty ("event", licenseStatusEvent.toString());
+    object->setProperty ("state", juce::String (toString (status)).substring (0, 32));
+    object->setProperty ("activationId", juce::String (activationId).substring (0, 64));
+    object->setProperty ("lastVerifiedTime", juce::String (lastVerifiedTime).substring (0, 32));
+    object->setProperty ("offlineGraceRemainingDays", offlineGraceRemainingDays);
+    if (errorCode.length() > 0)
+        object->setProperty ("code", juce::String (errorCode).substring (0, 64));
+    if (errorMessage.length() > 0)
+        object->setProperty ("message", juce::String (errorMessage).substring (0, 256));
     return result;
 }
 

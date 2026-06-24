@@ -7,6 +7,10 @@ export const sourceListEvent = 'source.list' as const;
 export const sourceStateEvent = 'source.state' as const;
 export const sourceSelectEvent = 'source.select' as const;
 export const sourceStopEvent = 'source.stop' as const;
+export const licenseStatusEvent = 'license.status' as const;
+export const licenseActivateEvent = 'license.activate' as const;
+export const licenseDeactivateEvent = 'license.deactivate' as const;
+export const licenseValidateEvent = 'license.validate' as const;
 export const maxSpectrumBins = 256 as const;
 
 export interface UiReady { protocolVersion: typeof protocolVersion }
@@ -70,6 +74,34 @@ export interface SourceStatePayload {
   message: string;
 }
 
+export type LicensingStateEnum =
+  | 'not_activated'
+  | 'activating'
+  | 'activated'
+  | 'offline_grace'
+  | 'revalidation_required'
+  | 'revoked'
+  | 'corrupt'
+  | 'service_unavailable'
+  | 'deactivating';
+
+export interface LicenseStatusPayload {
+  protocolVersion: typeof protocolVersion;
+  event: typeof licenseStatusEvent;
+  state: LicensingStateEnum;
+  activationId: string;
+  lastVerifiedTime: string;
+  offlineGraceRemainingDays: number;
+  code?: string;
+  message?: string;
+}
+
+export interface LicenseActivatePayload {
+  protocolVersion: typeof protocolVersion;
+  event: typeof licenseActivateEvent;
+  licenseKey: string;
+}
+
 export type BridgeStatus =
   | { state: 'connecting'; spectrumSnapshot?: SpectrumSnapshot }
   | { state: 'ready'; hostInfo: HostInfo; spectrumSnapshot?: SpectrumSnapshot; sourceList?: SourceListPayload; sourceState?: SourceStatePayload }
@@ -100,6 +132,27 @@ function parseSourceMode(value: unknown): SourceMode | null {
 
 function parseSourceStateEnum(value: unknown): SourceState | null {
   return value === 'stopped' || value === 'starting' || value === 'active' || value === 'silent' || value === 'error' ? value : null;
+}
+
+export function isLicenseState(value: unknown): value is LicensingStateEnum {
+  return value === 'not_activated' || value === 'activating' || value === 'activated'
+    || value === 'offline_grace' || value === 'revalidation_required'
+    || value === 'revoked' || value === 'corrupt'
+    || value === 'service_unavailable' || value === 'deactivating';
+}
+
+export function parseLicenseStatus(value: unknown): LicenseStatusPayload | null {
+  if (!value || typeof value !== 'object') return null;
+  const item = value as Record<string, unknown>;
+  if (item.protocolVersion !== protocolVersion) return null;
+  if (item.event !== licenseStatusEvent) return null;
+  if (!isLicenseState(item.state)) return null;
+  if (typeof item.activationId !== 'string' || item.activationId.length > 64) return null;
+  if (typeof item.lastVerifiedTime !== 'string' || item.lastVerifiedTime.length > 32) return null;
+  if (typeof item.offlineGraceRemainingDays !== 'number') return null;
+  if (item.code !== undefined && (typeof item.code !== 'string' || item.code.length > 64)) return null;
+  if (item.message !== undefined && (typeof item.message !== 'string' || item.message.length > 256)) return null;
+  return item as unknown as LicenseStatusPayload;
 }
 
 function parseSourceDescriptor(value: unknown): SourceDescriptor | null {

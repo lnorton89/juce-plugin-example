@@ -35,6 +35,17 @@ target_sources(LumaScope PRIVATE
   include/LumaScope/Analyzer/SpectrumAnalyzer.h
   include/LumaScope/Analyzer/SpectrumSnapshot.h
   include/LumaScope/HostBridge.h
+  include/LumaScope/Licensing/ActivationClient.h
+  include/LumaScope/Licensing/BuiltinPublicKeyRing.h
+  include/LumaScope/Licensing/EntitlementToken.h
+  include/LumaScope/Licensing/GraceModel.h
+  include/LumaScope/Licensing/LicensingCore.h
+  include/LumaScope/Licensing/LicensingEventIds.h
+  include/LumaScope/Licensing/LicensingState.h
+  include/LumaScope/Licensing/LocalEntitlementStore.h
+  include/LumaScope/Licensing/MachineIdentity.h
+  include/LumaScope/Licensing/PublicKeyRing.h
+  include/LumaScope/Licensing/TokenVerifier.h
   include/LumaScope/Standalone/SourceModel.h
   include/LumaScope/Standalone/StandaloneSourceController.h
   include/LumaScope/Standalone/WasapiLoopbackSourceAdapter.h
@@ -42,6 +53,16 @@ target_sources(LumaScope PRIVATE
   source/Analyzer/AnalyzerConfig.cpp
   source/Analyzer/SpectrumAnalyzer.cpp
   source/HostBridge.cpp
+  source/Licensing/ActivationClient.cpp
+  source/Licensing/EntitlementToken.cpp
+  source/Licensing/GraceModel.cpp
+  source/Licensing/LicensingCore.cpp
+  source/Licensing/LicensingState.cpp
+  source/Licensing/LocalEntitlementStore.cpp
+  source/Licensing/MachineIdentity.cpp
+  source/Licensing/PublicKeyRing.cpp
+  source/Licensing/TokenVerifier.cpp
+  source/Licensing/tweetnacl/tweetnacl.c
   source/PluginEditor.cpp
   source/PluginProcessor.cpp
   source/Standalone/SourcePreferenceStore.cpp
@@ -53,17 +74,20 @@ target_sources(LumaScope PRIVATE
 
 target_include_directories(LumaScope PUBLIC include)
 target_compile_features(LumaScope PUBLIC cxx_std_20)
-target_compile_definitions(LumaScope PUBLIC
-  JUCE_WEB_BROWSER=1
-  JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING=1
-  JUCE_USE_CURL=0
-  JUCE_VST3_CAN_REPLACE_VST2=0
-  LUMASCOPE_WEBVIEW_DEV_SERVER="$<$<CONFIG:Debug>:${LUMASCOPE_WEBVIEW_DEV_SERVER}>"
-  LUMASCOPE_BUILD_MARKER="${PROJECT_VERSION}-$<CONFIG>")
+  target_compile_definitions(LumaScope PUBLIC
+    JUCE_WEB_BROWSER=1
+    JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING=1
+    JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=0
+    LUMASCOPE_WEBVIEW_DEV_SERVER="$<$<CONFIG:Debug>:${LUMASCOPE_WEBVIEW_DEV_SERVER}>"
+    LUMASCOPE_ACTIVATION_BASE_URL="${LUMASCOPE_ACTIVATION_BASE_URL}"
+    LUMASCOPE_BUILD_MARKER="${PROJECT_VERSION}-$<CONFIG>")
 target_link_libraries(LumaScope PRIVATE
   LumaScopeWebBundle
   juce::juce_audio_utils
   juce::juce_dsp
   juce::juce_gui_extra
+  bcrypt
+  crypt32
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
 add_dependencies(LumaScope LumaScopeWebBundle)

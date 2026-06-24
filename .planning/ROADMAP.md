@@ -12,7 +12,8 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 - [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
 - [x] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency. (completed 2026-06-23)
 - [ ] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets.
-- [ ] **Phase 6.5: Project Configuration Centralization** - Extract all hardcoded product identity, branding, version, URLs, codes, and resource names into centralized typed configuration files with schemas mapping each value to its affected locations.
+| Phase 06 P01 | 15 min | 3 tasks | 8 files |
+| Phase 06 P02 | 20 min | 3 tasks | 20 files |
 - [ ] **Phase 7: Release and Handoff Proof** - Validate hosts, devices, security, CI, diagnostics, and clean-account deployment end to end.
 
 ## Phase Details
@@ -178,10 +179,10 @@ Plans:
 
 Plans:
 
-- [ ] 06-01: Implement versioned Windows machine identity, token parser/verifier, canonical fixtures, and public-key rotation.
-- [ ] 06-02: Implement protected local storage, grace/clock model, entitlement state machine, and native tests.
-- [ ] 06-03: Implement non-real-time activation client and React/MUI activation/deactivation/status flows.
-- [ ] 06-04: Integrate both targets and verify offline, transfer, expiry, revocation, corruption, and outage scenarios.
+- [x] 06-01: Implement versioned Windows machine identity, token parser/verifier, canonical fixtures, and public-key rotation.
+- [x] 06-02: Implement protected local storage, grace/clock model, entitlement state machine, and native tests.
+- [x] 06-03: Implement non-real-time activation client and React/MUI activation/deactivation/status flows.
+- [x] 06-04: Integrate both targets and verify offline, transfer, expiry, revocation, corruption, and outage scenarios.
 
 ### Phase 6.5: Project Configuration Centralization
 
@@ -244,6 +245,6 @@ Plans:
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
 | 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
 | 5. One-Machine Activation Service | 3/3 | Complete   | 2026-06-23 |
-| 6. Native Offline Licensing | 0/4 | Not started | - |
+| 6. Native Offline Licensing | 4/4 | Executing | 2026-06-23 (06-01, 06-02, 06-03, 06-04) |
 | 6.5. Project Configuration Centralization | 0/3 | Planned | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

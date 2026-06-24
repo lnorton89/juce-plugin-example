@@ -1,4 +1,10 @@
 #include "LumaScope/PluginProcessor.h"
+#include "LumaScope/Licensing/BuiltinPublicKeyRing.h"
+#include "LumaScope/Licensing/EntitlementToken.h"
+#include "LumaScope/Licensing/LocalEntitlementStore.h"
+#include "LumaScope/Licensing/MachineIdentity.h"
+#include "LumaScope/Licensing/PublicKeyRing.h"
+#include "LumaScope/Licensing/TokenVerifier.h"
 
 #ifndef LUMASCOPE_NATIVE_TESTS
  #include "LumaScope/PluginEditor.h"
@@ -11,6 +17,17 @@ LumaScopeAudioProcessor::LumaScopeAudioProcessor()
    #if JucePlugin_Build_Standalone
     standaloneSourceController = lumascope::createStandaloneSourceController (*this);
    #endif
+
+    auto keyRing = lumascope::PublicKeyRing::parse(std::string(lumascope::builtinTestKeyRing));
+    if (keyRing)
+    {
+        auto verifier = std::make_unique<lumascope::TokenVerifier>(std::move(*keyRing));
+        auto store = std::make_unique<lumascope::LocalEntitlementStore>();
+        licensingCore = std::make_unique<lumascope::LicensingCore>(
+            std::move(verifier), std::move(store));
+        activationClient = std::make_unique<lumascope::ActivationClient>(
+            juce::String(LUMASCOPE_ACTIVATION_BASE_URL));
+    }
 }
 
 LumaScopeAudioProcessor::~LumaScopeAudioProcessor() = default;
@@ -49,6 +66,116 @@ void LumaScopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     {
         if (snapshotMailbox.publish (snapshot))
             lastPublishedAnalyzerSequence = snapshot.sequence;
+    }
+}
+
+void LumaScopeAudioProcessor::activateLicense(const std::string& licenseKey)
+{
+    if (!licensingCore || !activationClient)
+        return;
+
+    auto machineId = lumascope::deriveMachineIdentifier();
+    storedLicenseKey_ = licenseKey;
+
+    licensingCore->statusAtom().updateStatus(lumascope::LicenseStatus::activating);
+
+    activationClient->activate({licenseKey, machineId},
+        [this, licenseKey](const lumascope::ActivationResult& result) {
+            handleActivationResult(result, licenseKey, false);
+        });
+}
+
+void LumaScopeAudioProcessor::deactivateLicense()
+{
+    if (!licensingCore || !activationClient || storedLicenseKey_.empty())
+        return;
+
+    auto machineId = lumascope::deriveMachineIdentifier();
+
+    licensingCore->statusAtom().updateStatus(lumascope::LicenseStatus::deactivating);
+
+    activationClient->deactivate({storedLicenseKey_, machineId},
+        [this](const lumascope::ActivationResult& result) {
+            handleActivationResult(result, storedLicenseKey_, true);
+        });
+}
+
+void LumaScopeAudioProcessor::validateLicense()
+{
+    if (!licensingCore || !activationClient || storedLicenseKey_.empty())
+        return;
+
+    auto machineId = lumascope::deriveMachineIdentifier();
+
+    activationClient->validate({storedLicenseKey_, machineId},
+        [this](const lumascope::ActivationResult& result) {
+            handleActivationResult(result, storedLicenseKey_, false);
+        });
+}
+
+void LumaScopeAudioProcessor::handleActivationResult(const lumascope::ActivationResult& result,
+                                                      const std::string& licenseKey,
+                                                      bool isDeactivation)
+{
+    juce::ignoreUnused(licenseKey);
+
+    if (!licensingCore)
+        return;
+
+    if (result.type == lumascope::ActivationResult::Type::networkError)
+    {
+        if (isDeactivation)
+        {
+            licensingCore->handleServerError("network_error", result.errorMessage);
+        }
+        else
+        {
+            licensingCore->handleServerError("network_error", result.errorMessage);
+        }
+        return;
+    }
+
+    if (result.statusCode >= 500)
+    {
+        licensingCore->handleServerError("server_error", result.errorMessage);
+        return;
+    }
+
+    if (result.statusCode >= 400 && result.statusCode < 500)
+    {
+        if (result.errorCode == "license_revoked" || result.errorCode == "license_expired")
+        {
+            licensingCore->handleAuthoritativeFailure(result.errorCode, result.errorMessage);
+        }
+        else if (isDeactivation && result.statusCode != 200)
+        {
+            licensingCore->handleServerError(result.errorCode, result.errorMessage);
+        }
+        else if (!isDeactivation)
+        {
+            licensingCore->handleServerError(result.errorCode, result.errorMessage);
+        }
+        return;
+    }
+
+    if (result.type == lumascope::ActivationResult::Type::success)
+    {
+        auto json = juce::JSON::parse(juce::String(result.responseBody));
+        if (auto* obj = json.getDynamicObject())
+        {
+            auto token = lumascope::parseSignedEntitlement(json);
+            if (token)
+            {
+                if (isDeactivation)
+                {
+                    licensingCore->handleDeactivationResponse();
+                }
+                else
+                {
+                    licensingCore->handleActivationResponse(*token, juce::Time::getCurrentTime());
+                }
+            }
+        }
     }
 }
 

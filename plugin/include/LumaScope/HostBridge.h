@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LumaScope/Analyzer/SpectrumSnapshot.h"
+#include "LumaScope/Licensing/LicensingState.h"
 #include "LumaScope/Standalone/SourceModel.h"
 
 #include <juce_core/juce_core.h>
@@ -26,6 +27,10 @@ public:
     static const juce::Identifier sourceStateEvent;
     static const juce::Identifier sourceSelectEvent;
     static const juce::Identifier sourceStopEvent;
+    static const juce::Identifier licenseStatusEvent;
+    static const juce::Identifier licenseActivateEvent;
+    static const juce::Identifier licenseDeactivateEvent;
+    static const juce::Identifier licenseValidateEvent;
 
     HostBridge (juce::String hostMode, juce::String uiSource, juce::String productVersion,
                 juce::String buildMarker);
@@ -35,6 +40,12 @@ public:
     static juce::var makeSourceList (const SourceList& list);
     static juce::var makeSourceStateSnapshot (const SourceStateSnapshot& state);
     static juce::var makeError (juce::String code, juce::String message);
+    static juce::var makeLicenseStatusPayload (LicenseStatus status,
+                                                const std::string& activationId,
+                                                const std::string& lastVerifiedTime,
+                                                int offlineGraceRemainingDays,
+                                                const std::string& errorCode,
+                                                const std::string& errorMessage);
 
 private:
     static BridgeResponse error (juce::String code, juce::String message);
