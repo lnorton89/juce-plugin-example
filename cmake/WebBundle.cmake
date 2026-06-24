@@ -28,10 +28,11 @@ add_custom_command(
   WORKING_DIRECTORY "${LUMASCOPE_UI_DIR}"
   COMMENT "Building and archiving the LumaScope UI")
 
-add_custom_target(LumaScopeWebArchive DEPENDS "${LUMASCOPE_WEB_ARCHIVE}")
+set(LUMASCOPE_WEB_ARCHIVE_TARGET "${PROJECT_CONFIG_WEB_BUNDLE_TARGET}Archive")
+add_custom_target(${LUMASCOPE_WEB_ARCHIVE_TARGET} DEPENDS "${LUMASCOPE_WEB_ARCHIVE}")
 set_source_files_properties("${LUMASCOPE_WEB_ARCHIVE}" PROPERTIES GENERATED TRUE)
-juce_add_binary_data(LumaScopeWebBundle
+juce_add_binary_data(${PROJECT_CONFIG_WEB_BUNDLE_TARGET}
   HEADER_NAME LumaScopeWebBundle.h
-  NAMESPACE LumaScopeWebBundleData
+  NAMESPACE ${PROJECT_CONFIG_WEB_BUNDLE_NS}
   SOURCES "${LUMASCOPE_WEB_ARCHIVE}")
-add_dependencies(LumaScopeWebBundle LumaScopeWebArchive)
+add_dependencies(${PROJECT_CONFIG_WEB_BUNDLE_TARGET} ${LUMASCOPE_WEB_ARCHIVE_TARGET})

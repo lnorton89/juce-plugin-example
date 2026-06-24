@@ -1,4 +1,5 @@
 # LumaScope Activation Worker — Wrangler v4 Configuration
+# Resource names mirror project-config.json worker.* values.
 # Environment-specific values (account_id, database_id) are set via
 # wrangler CLI or environment variables — not hardcoded here.
 

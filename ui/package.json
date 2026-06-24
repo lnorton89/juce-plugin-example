@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "generate-config": "node ../scripts/generate-config-ts.mjs",
+    "generate-all-config": "node ../scripts/generate-all-config.mjs",
+    "validate-config": "node ../scripts/validate-config.mjs",
     "test": "vitest",
     "test:run": "vitest run",
     "check:bundle": "node scripts/check-bundle.mjs"

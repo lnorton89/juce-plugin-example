@@ -1,6 +1,8 @@
 # LumaScope
 
-**LumaScope** is a production-minded example project demonstrating how to build a Windows spectrum-analyzer audio product with [JUCE 8](https://juce.com). It ships as a VST3 plug-in and a standalone application, uses a React/TypeScript [Material UI](https://mui.com) interface hosted in JUCE's WebView2, and will demonstrate a portable [Lemon Squeezy](https://lemonsqueezy.com) and [Cloudflare](https://cloudflare.com) Workers-based activation system.
+Config template variables: `{{product_name}}` resolves from `project-config.json` and `{{version}}` resolves from `project-config.json`.
+
+**LumaScope** is a production-minded example project demonstrating how to build a Windows spectrum-analyzer audio product with [JUCE 8](https://juce.com). It ships as a VST3 plug-in and a standalone application, uses a React/TypeScript [Material UI](https://mui.com) interface hosted in JUCE's WebView2, and demonstrates a portable [Lemon Squeezy](https://lemonsqueezy.com) and [Cloudflare](https://cloudflare.com) Workers-based activation system.
 
 **Core value:** A developer can clone the project and build, understand, provision, and run the complete analyzer and licensing stack without reconstructing hidden infrastructure or architecture decisions.
 
@@ -14,12 +16,13 @@
 | 2 | ✅ Complete | End-to-end VST3 spectrum analyzer — windowed FFT, log-mapped bins, smoothing, canvas renderer |
 | 3 | ✅ Complete | Standalone Windows device capture (input + WASAPI loopback) |
 | 4 | ✅ Complete | Cloudflare Worker + D1, Lemon Squeezy webhook ingestion |
-| 5–6 | 🔜 Planned | Lemon Squeezy cloud activation, one-machine licensing, offline grace |
+| 5-6 | Complete | Lemon Squeezy cloud activation, one-machine licensing, offline grace |
+| 6.5 | Complete | Centralized product/build/cloud configuration with generated native, UI, Worker, and PowerShell consumers |
 | 7 | 🔜 Planned | Release hardening, CI, documentation, handoff proof |
 
 Both the VST3 plug-in and standalone application are fully functional. The VST3 analyzes host audio with passthrough; the standalone monitors selectable input devices or Windows system output through WASAPI loopback. A compact source strip lets you choose between `Input Device` and `System Output` modes.
 
-The Cloudflare-based activation infrastructure is fully implemented and documented. See [cloud infrastructure](docs/cloud-infrastructure.md) for provisioning and deployment instructions. Licensing support (Phases 5–6) is the next major effort.
+The Cloudflare-based activation infrastructure and native offline licensing flow are implemented and documented. See [cloud infrastructure](docs/cloud-infrastructure.md), [activation API](docs/activation-api.md), and [configuration reference](docs/CONFIG-REFERENCE.md) for provisioning, deployment, and rebranding instructions.
 
 ---
 
@@ -90,7 +93,7 @@ The project uses one [Context7 MCP](https://github.com/upstash/context7) server 
 ├── scripts/           Build, test, validation, and packaging scripts
 ├── docs/              Design docs (DSP contract, bridge protocol, development workflow, smoke test)
 ├── tests/native/      C++ native unit tests (CTest)
-├── worker/            Cloudflare Worker source (future phases)
+├── worker/            Cloudflare Worker activation service
 └── .planning/         GSD phase plans, state, and roadmap
 ```
 
@@ -154,7 +157,7 @@ See [development](docs/development.md) for the full workflow and [troubleshootin
 | `LumaScope_Standalone` | Standalone EXE | Analyzer as a desktop app — owns device capture |
 | `LumaScope_VST3` | VST3 DLL | Analyzer as a DAW plug-in — consumes host audio |
 | `LumaScope_All` | Both | Convenience target for building everything |
-| `LumaScope_Tests` | Executable | Native CTest suite for DSP and analyzer core |
+| `LumaScopeNativeTests` | Executable | Native CTest suite for DSP, licensing, bridge, and analyzer core |
 
 ### CMake presets
 
@@ -163,6 +166,8 @@ See [development](docs/development.md) for the full workflow and [troubleshootin
 | `vs2019-debug` | Debug | None (embedded) | Default development and testing |
 | `vs2019-vite` | Debug | `http://127.0.0.1:5174` | Frontend hot-reload development |
 | `vs2019-release` | Release | None (embedded) | Production builds |
+
+Target names, artifact directory names, branding, version strings, local storage filenames, Worker names, and token type values come from `project-config.json`. Run `node scripts/generate-all-config.mjs` after edits; see [configuration reference](docs/CONFIG-REFERENCE.md).
 
 ---
 
@@ -214,8 +219,9 @@ For implementation details see [analyzer DSP contract](docs/analyzer-dsp.md), [b
 | 2 | End-to-end VST3 spectrum analyzer | Phase 1 | ✅ Complete |
 | 3 | Standalone Windows device capture (input + WASAPI loopback) | Phase 2 | ✅ Complete |
 | 4 | Cloudflare Worker + D1 provisioning, Lemon webhook ingestion | Phase 1 | ✅ Complete |
-| 5 | One-machine activation service (signed entitlements) | Phase 4 | 🔜 Planned |
-| 6 | Native offline licensing with 7-day grace | Phase 5 | 🔜 Planned |
+| 5 | One-machine activation service (signed entitlements) | Phase 4 | Complete |
+| 6 | Native offline licensing with 7-day grace | Phase 5 | Complete |
+| 6.5 | Project configuration centralization | Phase 6 | Complete |
 | 7 | Release hardening, CI, documentation, handoff proof | Phases 3, 6 | 🔜 Planned |
 
 See [roadmap](.planning/ROADMAP.md) and [requirements](.planning/REQUIREMENTS.md) for complete details.

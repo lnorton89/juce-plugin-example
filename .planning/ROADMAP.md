@@ -14,6 +14,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 - [ ] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets.
 | Phase 06 P01 | 15 min | 3 tasks | 8 files |
 | Phase 06 P02 | 20 min | 3 tasks | 20 files |
+- [x] **Phase 6.5: Project Configuration Centralization** - Centralize product identity, branding, versions, URLs, codes, and resource names behind typed config and validation. (completed 2026-06-24)
 - [ ] **Phase 7: Release and Handoff Proof** - Validate hosts, devices, security, CI, diagnostics, and clean-account deployment end to end.
 
 ## Phase Details
@@ -162,7 +163,7 @@ Plans:
 
 ### Phase 6: Native Offline Licensing
 
-**Goal**: Users can activate both products, work offline for seven days, understand status, and transfer the license themselves.
+**Goal**: As a Windows user, I want to activate both products, work offline for seven days, understand status, and transfer the license myself, so that I can use and transfer my license without constant network access.
 **Mode:** mvp
 **Depends on**: Phase 5
 **Requirements**: LIC-01, LIC-02, LIC-03, LIC-04, LIC-05, LIC-06, LIC-07, LIC-08, LIC-09, LIC-10, UI-05
@@ -206,12 +207,12 @@ Plans:
 
 **Wave 1**
 
-- [ ] 06.5-01: Define config schema, file locations, CMake integration, and validation tooling.
+- [x] 06.5-01: Define config schema, file locations, CMake integration, and validation tooling.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 06.5-02: Extract C++ and infrastructure hardcoded values into config-driven sources.
-- [ ] 06.5-03: Extract TypeScript, documentation, and script hardcoded values into config-driven sources.
+- [x] 06.5-02: Extract C++ and infrastructure hardcoded values into config-driven sources.
+- [x] 06.5-03: Extract TypeScript, documentation, and script hardcoded values into config-driven sources.
 
 ### Phase 7: Release and Handoff Proof
 

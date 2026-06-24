@@ -10,6 +10,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'config.ps1')
 
 function Resolve-Pluginval {
     param([string] $ExplicitPath)
@@ -34,9 +35,9 @@ function Resolve-Pluginval {
 
 function Resolve-DefaultPluginPath {
     $candidates = @(
-        (Join-Path $root 'build/vs2019-debug/plugin/LumaScope_artefacts/Debug/VST3/LumaScope.vst3'),
-        (Join-Path $root 'build/vs2019-debug/plugin/LumaScope_artefacts/Debug/VST3/LumaScope.vst3/Contents/x86_64-win/LumaScope.vst3'),
-        (Join-Path $root 'build/vs2019-vite/plugin/LumaScope_artefacts/Debug/VST3/LumaScope.vst3')
+        (Join-Path $root "build/vs2019-debug/plugin/$($script:ARTEFACTS_DIR_NAME)/Debug/VST3/$($script:PRODUCT_NAME).vst3"),
+        (Join-Path $root "build/vs2019-debug/plugin/$($script:ARTEFACTS_DIR_NAME)/Debug/VST3/$($script:PRODUCT_NAME).vst3/Contents/x86_64-win/$($script:PRODUCT_NAME).vst3"),
+        (Join-Path $root "build/vs2019-vite/plugin/$($script:ARTEFACTS_DIR_NAME)/Debug/VST3/$($script:PRODUCT_NAME).vst3")
     )
 
     foreach ($candidate in $candidates) {
@@ -68,7 +69,7 @@ if ([string]::IsNullOrWhiteSpace($PluginPath)) {
 }
 
 if (-not (Test-Path -LiteralPath $PluginPath)) {
-    Write-Error "VST3 artifact not found: $PluginPath. Build it with: cmake --build --preset vs2019-debug --target LumaScope_VST3 --parallel 4"
+    Write-Error "VST3 artifact not found: $PluginPath. Build it with: cmake --build --preset vs2019-debug --target $($script:VST3_TARGET_NAME) --parallel 4"
     exit 3
 }
 

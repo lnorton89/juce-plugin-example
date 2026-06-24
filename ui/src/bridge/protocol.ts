@@ -1,3 +1,5 @@
+import { projectConfig } from '../config/projectConfig';
+
 export const protocolVersion = 1 as const;
 export const uiReadyEvent = 'ui.ready' as const;
 export const hostInfoEvent = 'host.info' as const;
@@ -16,8 +18,8 @@ export const maxSpectrumBins = 256 as const;
 export interface UiReady { protocolVersion: typeof protocolVersion }
 export interface HostInfo {
   protocolVersion: typeof protocolVersion;
-  productName: 'LumaScope';
-  companyName: 'Signal Foundry Audio';
+  productName: typeof projectConfig.productName;
+  companyName: typeof projectConfig.companyName;
   productVersion: string;
   hostMode: 'VST3' | 'Standalone';
   uiSource: 'embedded' | 'vite';
@@ -111,8 +113,8 @@ export function parseHostInfo(value: unknown): HostInfo | null {
   if (!value || typeof value !== 'object') return null;
   const item = value as Record<string, unknown>;
   const bounded = (field: unknown) => typeof field === 'string' && field.length > 0 && field.length <= 128;
-  return item.protocolVersion === protocolVersion && item.productName === 'LumaScope'
-    && item.companyName === 'Signal Foundry Audio' && bounded(item.productVersion)
+  return item.protocolVersion === protocolVersion && item.productName === projectConfig.productName
+    && item.companyName === projectConfig.companyName && bounded(item.productVersion)
     && bounded(item.buildMarker)
     && (item.hostMode === 'VST3' || item.hostMode === 'Standalone')
     && (item.uiSource === 'embedded' || item.uiSource === 'vite') ? item as unknown as HostInfo : null;

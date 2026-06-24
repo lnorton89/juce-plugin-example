@@ -69,6 +69,12 @@ void LumaScopeAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
 }
 
+bool LumaScopeAudioProcessor::readLatestSpectrumSnapshot (lumascope::SpectrumSnapshot& snapshot,
+                                                          std::uint32_t& lastSeenSequence) const noexcept
+{
+    return snapshotMailbox.readLatest (snapshot, lastSeenSequence);
+}
+
 void LumaScopeAudioProcessor::activateLicense(const std::string& licenseKey)
 {
     if (!licensingCore || !activationClient)
@@ -195,12 +201,6 @@ void LumaScopeAudioProcessor::pushStandaloneAudioBlock (const juce::AudioBuffer<
         if (snapshotMailbox.publish (snapshot))
             lastPublishedAnalyzerSequence = snapshot.sequence;
     }
-}
-
-bool LumaScopeAudioProcessor::readLatestSpectrumSnapshot (lumascope::SpectrumSnapshot& snapshot,
-                                                          std::uint32_t& lastSeenSequence) const noexcept
-{
-    return snapshotMailbox.readLatest (snapshot, lastSeenSequence);
 }
 
 juce::AudioProcessorEditor* LumaScopeAudioProcessor::createEditor()

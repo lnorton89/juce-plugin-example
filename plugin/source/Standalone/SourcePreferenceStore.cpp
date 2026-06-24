@@ -1,10 +1,11 @@
 #include "LumaScope/Standalone/SourcePreferenceStore.h"
+#include "LumaScope/ProjectConfig.h"
 
 namespace lumascope
 {
 
 SourcePreferenceStore::SourcePreferenceStore (const juce::File& appDataDir)
-    : prefsFile (appDataDir.getChildFile ("LumaScope").getChildFile ("source-preference.json"))
+    : prefsFile (appDataDir.getChildFile (config::appdataDirName).getChildFile (config::sourcePreferenceFilename))
 {
 }
 

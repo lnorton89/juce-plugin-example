@@ -8,6 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
+import { projectConfig } from '../config/projectConfig';
 
 export interface DeactivationDialogProps {
   open: boolean;
@@ -54,7 +55,7 @@ export function DeactivationDialog({ open, onClose, onDeactivate, deactivating, 
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 1 }}>
             <WarningAmberOutlined color="warning" sx={{ fontSize: 40 }} />
             <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-              This will free your activation so you can activate LumaScope on another computer.
+              This will free your activation so you can activate {projectConfig.productName} on another computer.
               You can reactivate here at any time.
             </Typography>
           </Box>

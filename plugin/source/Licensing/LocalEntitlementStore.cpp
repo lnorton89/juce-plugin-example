@@ -1,4 +1,5 @@
 #include "LumaScope/Licensing/LocalEntitlementStore.h"
+#include "LumaScope/ProjectConfig.h"
 #include <windows.h>
 #include <dpapi.h>
 #include <vector>
@@ -9,15 +10,15 @@ juce::File LocalEntitlementStore::getEntitlementFilePath()
 {
     const auto appData = juce::File::getSpecialLocation(
         juce::File::userApplicationDataDirectory);
-    const auto dir = appData.getChildFile("LumaScope");
+    const auto dir = appData.getChildFile(config::appdataDirName);
     dir.createDirectory();
-    return dir.getChildFile("entitlement.dat");
+    return dir.getChildFile(config::entitlementFilename);
 }
 
 juce::File LocalEntitlementStore::resolvePath() const
 {
     if (basePath_ != juce::File{})
-        return basePath_.getChildFile("entitlement.dat");
+        return basePath_.getChildFile(config::entitlementFilename);
     return getEntitlementFilePath();
 }
 

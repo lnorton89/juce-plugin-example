@@ -1,4 +1,5 @@
 import type { ActivationErrorEnvelope } from './errors';
+import type { EntitlementTokenType } from '../config/projectConfig';
 
 export const ACTIVATION_API_VERSION = 'v1' as const;
 
@@ -47,7 +48,7 @@ export interface SignedEntitlementToken {
 export interface ActivationSuccessResponse {
   activationId: string;
   entitlementToken: SignedEntitlementToken;
-  tokenType: 'lumascope-entitlement-v1';
+  tokenType: EntitlementTokenType;
   expiresAt: string;
   serverTime: string;
   refreshAfter: string;

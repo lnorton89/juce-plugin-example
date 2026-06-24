@@ -12,23 +12,23 @@ if(LUMASCOPE_WEBVIEW_DEV_SERVER AND NOT LUMASCOPE_WEBVIEW_DEV_SERVER MATCHES "^h
     "paths, queries, and fragments are rejected.")
 endif()
 
-juce_add_plugin(LumaScope
-  COMPANY_NAME "Signal Foundry Audio"
+juce_add_plugin(${PROJECT_CONFIG_PLUGIN_TARGET}
+  COMPANY_NAME "${PROJECT_CONFIG_COMPANY}"
   IS_SYNTH FALSE
   NEEDS_MIDI_INPUT FALSE
   NEEDS_MIDI_OUTPUT FALSE
   IS_MIDI_EFFECT FALSE
   EDITOR_WANTS_KEYBOARD_FOCUS FALSE
   COPY_PLUGIN_AFTER_BUILD FALSE
-  BUNDLE_ID "audio.signal-foundry.LumaScope"
-  PLUGIN_MANUFACTURER_CODE SgFd
-  PLUGIN_CODE LmSc
+  BUNDLE_ID "${PROJECT_CONFIG_BUNDLE_ID}"
+  PLUGIN_MANUFACTURER_CODE ${PROJECT_CONFIG_MFR_CODE}
+  PLUGIN_CODE ${PROJECT_CONFIG_PLUGIN_CODE}
   FORMATS VST3 Standalone
-  PRODUCT_NAME "LumaScope"
+  PRODUCT_NAME "${PROJECT_CONFIG_NAME}"
   NEEDS_WEB_BROWSER TRUE
   NEEDS_WEBVIEW2 TRUE)
 
-target_sources(LumaScope PRIVATE
+target_sources(${PROJECT_CONFIG_PLUGIN_TARGET} PRIVATE
   include/LumaScope/PluginEditor.h
   include/LumaScope/PluginProcessor.h
   include/LumaScope/Analyzer/AnalyzerConfig.h
@@ -72,9 +72,9 @@ target_sources(LumaScope PRIVATE
   source/Standalone/windows/WasapiDeviceNotifications.cpp
   source/WebResources.cpp)
 
-target_include_directories(LumaScope PUBLIC include)
-target_compile_features(LumaScope PUBLIC cxx_std_20)
-  target_compile_definitions(LumaScope PUBLIC
+target_include_directories(${PROJECT_CONFIG_PLUGIN_TARGET} PUBLIC include "${PROJECT_CONFIG_GENERATED_INCLUDE_DIR}")
+target_compile_features(${PROJECT_CONFIG_PLUGIN_TARGET} PUBLIC cxx_std_20)
+  target_compile_definitions(${PROJECT_CONFIG_PLUGIN_TARGET} PUBLIC
     JUCE_WEB_BROWSER=1
     JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING=1
     JUCE_USE_CURL=0
@@ -82,12 +82,12 @@ target_compile_features(LumaScope PUBLIC cxx_std_20)
     LUMASCOPE_WEBVIEW_DEV_SERVER="$<$<CONFIG:Debug>:${LUMASCOPE_WEBVIEW_DEV_SERVER}>"
     LUMASCOPE_ACTIVATION_BASE_URL="${LUMASCOPE_ACTIVATION_BASE_URL}"
     LUMASCOPE_BUILD_MARKER="${PROJECT_VERSION}-$<CONFIG>")
-target_link_libraries(LumaScope PRIVATE
-  LumaScopeWebBundle
+target_link_libraries(${PROJECT_CONFIG_PLUGIN_TARGET} PRIVATE
+  ${PROJECT_CONFIG_WEB_BUNDLE_TARGET}
   juce::juce_audio_utils
   juce::juce_dsp
   juce::juce_gui_extra
   bcrypt
   crypt32
   PUBLIC juce::juce_recommended_config_flags juce::juce_recommended_warning_flags)
-add_dependencies(LumaScope LumaScopeWebBundle)
+add_dependencies(${PROJECT_CONFIG_PLUGIN_TARGET} ${PROJECT_CONFIG_WEB_BUNDLE_TARGET})

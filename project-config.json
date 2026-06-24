@@ -1,0 +1,99 @@
+{
+  "_comment": "Edit this file, then run: node scripts/generate-all-config.mjs",
+  "product": {
+    "name": "LumaScope",
+    "companyName": "Signal Foundry Audio",
+    "copyrightYear": 2026,
+    "author": "Signal Foundry Audio"
+  },
+  "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0,
+    "string": "0.1.0"
+  },
+  "identifiers": {
+    "bundleId": "audio.signal-foundry.LumaScope",
+    "namespace": "lumascope",
+    "classPrefix": "LumaScope",
+    "plugin": {
+      "manufacturerCode": "SgFd",
+      "pluginCode": "LmSc"
+    }
+  },
+  "paths": {
+    "appdataDirName": "LumaScope",
+    "sourcePreferenceFilename": "source-preference.json",
+    "entitlementFilename": "entitlement.dat"
+  },
+  "urls": {
+    "devServer": "http://127.0.0.1:5174",
+    "productionApi": "",
+    "previewApi": ""
+  },
+  "ui": {
+    "windowTitle": "LumaScope",
+    "brandHeaderText": "LumaScope",
+    "tagline": "Spectrum analyzer",
+    "errorMessageTemplates": {
+      "webview2Missing": "This application requires the Microsoft WebView2 runtime. Please install it from https://go.microsoft.com/fwlink/p/?LinkId=2124703 and then reopen LumaScope.",
+      "resourceMissing": "The embedded web resources could not be loaded. Try reinstalling or rebuilding LumaScope."
+    }
+  },
+  "bridge": {
+    "productName": "LumaScope",
+    "companyName": "Signal Foundry Audio",
+    "protocolVersion": 1
+  },
+  "worker": {
+    "names": {
+      "production": "lumascope-activation",
+      "preview": "lumascope-activation-preview",
+      "local": "lumascope-activation-local"
+    },
+    "d1DatabaseNames": {
+      "production": "lumascope-activation-db",
+      "preview": "lumascope-activation-db-preview",
+      "local": "lumascope-activation-db-local"
+    },
+    "routes": {
+      "production": "api.lumascope.example.com/*",
+      "preview": "preview-api.lumascope.example.com/*"
+    }
+  },
+  "cloud": {
+    "resourcePrefix": "lumascope-activation"
+  },
+  "tokens": {
+    "entitlementV1": "lumascope-entitlement-v1"
+  },
+  "build": {
+    "pluginTargetName": "LumaScope",
+    "vst3TargetName": "LumaScope_VST3",
+    "standaloneTargetName": "LumaScope_Standalone",
+    "testTargetName": "LumaScopeNativeTests",
+    "webBundleTargetName": "LumaScopeWebBundle",
+    "webBundleNamespace": "LumaScopeWebBundleData",
+    "testWebResourcesTargetName": "TestWebResources",
+    "testWebResourcesNamespace": "TestWebResourcesData",
+    "artefactsDirName": "LumaScope_artefacts",
+    "libraries": {
+      "juce": {
+        "repo": "juce-framework/JUCE",
+        "tag": "8.0.14"
+      },
+      "webview2": {
+        "version": "1.0.4022.49"
+      }
+    }
+  },
+  "env": {
+    "envVarPrefix": "LUMASCOPE",
+    "devServerVar": "LUMASCOPE_WEBVIEW_DEV_SERVER",
+    "releaseBuildVar": "LUMASCOPE_RELEASE_BUILD",
+    "buildMarkerVar": "LUMASCOPE_BUILD_MARKER",
+    "smokeResultVar": "LUMASCOPE_SMOKE_RESULT_FILE",
+    "nativeTestsDefine": "LUMASCOPE_NATIVE_TESTS",
+    "simulateWebFailureVar": "LUMASCOPE_SIMULATE_WEB_FAILURE"
+  }
+}

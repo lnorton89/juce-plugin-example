@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { projectConfig } from '../config/projectConfig';
 
 export interface BrandHeaderProps { mode?: 'VST3' | 'Standalone' }
 
@@ -21,9 +22,9 @@ export function BrandHeader({ mode }: BrandHeaderProps) {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
         <Box aria-hidden="true" sx={{ width: 4, height: 20, borderRadius: 1, bgcolor: 'primary.main' }} />
-        <Typography component="h1" variant="h1" noWrap>LumaScope</Typography>
+        <Typography component="h1" variant="h1" noWrap>{projectConfig.brandHeaderText}</Typography>
         <Typography color="text.secondary" noWrap sx={{ display: { xs: 'none', sm: 'block' } }}>
-          Spectrum analyzer
+          {projectConfig.tagline}
         </Typography>
       </Box>
       {mode && <Typography aria-label="Product mode" variant="subtitle2" noWrap>{mode}</Typography>}

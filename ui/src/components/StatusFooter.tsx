@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import type { LicenseStatusPayload } from '../bridge/protocol';
 import type { BridgeStatus as BridgeState } from '../bridge/protocol';
+import { projectConfig } from '../config/projectConfig';
 import { ActivationStatus } from './ActivationStatus';
 import { boundedDiagnostics, presentationKind, ReadyStatusIcon } from './BridgeStatus';
 
@@ -47,7 +48,7 @@ export function StatusFooter({ bridge, licensing, onLicenseClick }: StatusFooter
           offlineGraceRemainingDays={licensing.offlineGraceRemainingDays}
         />
       )}
-      <Typography color="text.secondary" noWrap sx={{ '@media (max-width:719px)': { display: 'none' } }}>Signal Foundry Audio</Typography>
+      <Typography color="text.secondary" noWrap sx={{ '@media (max-width:719px)': { display: 'none' } }}>{projectConfig.companyName}</Typography>
     </Box>
   );
 }

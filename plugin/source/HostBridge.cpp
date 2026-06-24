@@ -1,4 +1,5 @@
 #include "LumaScope/HostBridge.h"
+#include "LumaScope/ProjectConfig.h"
 
 namespace lumascope
 {
@@ -47,8 +48,8 @@ juce::var HostBridge::makeHostInfo() const
     auto result = juce::var (new juce::DynamicObject());
     auto* object = result.getDynamicObject();
     object->setProperty ("protocolVersion", protocolVersion);
-    object->setProperty ("productName", "LumaScope");
-    object->setProperty ("companyName", "Signal Foundry Audio");
+    object->setProperty ("productName", config::productName);
+    object->setProperty ("companyName", config::companyName);
     object->setProperty ("productVersion", productVersion);
     object->setProperty ("hostMode", hostMode);
     object->setProperty ("uiSource", uiSource);

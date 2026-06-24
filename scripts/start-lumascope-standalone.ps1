@@ -37,6 +37,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'config.ps1')
 
 # Resolve build directory
 $resolvedBuild = Resolve-Path $BuildDir -ErrorAction SilentlyContinue
@@ -46,10 +47,10 @@ if (-not $resolvedBuild) {
   exit 1
 }
 
-$exePath = Join-Path $resolvedBuild "plugin\$Config\LumaScope_Standalone.exe"
+$exePath = Join-Path $resolvedBuild "plugin\$($script:ARTEFACTS_DIR_NAME)\$Config\Standalone\$($script:PRODUCT_NAME).exe"
 if (-not (Test-Path $exePath)) {
   Write-Error "Standalone executable not found: $exePath"
-  Write-Error "Build with: cmake --build `"$resolvedBuild`" --target LumaScope_Standalone --config $Config"
+  Write-Error "Build with: cmake --build `"$resolvedBuild`" --target $($script:STANDALONE_TARGET_NAME) --config $Config"
   exit 1
 }
 
@@ -61,7 +62,7 @@ if (-not $webviewCheck) {
 }
 
 # Check source preference file (informational)
-$prefsFile = Join-Path $env:APPDATA "LumaScope\source-preference.json"
+$prefsFile = Join-Path $env:APPDATA (Join-Path $script:APPDATA_DIR_NAME $script:SOURCE_PREFERENCE_FILENAME)
 if (Test-Path $prefsFile) {
   try {
     $prefs = Get-Content $prefsFile -Raw | ConvertFrom-Json
@@ -73,12 +74,12 @@ if (Test-Path $prefsFile) {
   Write-Host "No saved source preference (first launch or reset)"
 }
 
-Write-Host "Launching LumaScope Standalone ($Config)..."
+Write-Host "Launching $($script:PRODUCT_NAME) Standalone ($Config)..."
 Write-Host "  Executable: $exePath"
 
 do {
   $process = Start-Process -FilePath $exePath -NoNewWindow -PassThru -Wait
-  Write-Host "LumaScope exited with code $($process.ExitCode)"
+  Write-Host "$($script:PRODUCT_NAME) exited with code $($process.ExitCode)"
 
   if ($Restart) {
     Write-Host "Restarting in 2 seconds..."

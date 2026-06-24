@@ -15,8 +15,9 @@ import type { Env } from '../env';
 import { Repository } from '../db/repository';
 import type { Activation, License } from '../db/schema';
 import { buildEntitlementClaims, signEntitlement } from '../signing/entitlement';
+import { projectConfig } from '../config/projectConfig';
 
-const TOKEN_TYPE = 'lumascope-entitlement-v1' as const;
+const TOKEN_TYPE = projectConfig.tokenTypeV1;
 const REFRESH_AFTER_MS = 24 * 60 * 60 * 1000;
 const EXPIRES_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 

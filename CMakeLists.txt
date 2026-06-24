@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
-project(LumaScope VERSION 0.1.0 LANGUAGES CXX)
+include(cmake/Config.cmake)
+
+project(${PROJECT_CONFIG_NAME} VERSION ${PROJECT_CONFIG_VERSION_STR} LANGUAGES CXX)
+
+set(PROJECT_CONFIG_GENERATED_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/include")
+configure_file(
+  "${CMAKE_SOURCE_DIR}/cmake/templates/ProjectConfig.h.in"
+  "${PROJECT_CONFIG_GENERATED_INCLUDE_DIR}/LumaScope/ProjectConfig.h"
+  @ONLY)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

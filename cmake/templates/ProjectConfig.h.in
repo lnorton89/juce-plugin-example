@@ -1,0 +1,17 @@
+#pragma once
+
+#define PROJECT_NAMESPACE @PROJECT_CONFIG_NAMESPACE@
+
+namespace PROJECT_NAMESPACE::config
+{
+inline constexpr auto productName = "@PROJECT_CONFIG_NAME@";
+inline constexpr auto companyName = "@PROJECT_CONFIG_COMPANY@";
+inline constexpr auto productVersion = "@PROJECT_CONFIG_VERSION_STR@";
+inline constexpr auto appdataDirName = "@PROJECT_CONFIG_APPDATA_DIR@";
+inline constexpr auto sourcePreferenceFilename = "@PROJECT_CONFIG_SOURCE_PREF_FILENAME@";
+inline constexpr auto entitlementFilename = "@PROJECT_CONFIG_ENTITLEMENT_FILENAME@";
+inline constexpr auto webview2MissingMessage = "@PROJECT_CONFIG_WEBVIEW2_MISSING@";
+inline constexpr auto resourceMissingMessage = "@PROJECT_CONFIG_RESOURCE_MISSING@";
+inline constexpr auto devServerUrl = "@PROJECT_CONFIG_DEV_SERVER_URL@";
+inline constexpr auto entitlementTokenType = "@PROJECT_CONFIG_TOKEN_TYPE_V1@";
+}

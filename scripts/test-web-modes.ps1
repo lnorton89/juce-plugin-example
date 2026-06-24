@@ -3,6 +3,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'config.ps1')
 $results = Join-Path $root 'build/web-mode-results'
 $viteProcess = $null
 
@@ -29,13 +30,13 @@ function Stop-OwnedProcessTree($Process) {
 
 function Invoke-Smoke([string] $Preset, [string] $ExpectedSource, [string] $Case, [string] $ExpectedStatus, [string] $ExpectedError = '', [string] $Simulation = '') {
     Invoke-Checked 'cmake' @('--preset', $Preset)
-    Invoke-Checked 'cmake' @('--build', '--preset', $Preset, '--target', 'LumaScope_Standalone', '--parallel', '4')
+    Invoke-Checked 'cmake' @('--build', '--preset', $Preset, '--target', $script:STANDALONE_TARGET_NAME, '--parallel', '4')
     $resultPath = Join-Path $results "$Case.json"
     Remove-Item -LiteralPath $resultPath -Force -ErrorAction SilentlyContinue
     $env:LUMASCOPE_SMOKE_RESULT_FILE = $resultPath
     if ($Simulation) { $env:LUMASCOPE_SIMULATE_WEB_FAILURE = $Simulation }
     else { Remove-Item Env:LUMASCOPE_SIMULATE_WEB_FAILURE -ErrorAction SilentlyContinue }
-    $exe = Join-Path $root "build/$Preset/plugin/LumaScope_artefacts/Debug/Standalone/LumaScope.exe"
+    $exe = Join-Path $root "build/$Preset/plugin/$($script:ARTEFACTS_DIR_NAME)/Debug/Standalone/$($script:PRODUCT_NAME).exe"
     $process = Start-Process -FilePath $exe -PassThru
     $deadline = (Get-Date).AddSeconds(20)
     while (-not (Test-Path -LiteralPath $resultPath) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 100 }

@@ -27,7 +27,7 @@ set(LICENSING_TEST_SOURCES
   "${CMAKE_SOURCE_DIR}/tests/native/Licensing/ActivationClientTests.cpp"
 )
 
-add_executable(LumaScopeNativeTests AudioConversionTests.cpp EditorSnapshotPollingTests.cpp HostBridgeTests.cpp PluginProcessorTests.cpp RealtimeHandoffTests.cpp SourcePreferenceStoreTests.cpp SpectrumAnalyzerTests.cpp StandaloneSourceControllerTests.cpp WasapiEndpointModelTests.cpp WebResourcesTests.cpp
+add_executable(${PROJECT_CONFIG_TEST_TARGET} AudioConversionTests.cpp EditorSnapshotPollingTests.cpp HostBridgeTests.cpp PluginProcessorTests.cpp RealtimeHandoffTests.cpp SourcePreferenceStoreTests.cpp SpectrumAnalyzerTests.cpp StandaloneSourceControllerTests.cpp WasapiEndpointModelTests.cpp WebResourcesTests.cpp
   "${CMAKE_SOURCE_DIR}/plugin/source/HostBridge.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Analyzer/AnalyzerConfig.cpp"
   "${CMAKE_SOURCE_DIR}/plugin/source/Analyzer/SpectrumAnalyzer.cpp"
@@ -40,18 +40,18 @@ add_executable(LumaScopeNativeTests AudioConversionTests.cpp EditorSnapshotPolli
   "${CMAKE_SOURCE_DIR}/plugin/source/WebResources.cpp"
   ${LICENSING_SOURCES}
   ${LICENSING_TEST_SOURCES})
-target_include_directories(LumaScopeNativeTests PRIVATE "${CMAKE_SOURCE_DIR}/plugin/include")
-target_compile_features(LumaScopeNativeTests PRIVATE cxx_std_20)
-target_compile_definitions(LumaScopeNativeTests PRIVATE
-  JucePlugin_Name="LumaScope"
-  JucePlugin_VersionString="0.1.0"
+target_include_directories(${PROJECT_CONFIG_TEST_TARGET} PRIVATE "${CMAKE_SOURCE_DIR}/plugin/include" "${PROJECT_CONFIG_GENERATED_INCLUDE_DIR}")
+target_compile_features(${PROJECT_CONFIG_TEST_TARGET} PRIVATE cxx_std_20)
+target_compile_definitions(${PROJECT_CONFIG_TEST_TARGET} PRIVATE
+  JucePlugin_Name="${PROJECT_CONFIG_NAME}"
+  JucePlugin_VersionString="${PROJECT_CONFIG_VERSION_STR}"
   JucePlugin_Build_Standalone=0
   LUMASCOPE_NATIVE_TESTS=1
   LUMASCOPE_PLUGIN_PROCESSOR_SOURCE="${CMAKE_SOURCE_DIR}/plugin/source/PluginProcessor.cpp"
   LUMASCOPE_SNAPSHOT_MAILBOX_HEADER="${CMAKE_SOURCE_DIR}/plugin/include/LumaScope/SnapshotMailbox.h"
   LUMASCOPE_WEBVIEW_DEV_SERVER=""
   LUMASCOPE_ACTIVATION_BASE_URL="http://localhost:8787"
-  LUMASCOPE_BUILD_MARKER="0.1.0-test"
+  LUMASCOPE_BUILD_MARKER="${PROJECT_CONFIG_VERSION_STR}-test"
   LUMASCOPE_FIXTURE_UI_READY="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/ui-ready-v1.json"
   LUMASCOPE_FIXTURE_HOST_INFO="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/host-info-v1.json"
   LUMASCOPE_FIXTURE_SPECTRUM_SNAPSHOT="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/spectrum-snapshot-v1.json"
@@ -59,5 +59,5 @@ target_compile_definitions(LumaScopeNativeTests PRIVATE
   LUMASCOPE_FIXTURE_MALFORMED="${CMAKE_SOURCE_DIR}/tests/fixtures/bridge/malformed.json"
   LUMASCOPE_FIXTURE_ENTITLEMENT_V1="${CMAKE_SOURCE_DIR}/tests/worker/fixtures/entitlement-v1.json"
   LUMASCOPE_FIXTURE_KEY_RING="${CMAKE_SOURCE_DIR}/tests/native/fixtures/public-key-ring.json")
-target_link_libraries(LumaScopeNativeTests PRIVATE TestWebResources juce::juce_audio_devices juce::juce_audio_processors juce::juce_dsp juce::juce_gui_extra bcrypt crypt32)
-add_test(NAME LumaScopeNativeTests COMMAND LumaScopeNativeTests)
+target_link_libraries(${PROJECT_CONFIG_TEST_TARGET} PRIVATE TestWebResources juce::juce_audio_devices juce::juce_audio_processors juce::juce_dsp juce::juce_gui_extra bcrypt crypt32)
+add_test(NAME ${PROJECT_CONFIG_TEST_TARGET} COMMAND ${PROJECT_CONFIG_TEST_TARGET})

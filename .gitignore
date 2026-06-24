@@ -5,6 +5,9 @@
 /.vs/
 *.user
 
+# Scratch/test files from development
+test_*.cpp
+
 # Phase 4 — Cloudflare deployment infrastructure
 /infra/generated-state.json
 /worker/node_modules/

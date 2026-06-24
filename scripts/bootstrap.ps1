@@ -6,6 +6,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'config.ps1')
 
 function Invoke-Checked([string] $File, [string[]] $Arguments) {
     Write-Host "> $File $($Arguments -join ' ')"
@@ -20,7 +21,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Invoke-Checked 'npm.cmd' @('--prefix', 'ui', 'ci')
 Invoke-Checked 'cmake' @('--preset', $Preset)
 if (-not $SkipBuild) {
-    Invoke-Checked 'cmake' @('--build', '--preset', $Preset, '--target', 'LumaScope_Standalone', 'LumaScope_VST3', 'LumaScopeNativeTests', '--parallel', '4')
+    Invoke-Checked 'cmake' @('--build', '--preset', $Preset, '--target', $script:STANDALONE_TARGET_NAME, $script:VST3_TARGET_NAME, $script:TEST_TARGET_NAME, '--parallel', '4')
 }
 
 Write-Host "Bootstrap complete for $Preset. Dependencies remain in the ignored .deps and ui/node_modules caches."

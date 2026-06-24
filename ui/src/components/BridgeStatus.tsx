@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import type { BridgeStatus as BridgeState } from '../bridge/protocol';
+import { projectConfig } from '../config/projectConfig';
 
 export interface BridgeStatusProps { bridge: BridgeState; onRetry?: () => void }
 export type PresentationKind = 'connecting' | 'ready' | 'development-server-unavailable' | 'protocol-mismatch' | 'runtime-error';
@@ -24,7 +25,7 @@ export function boundedDiagnostics(bridge: Extract<BridgeState, { state: 'error'
 const copyByKind = {
   'development-server-unavailable': 'Development server unavailable. Start the UI dev task or switch to embedded assets.',
   'protocol-mismatch': 'Interface version mismatch. Rebuild the native app and embedded UI from the same checkout.',
-  'runtime-error': 'The interface could not start. Check the WebView2 runtime and reopen LumaScope.',
+  'runtime-error': `The interface could not start. Check the WebView2 runtime and reopen ${projectConfig.productName}.`,
 } as const;
 
 export function BridgeStatus({ bridge, onRetry }: BridgeStatusProps) {

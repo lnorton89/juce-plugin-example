@@ -1,6 +1,7 @@
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import { useCallback, useState } from 'react';
+import { projectConfig } from '../config/projectConfig';
 
 export interface GraceWarnAlertProps {
   offlineGraceRemainingDays: number;
@@ -23,7 +24,7 @@ export function GraceWarnAlert({ offlineGraceRemainingDays }: GraceWarnAlertProp
 
   if (offlineGraceRemainingDays <= 0) {
     severity = 'error';
-    message = 'Offline grace expired. Please activate to continue using LumaScope.';
+    message = `Offline grace expired. Please activate to continue using ${projectConfig.productName}.`;
   } else if (offlineGraceRemainingDays === 1) {
     severity = 'error';
     message = 'Activation expires tomorrow. Connect to the internet now to avoid interruption.';

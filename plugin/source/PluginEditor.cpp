@@ -1,9 +1,10 @@
 #include "LumaScope/PluginEditor.h"
+#include "LumaScope/ProjectConfig.h"
 #include "LumaScopeWebBundle.h"
 
 namespace
 {
-constexpr auto canonicalDevServer = "http://127.0.0.1:5174";
+constexpr auto canonicalDevServer = lumascope::config::devServerUrl;
 
 auto makeBrowserOptions (LumaScopeAudioProcessorEditor* editor,
                          lumascope::WebResources& resources,
@@ -90,18 +91,18 @@ LumaScopeAudioProcessorEditor::LumaScopeAudioProcessorEditor (LumaScopeAudioProc
    #endif
     if (simulation == "webview2")
     {
-        showFallback ("webview2_unavailable", "The WebView2 runtime is unavailable. Install or repair Evergreen WebView2, then reopen LumaScope.");
+        showFallback ("webview2_unavailable", lumascope::config::webview2MissingMessage);
         return;
     }
     if (simulation == "resource")
     {
-        showFallback ("embedded_resource_unavailable", "The packaged interface could not be loaded. Rebuild LumaScope and reopen it.");
+        showFallback ("embedded_resource_unavailable", lumascope::config::resourceMissingMessage);
         return;
     }
     if (! juce::WebBrowserComponent::areOptionsSupported (makeBrowserOptions (this, resources,
             uiSource == "vite" ? configuredDevServer() : juce::String {})))
     {
-        showFallback ("webview2_unavailable", "The WebView2 runtime is unavailable. Install or repair Evergreen WebView2, then reopen LumaScope.");
+        showFallback ("webview2_unavailable", lumascope::config::webview2MissingMessage);
         return;
     }
     browser.goToURL (uiSource == "vite" ? configuredDevServer()
@@ -138,12 +139,13 @@ void LumaScopeAudioProcessorEditor::paint (juce::Graphics& graphics)
     graphics.drawRoundedRectangle (fallbackBounds.toFloat(), 10.0f, 1.0f);
     graphics.setColour (juce::Colour (0xfff2f7f8));
     graphics.setFont (juce::FontOptions { 24.0f });
-    graphics.drawFittedText ("LumaScope", fallbackBounds.withTrimmedBottom (fallbackBounds.getHeight() / 2),
+    graphics.drawFittedText (lumascope::config::productName, fallbackBounds.withTrimmedBottom (fallbackBounds.getHeight() / 2),
                              juce::Justification::centredBottom, 1);
     graphics.setColour (juce::Colour (0xff91a4ae));
     graphics.setFont (juce::FontOptions { 14.0f });
     graphics.drawFittedText (fallbackMessage.isNotEmpty() ? fallbackMessage
-                                                          : "The interface could not start. Check the WebView2 runtime and reopen LumaScope.",
+                                                          : juce::String ("The interface could not start. Check the WebView2 runtime and reopen ")
+                                                                + lumascope::config::productName + ".",
                              fallbackBounds.withTrimmedTop (fallbackBounds.getHeight() / 2),
                              juce::Justification::centredTop, 2);
 }
@@ -290,7 +292,7 @@ void LumaScopeAudioProcessorEditor::handleBrowserNetworkError (const juce::Strin
     const auto code = uiSource == "vite" ? "development_server_unavailable" : "embedded_resource_unavailable";
     const auto message = uiSource == "vite"
         ? "Development server unavailable. Start npm --prefix ui run dev or switch to embedded assets."
-        : "The packaged interface could not be loaded. Rebuild LumaScope and reopen it.";
+        : juce::String (lumascope::config::resourceMissingMessage);
     showFallback (code, juce::String (message) + " " + errorInfo.substring (0, 128));
 }
 

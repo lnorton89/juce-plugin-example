@@ -5,7 +5,7 @@
 - Windows 10 20H1+ or Windows 11
 - [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (Evergreen)
 - VST3 (optional — only if using the host)
-- Build artifacts from a successful CMake build (see [BUILD.md](../../BUILD.md))
+- Build artifacts from a successful CMake build (see the repository [README](../../README.md))
 
 ## Quick Start
 
@@ -16,13 +16,13 @@
 cmake --preset vs2019-vite
 
 # Build standalone
-cmake --build build\vs2019-vite --target LumaScope_Standalone --config Debug
+cmake --build --preset vs2019-vite --target LumaScope_Standalone --parallel 4
 ```
 
 ### Run
 
 ```powershell
-.\build\vs2019-vite\plugin\Debug\LumaScope_Standalone.exe
+.\build\vs2019-vite\plugin\LumaScope_artefacts\Debug\Standalone\LumaScope.exe
 ```
 
 ### Run via launcher script
@@ -58,6 +58,8 @@ LumaScope saves the last valid source selection (mode + ID + display name) to a 
 On startup, the application restores the saved source if it is still available in the current device enumeration. If the source is no longer available, the application starts in the stopped (choose-source) state.
 
 To clear the saved preference, delete the `source-preference.json` file while the application is closed.
+
+Product name, artifact directory, standalone target name, AppData directory, and preference filename are sourced from `project-config.json` via `scripts/config.ps1`; see [configuration reference](../CONFIG-REFERENCE.md).
 
 ## Troubleshooting
 

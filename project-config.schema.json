@@ -1,0 +1,438 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$version": "1.0.0",
+  "title": "LumaScope Project Configuration",
+  "description": "Centralized configuration for the LumaScope spectrum analyzer project. All product identity, version, paths, URLs, and build values are defined here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "product", "version", "identifiers", "paths", "urls",
+    "ui", "bridge", "worker", "cloud", "tokens", "build", "env"
+  ],
+  "properties": {
+    "_comment": {
+      "type": "string",
+      "description": "Human-readable regeneration hint",
+      "filesAffected": ["project-config.json"]
+    },
+    "product": {
+      "type": "object",
+      "description": "Product identity and branding information",
+      "additionalProperties": false,
+      "required": ["name", "companyName", "copyrightYear", "author"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Product display name used in UI, build targets, and path names",
+          "filesAffected": [
+            "CMakeLists.txt:3 (project name)",
+            "plugin/CMakeLists.txt:15 (juce_add_plugin target name), :27 (PRODUCT_NAME)",
+            "tests/native/CMakeLists.txt:46 (PRODUCT_NAME compile define)",
+            "plugin/source/HostBridge.cpp:50 (productName in host.info)",
+            "plugin/source/PluginEditor.cpp:87,92,98,140,288 (user-facing error strings)",
+            "plugin/source/PluginEditor.cpp:135 (editor title)",
+            "plugin/source/Licensing/LocalEntitlementStore.cpp:12 (appdata subdirectory)",
+            "plugin/source/Standalone/SourcePreferenceStore.cpp:7 (appdata subdirectory)",
+            "ui/src/bridge/protocol.ts:19,114 (productName literal type and parser)",
+            "ui/src/components/BrandHeader.tsx:24 (heading text)",
+            "ui/src/components/BridgeStatus.tsx:27 (error message text)",
+            "ui/src/test/BridgeStates.test.tsx, AppShell.test.tsx, AnalyzerStage.test.tsx, StandaloneSourceStrip.test.tsx (test fixture values)",
+            "docs/development.md:1 (project name in heading)",
+            "docs/bridge-protocol.md:3,17,287 (protocol documentation references)",
+            "README.md (project name)",
+            "scripts/start-lumascope-standalone.ps1:49,64 (exe path and appdata path)",
+            "scripts/validate-plugin.ps1:37-39 (artifact paths)"
+          ]
+        },
+        "companyName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Company or author name for plugin metadata and UI",
+          "filesAffected": [
+            "plugin/CMakeLists.txt:16 (COMPANY_NAME in juce_add_plugin)",
+            "plugin/source/HostBridge.cpp:51 (companyName in host.info)",
+            "ui/src/bridge/protocol.ts:20,115 (companyName literal type and parser)",
+            "ui/src/components/StatusFooter.tsx:50 (footer company name text)",
+            "ui/src/test/BridgeStates.test.tsx:9 (test fixture value)",
+            "docs/bridge-protocol.md:24 (companyName field documentation)"
+          ]
+        },
+        "copyrightYear": {
+          "type": "integer",
+          "minimum": 2024,
+          "description": "Copyright year for generated files and metadata",
+          "filesAffected": []
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Author string for metadata (may match companyName)",
+          "filesAffected": []
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "description": "Product version in semver format",
+      "additionalProperties": false,
+      "required": ["major", "minor", "patch", "string"],
+      "properties": {
+        "major": { "type": "integer", "minimum": 0, "filesAffected": [] },
+        "minor": { "type": "integer", "minimum": 0, "filesAffected": [] },
+        "patch": { "type": "integer", "minimum": 0, "filesAffected": [] },
+        "string": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Semver string (major.minor.patch)",
+          "filesAffected": [
+            "CMakeLists.txt:3 (project VERSION)",
+            "tests/native/CMakeLists.txt:47 (JucePlugin_VersionString compile define)",
+            "ui/src/test/BridgeStates.test.tsx:9 (test fixture)",
+            "ui/src/test/AppShell.test.tsx:16 (test fixture)",
+            "ui/src/test/AnalyzerStage.test.tsx:32 (test fixture)",
+            "ui/src/test/StandaloneSourceStrip.test.tsx:35,48 (test fixture)",
+            "docs/bridge-protocol.md:24 (productVersion field)"
+          ]
+        }
+      }
+    },
+    "identifiers": {
+      "type": "object",
+      "description": "Internal identifiers for plugin, bundle, and code namespaces",
+      "additionalProperties": false,
+      "required": ["bundleId", "namespace", "classPrefix", "plugin"],
+      "properties": {
+        "bundleId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Reverse-domain bundle identifier",
+          "filesAffected": ["plugin/CMakeLists.txt:23 (BUNDLE_ID)"]
+        },
+        "namespace": {
+          "type": "string",
+          "minLength": 1,
+          "description": "C++ namespace for all plugin code",
+          "filesAffected": [
+            "All files under plugin/include/LumaScope/ and plugin/source/",
+            "tests/native/ (all test files reference lumascope:: namespace)"
+          ]
+        },
+        "classPrefix": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prefix for C++ class names (e.g., LumaScopeAudioProcessor)",
+          "filesAffected": [
+            "plugin/source/PluginProcessor.cpp (class definitions)",
+            "plugin/source/PluginEditor.cpp (class definitions)"
+          ]
+        },
+        "plugin": {
+          "type": "object",
+          "description": "JUCE plugin format codes",
+          "additionalProperties": false,
+          "required": ["manufacturerCode", "pluginCode"],
+          "properties": {
+            "manufacturerCode": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 4,
+              "description": "JUCE 4-character manufacturer code",
+              "filesAffected": ["plugin/CMakeLists.txt:24 (PLUGIN_MANUFACTURER_CODE)"]
+            },
+            "pluginCode": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 4,
+              "description": "JUCE 4-character plugin code",
+              "filesAffected": ["plugin/CMakeLists.txt:25 (PLUGIN_CODE)"]
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "description": "File-system paths and filenames used at runtime",
+      "additionalProperties": false,
+      "required": ["appdataDirName", "sourcePreferenceFilename", "entitlementFilename"],
+      "properties": {
+        "appdataDirName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Subdirectory name under user appdata for LumaScope files",
+          "filesAffected": [
+            "plugin/source/Licensing/LocalEntitlementStore.cpp:12 (appdata path)",
+            "plugin/source/Standalone/SourcePreferenceStore.cpp:7 (appdata path)"
+          ]
+        },
+        "sourcePreferenceFilename": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filename for stored source selection preference",
+          "filesAffected": ["plugin/source/Standalone/SourcePreferenceStore.cpp:7 (source preference file)"]
+        },
+        "entitlementFilename": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filename for stored activation entitlement (DPAPI encrypted)",
+          "filesAffected": [
+            "plugin/source/Licensing/LocalEntitlementStore.cpp:14,20 (entitlement file)"
+          ]
+        }
+      }
+    },
+    "urls": {
+      "type": "object",
+      "description": "URLs for development and production services",
+      "additionalProperties": false,
+      "required": ["devServer", "productionApi", "previewApi"],
+      "properties": {
+        "devServer": {
+          "type": "string",
+          "pattern": "^(http://127\\.0\\.0\\.1:\\d+|)$",
+          "description": "Vite development server URL (local loopback only)",
+          "filesAffected": [
+            "CMakeLists.txt:9 (cache variable default)",
+            "CMakeLists.txt:13-14 (validation)",
+            "plugin/CMakeLists.txt:3-13 (validation)",
+            "plugin/source/PluginEditor.cpp:6,68 (constexpr URL constant)"
+          ]
+        },
+        "productionApi": {
+          "type": "string",
+          "description": "Production activation API base URL (empty until deployed)",
+          "filesAffected": []
+        },
+        "previewApi": {
+          "type": "string",
+          "description": "Preview/pre-production activation API base URL (empty until deployed)",
+          "filesAffected": []
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "description": "User-facing text strings used in the React/MUI frontend and native editor",
+      "additionalProperties": false,
+      "required": ["windowTitle", "brandHeaderText", "tagline", "errorMessageTemplates"],
+      "properties": {
+        "windowTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Window title for the native editor",
+          "filesAffected": ["plugin/source/PluginEditor.cpp:135 (editor window title)"]
+        },
+        "brandHeaderText": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Heading text in BrandHeader component",
+          "filesAffected": ["ui/src/components/BrandHeader.tsx:24 (heading text)"]
+        },
+        "tagline": {
+          "type": "string",
+          "description": "Subtitle text below the brand heading",
+          "filesAffected": ["ui/src/components/BrandHeader.tsx:27 (subtitle text)"]
+        },
+        "errorMessageTemplates": {
+          "type": "object",
+          "description": "Template strings for user-facing error messages",
+          "additionalProperties": false,
+          "required": ["webview2Missing", "resourceMissing"],
+          "properties": {
+            "webview2Missing": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Error shown when WebView2 runtime is not installed",
+              "filesAffected": ["plugin/source/PluginEditor.cpp:87 (WebView2 missing error text)"]
+            },
+            "resourceMissing": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Error shown when embedded web resources fail to load",
+              "filesAffected": ["plugin/source/PluginEditor.cpp:92 (embedded resource error text)"]
+            }
+          }
+        }
+      }
+    },
+    "bridge": {
+      "type": "object",
+      "description": "Native/web bridge protocol constants",
+      "additionalProperties": false,
+      "required": ["productName", "companyName", "protocolVersion"],
+      "properties": {
+        "productName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Product name sent in host.info bridge event",
+          "filesAffected": [
+            "plugin/source/HostBridge.cpp:50 (host.info payload)",
+            "ui/src/bridge/protocol.ts:19 (productName literal type)"
+          ]
+        },
+        "companyName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Company name sent in host.info bridge event",
+          "filesAffected": [
+            "plugin/source/HostBridge.cpp:51 (host.info payload)",
+            "ui/src/bridge/protocol.ts:20 (companyName literal type)"
+          ]
+        },
+        "protocolVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Bridge protocol version (must match across C++ and TypeScript)",
+          "filesAffected": [
+            "plugin/include/LumaScope/HostBridge.h:21 (PROTOCOL_VERSION constant)",
+            "ui/src/bridge/protocol.ts:1 (protocolVersion constant)"
+          ]
+        }
+      }
+    },
+    "worker": {
+      "type": "object",
+      "description": "Cloudflare Worker deployment names, routes, and D1 database names",
+      "additionalProperties": false,
+      "required": ["names", "d1DatabaseNames", "routes"],
+      "properties": {
+        "names": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["production", "preview", "local"],
+          "properties": {
+            "production": { "type": "string", "filesAffected": ["worker/wrangler.toml:3 (name)", "infra/manifest.yaml"] },
+            "preview": { "type": "string", "filesAffected": ["worker/wrangler.toml", "infra/manifest.yaml"] },
+            "local": { "type": "string", "filesAffected": ["worker/wrangler.toml"] }
+          }
+        },
+        "d1DatabaseNames": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["production", "preview", "local"],
+          "properties": {
+            "production": { "type": "string", "filesAffected": ["worker/wrangler.toml:17 (d1_database name)"] },
+            "preview": { "type": "string", "filesAffected": ["worker/wrangler.toml"] },
+            "local": { "type": "string", "filesAffected": ["worker/wrangler.toml:11 (d1_database name)"] }
+          }
+        },
+        "routes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["production", "preview"],
+          "properties": {
+            "production": { "type": "string", "filesAffected": ["worker/wrangler.toml:5 (route)"] },
+            "preview": { "type": "string", "filesAffected": ["worker/wrangler.toml"] }
+          }
+        }
+      }
+    },
+    "cloud": {
+      "type": "object",
+      "description": "Cloud resource prefix for infrastructure provisioning",
+      "additionalProperties": false,
+      "required": ["resourcePrefix"],
+      "properties": {
+        "resourcePrefix": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prefix used for all Cloudflare resource names",
+          "filesAffected": ["infra/manifest.yaml:1 (resourcePrefix)"]
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Signed entitlement token type identifiers",
+      "additionalProperties": false,
+      "required": ["entitlementV1"],
+      "properties": {
+        "entitlementV1": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Token type string for v1 entitlements",
+          "filesAffected": [
+            "worker/src/api/contracts.ts:50 (TOKEN_TYPE constant)",
+            "worker/src/api/activationRoutes.ts:19 (token type check)"
+          ]
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "description": "CMake build target names and dependency versions",
+      "additionalProperties": false,
+      "required": [
+        "pluginTargetName", "vst3TargetName", "standaloneTargetName",
+        "testTargetName", "webBundleTargetName", "webBundleNamespace",
+        "testWebResourcesTargetName", "testWebResourcesNamespace",
+        "artefactsDirName", "libraries"
+      ],
+      "properties": {
+        "pluginTargetName": { "type": "string", "filesAffected": ["plugin/CMakeLists.txt:15 (juce_add_plugin target)"] },
+        "vst3TargetName": { "type": "string", "filesAffected": [] },
+        "standaloneTargetName": { "type": "string", "filesAffected": [] },
+        "testTargetName": { "type": "string", "filesAffected": ["tests/native/CMakeLists.txt"] },
+        "webBundleTargetName": { "type": "string", "filesAffected": ["plugin/CMakeLists.txt:86 (target link)"] },
+        "webBundleNamespace": { "type": "string", "filesAffected": ["cmake/WebBundle.cmake"] },
+        "testWebResourcesTargetName": { "type": "string", "filesAffected": ["tests/native/CMakeLists.txt"] },
+        "testWebResourcesNamespace": { "type": "string", "filesAffected": ["cmake/WebBundle.cmake"] },
+        "artefactsDirName": { "type": "string", "filesAffected": [] },
+        "libraries": {
+          "type": "object",
+          "description": "Pinned dependency versions",
+          "additionalProperties": false,
+          "required": ["juce", "webview2"],
+          "properties": {
+            "juce": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["repo", "tag"],
+              "properties": {
+                "repo": { "type": "string", "filesAffected": ["cmake/Dependencies.cmake:9 (GITHUB_REPOSITORY)"] },
+                "tag": { "type": "string", "filesAffected": ["cmake/Dependencies.cmake:10 (GIT_TAG)"] }
+              }
+            },
+            "webview2": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["version"],
+              "properties": {
+                "version": { "type": "string", "filesAffected": ["cmake/Dependencies.cmake:14 (WEBVIEW2_VERSION)"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "env": {
+      "type": "object",
+      "description": "Environment variable names used in CMake, build, and test configuration",
+      "additionalProperties": false,
+      "required": [
+        "envVarPrefix", "devServerVar", "releaseBuildVar",
+        "buildMarkerVar", "smokeResultVar", "nativeTestsDefine",
+        "simulateWebFailureVar"
+      ],
+      "properties": {
+        "envVarPrefix": {
+          "type": "string",
+          "pattern": "^[A-Z_]+$",
+          "description": "Prefix for all CMake cache variables and compile definitions",
+          "filesAffected": [
+            "CMakeLists.txt:9-18 (all LUMASCOPE_* variables)",
+            "plugin/CMakeLists.txt:82-84 (LUMASCOPE_* compile definitions)",
+            "tests/native/CMakeLists.txt:49 (LUMASCOPE compile defines)"
+          ]
+        },
+        "devServerVar": { "type": "string", "filesAffected": ["CMakeLists.txt:9"] },
+        "releaseBuildVar": { "type": "string", "filesAffected": ["CMakeLists.txt:11"] },
+        "buildMarkerVar": { "type": "string", "filesAffected": ["plugin/CMakeLists.txt:84"] },
+        "smokeResultVar": { "type": "string", "filesAffected": [] },
+        "nativeTestsDefine": { "type": "string", "filesAffected": ["tests/native/CMakeLists.txt:49"] },
+        "simulateWebFailureVar": { "type": "string", "filesAffected": [] }
+      }
+    }
+  }
+}

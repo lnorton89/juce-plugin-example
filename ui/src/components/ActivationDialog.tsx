@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import LinearProgress from '@mui/material/LinearProgress';
 import TextField from '@mui/material/TextField';
 import { useCallback, useState } from 'react';
+import { projectConfig } from '../config/projectConfig';
 
 export interface ActivationDialogProps {
   open: boolean;
@@ -87,13 +88,13 @@ export function ActivationDialog({ open, onClose, onActivate, activating, errorC
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="activation-dialog-title">
       <DialogTitle id="activation-dialog-title" variant="h2">
-        {showSuccess ? 'Activation complete' : activating ? 'Activating\u2026' : 'Activate LumaScope'}
+        {showSuccess ? 'Activation complete' : activating ? 'Activating\u2026' : `Activate ${projectConfig.productName}`}
       </DialogTitle>
       <DialogContent>
         {activating && <LinearProgress sx={{ my: 1 }} aria-label="Activating" />}
         {showSuccess && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            LumaScope is now activated and licensed.
+            {projectConfig.productName} is now activated and licensed.
           </Alert>
         )}
         {showError && (

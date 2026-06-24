@@ -223,7 +223,7 @@ For deployed activation smoke instructions, see `docs/activation-api.md`. Deploy
 
 ## Phase 5 Activation Service
 
-Phase 5 builds on this infrastructure with a one-machine activation service:
+Phase 5 adds the one-machine activation service on top of this infrastructure:
 
 - Activation endpoint: validate license key + machine identifier, issue Ed25519-signed entitlement token
 - Validation endpoint: refresh and re-sign existing entitlements

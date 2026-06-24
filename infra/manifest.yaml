@@ -1,4 +1,5 @@
 # LumaScope Activation Infrastructure Manifest v1
+# Logical names mirror project-config.json worker.* and cloud.resourcePrefix values.
 # This file defines logical resources only. No account IDs,
 # resource UUIDs, or secret values are contained here.
 # Bootstrap scripts read this manifest and write account-
