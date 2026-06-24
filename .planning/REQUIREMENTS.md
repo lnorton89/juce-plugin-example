@@ -73,6 +73,18 @@
 - [ ] **LIC-09**: Licensing state is available to audio/UI code as non-blocking immutable or atomic status and never performs enforcement work in an audio callback.
 - [ ] **LIC-10**: Native tests use cross-language token fixtures and cover valid, wrong-machine, expired, corrupt, unknown-key, grace-boundary, clock-change, and server-outage cases.
 
+### Project Configuration
+
+- [ ] **CFG-01**: A versioned JSON configuration file at the project root defines all product identity values (name, company name, version, plugin codes, URLs, appdata paths, author identity, resource identifiers) with a corresponding JSON Schema documenting every value and listing every file location affected by it.
+- [ ] **CFG-02**: CMake build system reads configuration from the centralized file rather than hardcoding target names, bundle IDs, version strings, dependency paths, or any other configurable values.
+- [ ] **CFG-03**: C++ source code uses configuration-derived constants for product name, company name, namespace, appdata directory, and all user-facing strings instead of string literals.
+- [ ] **CFG-04**: TypeScript/React UI reads product name, company name, version, and branding from configuration rather than hardcoded constants.
+- [ ] **CFG-05**: Worker and infrastructure configuration (Wrangler, manifest, scripts) derive resource names, route patterns, and env var contracts from the centralized config.
+- [ ] **CFG-06**: Documentation and scripts reference configuration values or template variables instead of hardcoded product names, versions, or paths.
+- [ ] **CFG-07**: Setup validation step verifies all required configuration values are present and produces a clear error for missing values — making misconfiguration obvious rather than silently producing broken builds.
+- [ ] **CFG-08**: Configuration schema is independently versioned and changes are tracked alongside the config file to prevent silent incompatibilities between config versions and consuming code.
+- [ ] **CFG-09**: A single documented command or script can regenerate all configuration-derived constants across C++, TypeScript, CMake, and Worker targets, ensuring consistency after any config change.
+
 ### Portable Cloudflare Infrastructure
 
 - [ ] **INFRA-01**: Repository contains a declarative YAML manifest describing logical Worker, D1, bindings, environments, required secrets, configured Lemon identifiers, and optional routing without account credentials.
@@ -178,6 +190,15 @@ Roadmap phase mappings are populated during roadmap creation.
 | LIC-08 | Phase 6 | Pending |
 | LIC-09 | Phase 6 | Pending |
 | LIC-10 | Phase 6 | Pending |
+| CFG-01 | Phase 6.5 | Pending |
+| CFG-02 | Phase 6.5 | Pending |
+| CFG-03 | Phase 6.5 | Pending |
+| CFG-04 | Phase 6.5 | Pending |
+| CFG-05 | Phase 6.5 | Pending |
+| CFG-06 | Phase 6.5 | Pending |
+| CFG-07 | Phase 6.5 | Pending |
+| CFG-08 | Phase 6.5 | Pending |
+| CFG-09 | Phase 6.5 | Pending |
 | INFRA-01 | Phase 4 | Complete (04-01: Manifest, wrangler config, generated-state) |
 | INFRA-02 | Phase 4 | Complete |
 | INFRA-03 | Phase 4 | Complete |
@@ -192,8 +213,8 @@ Roadmap phase mappings are populated during roadmap creation.
 | QUAL-04 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 59 total
-- Mapped to phases: 59
+- v1 requirements: 68 total
+- Mapped to phases: 68
 - Unmapped: 0 ✓
 
 ---

@@ -12,6 +12,7 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 - [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
 - [x] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency. (completed 2026-06-23)
 - [ ] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets.
+- [ ] **Phase 6.5: Project Configuration Centralization** - Extract all hardcoded product identity, branding, version, URLs, codes, and resource names into centralized typed configuration files with schemas mapping each value to its affected locations.
 - [ ] **Phase 7: Release and Handoff Proof** - Validate hosts, devices, security, CI, diagnostics, and clean-account deployment end to end.
 
 ## Phase Details
@@ -182,6 +183,35 @@ Plans:
 - [ ] 06-03: Implement non-real-time activation client and React/MUI activation/deactivation/status flows.
 - [ ] 06-04: Integrate both targets and verify offline, transfer, expiry, revocation, corruption, and outage scenarios.
 
+### Phase 6.5: Project Configuration Centralization
+
+**Goal**: All hardcoded product identity, branding, version, URLs, codes, and resource names are extracted into centralized typed configuration files with schemas mapping each value to its affected locations.
+**Mode:** mvp
+**Depends on**: Phase 6
+**Requirements**: CFG-01, CFG-02, CFG-03, CFG-04, CFG-05, CFG-06, CFG-07, CFG-08, CFG-09
+**Success Criteria** (what must be TRUE):
+
+  1. A versioned JSON configuration file exists at the project root defining product name, company name, version, plugin codes, URLs, appdata paths, company/author identity, and all resource identifiers — with a corresponding JSON Schema documenting every value and listing every file location affected by it.
+  2. CMake build system reads configuration from the centralized file rather than hardcoding target names, bundle IDs, version strings, and dependency paths.
+  3. C++ source code uses configuration-derived constants for product name, company name, namespace, appdata directory, and all user-facing strings instead of string literals.
+  4. TypeScript/React UI reads product name, company name, version, and branding from configuration rather than hardcoded constants.
+  5. Worker and infrastructure configuration (Wrangler, manifest, scripts) derive resource names, route patterns, and env var contracts from the centralized config.
+  6. Documentation and scripts reference configuration values or template variables instead of hardcoded names.
+  7. A setup validation step exists that verifies all required configuration values are present and produces a clear error for missing values — making misconfiguration obvious rather than silently producing broken builds.
+
+**Plans**: 3 plans
+
+Plans:
+
+**Wave 1**
+
+- [ ] 06.5-01: Define config schema, file locations, CMake integration, and validation tooling.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 06.5-02: Extract C++ and infrastructure hardcoded values into config-driven sources.
+- [ ] 06.5-03: Extract TypeScript, documentation, and script hardcoded values into config-driven sources.
+
 ### Phase 7: Release and Handoff Proof
 
 **Goal**: Another developer can validate, diagnose, and reproduce the complete product and cloud stack without hidden knowledge.
@@ -215,4 +245,5 @@ Plans:
 | 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
 | 5. One-Machine Activation Service | 3/3 | Complete   | 2026-06-23 |
 | 6. Native Offline Licensing | 0/4 | Not started | - |
+| 6.5. Project Configuration Centralization | 0/3 | Planned | - |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |
