@@ -13,4 +13,5 @@ test_*.cpp
 /worker/node_modules/
 /worker/dist/
 /tests/worker/node_modules/
+/.env
 

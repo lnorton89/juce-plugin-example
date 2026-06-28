@@ -34,7 +34,7 @@ The VST3 analyzes audio supplied by its host. The standalone application can ana
 | JUCE | 8.0.14, pinned | VST3/standalone shell, audio devices, DSP, WebView | Current JUCE 8 release; one codebase for both targets with official CMake support |
 | C++ | C++20 | Real-time DSP, host integration, local licensing | Strong JUCE/toolchain support without requiring bleeding-edge language mode |
 | CMake | 3.22+ | Reproducible native builds | Minimum documented by JUCE and used by the WebView tutorial |
-| MSVC | Visual Studio 2022 current toolset | Windows compiler and debugger | JUCE's primary Windows toolchain and best WebView2/Windows SDK integration |
+| MSVC | Visual Studio 2019 / VS 2022 toolset | Windows compiler and debugger | CMake presets target VS 2019 generator; VS 2022 also compatible with Ninja presets |
 | React + TypeScript | Pinned stable releases at implementation | Embedded application UI | Matches tutorial architecture while keeping bridge contracts typed |
 | Material UI | Current stable `@mui/material` | Accessible controls, layout, theming | Requested UI system with mature TypeScript support |
 | Vite | Pinned stable release | Frontend dev/build | Fast local iteration and deterministic production asset output |
@@ -83,7 +83,7 @@ The VST3 analyzes audio supplied by its host. The standalone application can ana
 ## Version Compatibility
 | Package A | Compatible With | Notes |
 |-----------|-----------------|-------|
-| JUCE 8.0.14 | CMake 3.22+, VS 2022 | Exact Windows SDK baseline validated in build phase |
+| JUCE 8.0.14 | CMake 3.22+, VS 2019 | Exact Windows SDK baseline validated in build phase |
 | JUCE WebBrowserComponent | WebView2 | Set `NEEDS_WEB_BROWSER`, `NEEDS_WEBVIEW2`, and JUCE WebView2 definitions |
 | React/TypeScript/MUI/Vite | WebView2 Evergreen | Target browser capabilities supported by the chosen minimum Windows baseline |
 | Wrangler v4 | Workers + D1 | Pin in Worker package and use `npx`/package scripts |
@@ -100,13 +100,33 @@ The VST3 analyzes audio supplied by its host. The standalone application can ana
 <!-- GSD:conventions-start source:CONVENTIONS.md -->
 ## Conventions
 
-Conventions not yet established. Will populate as patterns emerge during development.
+### Naming
+- **Product**: LumaScope (brand name), Signal Foundry Audio (company/author)
+- **Namespace**: `lumascope::` in C++, `lumascope-` or `LumaScope` in CMake targets and build artifacts
+- **Config**: All product identity, version, URLs, and resource names come from `project-config.json`, not hardcoded
+
+### Code
+- **Headers**: All public headers in `plugin/include/LumaScope/`; implementations in `plugin/source/`
+- **Licensing**: Licensing code uses `juce::TimeSliceThread` (not `std::thread`), `juce::ScopedLock` alias (not `CriticalSection::ScopedLock`)
+- **Real-time safety**: Audio callback never allocates, blocks, performs I/O, or touches WebView
+- **Bridge protocol**: Typed JSON v1 over JUCE native events; no string-built JavaScript evaluation
+
+### Testing
+- **Native tests**: CTest suite in `tests/native/` using JUCE unit test classes
+- **Frontend tests**: Vitest + React Testing Library in `ui/`
+- **Worker tests**: Vitest in `worker/`
+- **Fixtures**: Cross-language token fixtures in `tests/fixtures/` for licensing tests
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
-Architecture not yet mapped. Follow existing patterns found in the codebase.
+- **Audio thread** (real-time safe): `LumaScopeAudioProcessor::processBlock` → windowed FFT → log bin mapping → smoothing/decay → lock-free SPSC mailbox → `SpectrumSnapshot`
+- **Editor thread** (message thread): Timer polls snapshots from mailbox → converts to typed JSON → sends to WebView via `WebBrowserComponent::emit`
+- **WebView** (React/MUI): Receives `spectrum.snapshot` events → renders canvas spectrum. Bridge protocol v1 over JUCE native events
+- **Standalone source chain**: `StandaloneSourceController` → `JuceInputSourceAdapter` or `WasapiLoopbackSourceAdapter` → unified capture → `LumaScopeAudioProcessor`
+- **Licensing**: `ActivationClient` (TimeSliceThread) → Cloudflare Worker → signature verification in `TokenVerifier` → DPAPI-protected `LocalEntitlementStore` → `GraceModel` for offline bounds
+- **Cloud**: Cloudflare Worker + D1, webhook ingestion via Lemon Squeezy HMAC, Ed25519-signed activation tokens, Wrangler-deployed infra
 <!-- GSD:architecture-end -->
 
 <!-- GSD:skills-start source:skills/ -->

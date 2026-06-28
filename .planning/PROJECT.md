@@ -20,15 +20,14 @@ A developer can clone the project and build, understand, provision, and run the 
 - [x] Phase 2 validated a responsive, stable, non-mutating VST3 spectrum analyzer path from host audio through native FFT/smoothing analysis to the React/WebView canvas renderer.
 - [x] Phase 2 validated analyzer defaults behind extensible DSP, snapshot, bridge, and UI contracts so FFT size, smoothing, decay, and display controls can expand later without redesigning the real-time path.
 - [x] Phase 6 implemented versioned Windows machine identity, Ed25519 token parser/verifier with public-key rotation, DPAPI-protected local entitlement store, 7-day grace model with clock rollback detection, atomic cross-thread licensing state machine, queue-based activation HTTP client, React/MUI activation/deactivation/grace-warning UI, and both-target integration with HostBridge protocol extension.
+- [x] Phase 3 validated standalone Windows monitoring with selectable JUCE input devices and WASAPI loopback capture, source preference persistence, device notifications, and diagnostics.
+- [x] Phase 4 validated portable Cloudflare Worker/D1 provisioning with Lemon Squeezy webhook ingestion, idempotent event processing, and fresh-account deployment guide.
+- [x] Phase 5 validated one-machine activation service with Ed25519 signing, concurrency-safe activate/validate/deactivate, rate limiting, key rotation, and automated Worker tests.
+- [x] Phase 6.5 validated centralized project configuration with project-config.json, JSON Schema, CMake integration, C++/TypeScript/Worker/PowerShell consumers, validation scripts, and one-command regeneration.
 
 ### Active
 
-- [ ] Let the standalone application monitor both selectable input devices and Windows system output through WASAPI loopback.
-- [ ] Activate Lemon Squeezy purchases through a Cloudflare Worker backed by D1.
-- [ ] Restrict each license to one active machine while supporting self-service deactivation and transfer.
-- [ ] Store a signed machine-bound license locally and permit seven days of offline use before requiring successful online revalidation.
-- [ ] Provision and deploy Cloudflare resources from declarative, versioned infrastructure configuration and repeatable scripts using Wrangler and/or Cloudflare APIs.
-- [ ] Keep account identifiers, credentials, webhook secrets, and signing private keys out of source control while documenting setup for a new Cloudflare account.
+- [ ] Phase 7: Release and Handoff Proof — validate hosts, devices, security, CI, diagnostics, and clean-account deployment end to end.
 
 ### Out of Scope
 
@@ -72,13 +71,13 @@ A developer can clone the project and build, understand, provision, and run the 
 |----------|-----------|---------|
 | Target Windows, VST3, and standalone first | Keeps the example focused while covering host and device-capture use cases | Validated in Phase 1 for shell/build artifacts and Phase 2 for VST3 analyzer behavior; standalone audio capture remains active |
 | Use React/TypeScript and Material UI in a JUCE WebView2 editor | Enables modern UI development while demonstrating JUCE 8 native integration | Validated in Phase 1 as the embedded shell and Vite development workflow |
-| Support WASAPI input and loopback capture in standalone | Covers microphones/interfaces and system-output monitoring | — Pending |
+| Support WASAPI input and loopback capture in standalone | Covers microphones/interfaces and system-output monitoring | Validated in Phase 3 |
 | Ship analyzer defaults behind an extensible DSP/UI model | Produces a useful v1 without prematurely designing every control | Validated in Phase 2 through native analyzer profiles, snapshots, bridge events, and canvas rendering |
-| Use Lemon Squeezy, Cloudflare Workers, and D1 for activation | Matches the requested purchase and serverless deployment model | — Pending |
-| Enforce one active machine with self-service transfer | Provides a clear commercial policy without permanent lock-in | — Pending |
-| Verify Ed25519-signed machine-bound entitlements locally | Allows offline verification without embedding server secrets | — Pending |
-| Use a seven-day offline grace period | Balances offline use with entitlement enforcement | — Pending |
-| Treat Cloudflare infrastructure as code and automate account provisioning | Makes the example transferable and avoids undocumented dashboard state | — Pending |
+| Use Lemon Squeezy, Cloudflare Workers, and D1 for activation | Matches the requested purchase and serverless deployment model | Validated in Phase 4-5 |
+| Enforce one active machine with self-service transfer | Provides a clear commercial policy without permanent lock-in | Validated in Phase 5 |
+| Verify Ed25519-signed machine-bound entitlements locally | Allows offline verification without embedding server secrets | Validated in Phase 6 |
+| Use a seven-day offline grace period | Balances offline use with entitlement enforcement | Validated in Phase 6 |
+| Treat Cloudflare infrastructure as code and automate account provisioning | Makes the example transferable and avoids undocumented dashboard state | Validated in Phase 4 |
 | Configure one Context7 MCP server with three pinned source references | Context7 is the MCP provider; JUCE, tutorial, and MUI are libraries within it | Validated in Phase 1 |
 
 ## Evolution
@@ -99,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-23 after Phase 2 completion*
+*Last updated: 2026-06-27 — reconciled Active/Validated/Key Decisions with full codebase audit*

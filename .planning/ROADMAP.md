@@ -8,10 +8,10 @@ The roadmap grows one working product slice at a time: first a reproducible JUCE
 
 - [x] **Phase 1: Reproducible Product Shell** - Build both Windows targets and display a packaged, typed React/MUI WebView shell. (completed 2026-06-23)
 - [x] **Phase 2: End-to-End VST3 Analyzer** - Analyze host audio correctly and render it smoothly without changing the signal. (completed 2026-06-23)
-- [ ] **Phase 3: Standalone Windows Monitoring** - Analyze selectable input devices and system output through WASAPI loopback.
-- [ ] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events.
+- [x] **Phase 3: Standalone Windows Monitoring** - Analyze selectable input devices and system output through WASAPI loopback. (completed 2026-06-23)
+- [x] **Phase 4: Portable Purchase Infrastructure** - Provision Cloudflare resources reproducibly and ingest trusted Lemon Squeezy entitlement events. (completed 2026-06-23)
 - [x] **Phase 5: One-Machine Activation Service** - Activate, validate, deactivate, and sign one-seat entitlements safely under concurrency. (completed 2026-06-23)
-- [ ] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets.
+- [x] **Phase 6: Native Offline Licensing** - Integrate activation, self-service transfer, local verification, and seven-day offline grace into both targets. (completed 2026-06-23)
 | Phase 06 P01 | 15 min | 3 tasks | 8 files |
 | Phase 06 P02 | 20 min | 3 tasks | 20 files |
 - [x] **Phase 6.5: Project Configuration Centralization** - Centralize product identity, branding, versions, URLs, codes, and resource names behind typed config and validation. (completed 2026-06-24)
@@ -244,8 +244,8 @@ Plans:
 | 1. Reproducible Product Shell | 3/3 | Complete    | 2026-06-23 |
 | 2. End-to-End VST3 Analyzer | 4/4 | Complete    | 2026-06-23 |
 | 3. Standalone Windows Monitoring | 3/3 | Complete | 2026-06-23 |
-| 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |  |
+| 4. Portable Purchase Infrastructure | 4/4 | Complete | 2026-06-23 |
 | 5. One-Machine Activation Service | 3/3 | Complete   | 2026-06-23 |
-| 6. Native Offline Licensing | 4/4 | Executing | 2026-06-23 (06-01, 06-02, 06-03, 06-04) |
-| 6.5. Project Configuration Centralization | 0/3 | Planned | - |
+| 6. Native Offline Licensing | 4/4 | Complete | 2026-06-23 (06-01, 06-02, 06-03, 06-04) |
+| 6.5. Project Configuration Centralization | 3/3 | Complete | 2026-06-24 |
 | 7. Release and Handoff Proof | 0/3 | Not started | - |

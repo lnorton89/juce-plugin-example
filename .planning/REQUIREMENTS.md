@@ -31,19 +31,19 @@
 
 ### Standalone Audio Capture
 
-- [ ] **CAP-01**: User can select and monitor an available Windows audio input device in the standalone application.
+- [x] **CAP-01**: User can select and monitor an available Windows audio input device in the standalone application.
 - [x] **CAP-02**: User can select and monitor a Windows render endpoint through shared-mode WASAPI loopback without requiring a vendor “Stereo Mix” device.
 - [x] **CAP-03**: Standalone converts supported device channel/sample formats into the analyzer ingress contract without changing analyzer behavior.
 - [x] **CAP-04**: Standalone safely handles source switching, no active source, device removal, default-device changes, capture invalidation, and restart.
-- [ ] **CAP-05**: Standalone persists the last valid source preference and falls back visibly when that source is unavailable.
+- [x] **CAP-05**: Standalone persists the last valid source preference and falls back visibly when that source is unavailable.
 
 ### WebView User Interface
 
 - [x] **UI-01**: User sees a responsive React/TypeScript Material UI application hosted by JUCE WebView2 in both VST3 and standalone targets.
 - [x] **UI-02**: Spectrum renders smoothly at a bounded display frame rate without creating a DOM/MUI element per FFT bin.
 - [x] **UI-03**: Native and web layers communicate through a versioned, typed protocol with validated message shapes, request identifiers, and stable error envelopes.
-- [ ] **UI-04**: UI exposes source selection and source/error state in standalone while omitting standalone-only controls in VST3.
-- [ ] **UI-05**: UI exposes activation, activated, offline-grace, revalidation-required, deactivation, and actionable failure states.
+- [x] **UI-04**: UI exposes source selection and source/error state in standalone while omitting standalone-only controls in VST3.
+- [x] **UI-05**: UI exposes activation, activated, offline-grace, revalidation-required, deactivation, and actionable failure states.
 - [ ] **UI-06**: UI remains usable across supported window sizes and Windows DPI scaling, with keyboard-accessible controls and sufficient contrast.
 - [ ] **UI-07**: Missing WebView2 runtime, packaged-asset failure, and bridge-version mismatch produce visible native diagnostics rather than a blank editor.
 
@@ -62,39 +62,39 @@
 
 ### Native Licensing
 
-- [ ] **LIC-01**: Application derives a versioned, privacy-conscious machine identifier and never transmits raw hardware identifiers to the service.
-- [ ] **LIC-02**: Application activates by sending the license key and machine identifier only from a non-real-time thread over authenticated HTTPS.
-- [ ] **LIC-03**: Application verifies token signature, key identifier, schema version, product, machine binding, issued time, and validity bounds using embedded public keys.
+- [x] **LIC-01**: Application derives a versioned, privacy-conscious machine identifier and never transmits raw hardware identifiers to the service.
+- [x] **LIC-02**: Application activates by sending the license key and machine identifier only from a non-real-time thread over authenticated HTTPS.
+- [x] **LIC-03**: Application verifies token signature, key identifier, schema version, product, machine binding, issued time, and validity bounds using embedded public keys.
 - [x] **LIC-04**: Application stores the verified entitlement in the user's application-data directory with appropriate Windows access protection and detects corrupt or tampered files.
 - [x] **LIC-05**: Application launches without a server call for up to seven days after the last successful online validation when the signed entitlement remains otherwise valid.
 - [x] **LIC-06**: Application requires online revalidation after the seven-day window and clearly warns before the offline window expires.
 - [x] **LIC-07**: Application resists simple wall-clock rollback from extending offline use indefinitely and documents the remaining limitations.
 - [x] **LIC-08**: Application clears local entitlement only after successful server deactivation and then permits activation on another machine.
 - [x] **LIC-09**: Licensing state is available to audio/UI code as non-blocking immutable or atomic status and never performs enforcement work in an audio callback.
-- [ ] **LIC-10**: Native tests use cross-language token fixtures and cover valid, wrong-machine, expired, corrupt, unknown-key, grace-boundary, clock-change, and server-outage cases.
+- [x] **LIC-10**: Native tests use cross-language token fixtures and cover valid, wrong-machine, expired, corrupt, unknown-key, grace-boundary, clock-change, and server-outage cases.
 
 ### Project Configuration
 
-- [ ] **CFG-01**: A versioned JSON configuration file at the project root defines all product identity values (name, company name, version, plugin codes, URLs, appdata paths, author identity, resource identifiers) with a corresponding JSON Schema documenting every value and listing every file location affected by it.
-- [ ] **CFG-02**: CMake build system reads configuration from the centralized file rather than hardcoding target names, bundle IDs, version strings, dependency paths, or any other configurable values.
-- [ ] **CFG-03**: C++ source code uses configuration-derived constants for product name, company name, namespace, appdata directory, and all user-facing strings instead of string literals.
-- [ ] **CFG-04**: TypeScript/React UI reads product name, company name, version, and branding from configuration rather than hardcoded constants.
-- [ ] **CFG-05**: Worker and infrastructure configuration (Wrangler, manifest, scripts) derive resource names, route patterns, and env var contracts from the centralized config.
-- [ ] **CFG-06**: Documentation and scripts reference configuration values or template variables instead of hardcoded product names, versions, or paths.
-- [ ] **CFG-07**: Setup validation step verifies all required configuration values are present and produces a clear error for missing values — making misconfiguration obvious rather than silently producing broken builds.
-- [ ] **CFG-08**: Configuration schema is independently versioned and changes are tracked alongside the config file to prevent silent incompatibilities between config versions and consuming code.
-- [ ] **CFG-09**: A single documented command or script can regenerate all configuration-derived constants across C++, TypeScript, CMake, and Worker targets, ensuring consistency after any config change.
+- [x] **CFG-01**: A versioned JSON configuration file at the project root defines all product identity values (name, company name, version, plugin codes, URLs, appdata paths, author identity, resource identifiers) with a corresponding JSON Schema documenting every value and listing every file location affected by it.
+- [x] **CFG-02**: CMake build system reads configuration from the centralized file rather than hardcoding target names, bundle IDs, version strings, dependency paths, or any other configurable values.
+- [x] **CFG-03**: C++ source code uses configuration-derived constants for product name, company name, namespace, appdata directory, and all user-facing strings instead of string literals.
+- [x] **CFG-04**: TypeScript/React UI reads product name, company name, version, and branding from configuration rather than hardcoded constants.
+- [x] **CFG-05**: Worker and infrastructure configuration (Wrangler, manifest, scripts) derive resource names, route patterns, and env var contracts from the centralized config.
+- [x] **CFG-06**: Documentation and scripts reference configuration values or template variables instead of hardcoded product names, versions, or paths.
+- [x] **CFG-07**: Setup validation step verifies all required configuration values are present and produces a clear error for missing values — making misconfiguration obvious rather than silently producing broken builds.
+- [x] **CFG-08**: Configuration schema is independently versioned and changes are tracked alongside the config file to prevent silent incompatibilities between config versions and consuming code.
+- [x] **CFG-09**: A single documented command or script can regenerate all configuration-derived constants across C++, TypeScript, CMake, and Worker targets, ensuring consistency after any config change.
 
 ### Portable Cloudflare Infrastructure
 
-- [ ] **INFRA-01**: Repository contains a declarative YAML manifest describing logical Worker, D1, bindings, environments, required secrets, configured Lemon identifiers, and optional routing without account credentials.
+- [x] **INFRA-01**: Repository contains a declarative YAML manifest describing logical Worker, D1, bindings, environments, required secrets, configured Lemon identifiers, and optional routing without account credentials.
 - [x] **INFRA-02**: Developer can run an idempotent bootstrap command that authenticates to a chosen Cloudflare account, creates or reuses required resources, and writes account-specific IDs only to gitignored generated state.
 - [x] **INFRA-03**: Developer can apply local and remote D1 migrations through documented package commands.
 - [x] **INFRA-04**: Developer can inject required secrets through Wrangler or Cloudflare APIs without placing secret values in committed files or command output.
 - [x] **INFRA-05**: Developer can deploy the Worker and bindings through a repeatable command using a least-privilege Cloudflare API token.
 - [x] **INFRA-06**: Deployment workflow reports missing prerequisites/configuration before mutation and supports non-destructive verification plus explicitly confirmed teardown.
-- [ ] **INFRA-07**: Fresh Cloudflare account can be provisioned, migrated, deployed, and smoke-tested using only repository documentation and declared prerequisites.
-- [ ] **INFRA-08**: Documentation explains the unavoidable Lemon Squeezy webhook registration/secret exchange and outputs the deployed callback URL needed to complete it.
+- [x] **INFRA-07**: Fresh Cloudflare account can be provisioned, migrated, deployed, and smoke-tested using only repository documentation and declared prerequisites.
+- [x] **INFRA-08**: Documentation explains the unavoidable Lemon Squeezy webhook registration/secret exchange and outputs the deployed callback URL needed to complete it.
 
 ### Quality and Handoff
 
@@ -158,16 +158,16 @@ Roadmap phase mappings are populated during roadmap creation.
 | VST3-02 | Phase 2 | Complete |
 | VST3-03 | Phase 2 | Complete |
 | VST3-04 | Phase 2 | Complete |
-| CAP-01 | Phase 3 | Pending |
+| CAP-01 | Phase 3 | Complete |
 | CAP-02 | Phase 3 | Complete |
 | CAP-03 | Phase 3 | Complete |
 | CAP-04 | Phase 3 | Complete |
-| CAP-05 | Phase 3 | Pending |
+| CAP-05 | Phase 3 | Complete |
 | UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 2 | Complete |
 | UI-03 | Phase 1 | Complete |
-| UI-04 | Phase 3 | Pending |
-| UI-05 | Phase 6 | Pending |
+| UI-04 | Phase 3 | Complete |
+| UI-05 | Phase 6 | Complete |
 | UI-06 | Phase 7 | Pending |
 | UI-07 | Phase 7 | Pending |
 | CLOUD-01 | Phase 4 | Complete (04-03: Webhook verification) |
@@ -180,25 +180,25 @@ Roadmap phase mappings are populated during roadmap creation.
 | CLOUD-08 | Phase 5 | Complete |
 | CLOUD-09 | Phase 5 | Complete |
 | CLOUD-10 | Phase 5 | Complete |
-| LIC-01 | Phase 6 | Pending |
-| LIC-02 | Phase 6 | Pending |
-| LIC-03 | Phase 6 | Pending |
+| LIC-01 | Phase 6 | Complete (06-01: MachineIdentity) |
+| LIC-02 | Phase 6 | Complete (06-03: ActivationClient) |
+| LIC-03 | Phase 6 | Complete (06-01: TokenVerifier) |
 | LIC-04 | Phase 6 | Complete (06-02: LocalEntitlementStore DPAPI store) |
 | LIC-05 | Phase 6 | Complete (06-02: GraceModel 7-day period, LicensingCore loadFromDisk) |
 | LIC-06 | Phase 6 | Complete (06-02: GraceModel warning/expired, revalidation_required state) |
 | LIC-07 | Phase 6 | Complete (06-02: GraceModel rollback detection with 1-hour tolerance) |
 | LIC-08 | Phase 6 | Complete (06-02: LicensingCore handleDeactivationResponse D-11 policy) |
 | LIC-09 | Phase 6 | Complete (06-02: LicensingState atomic status, no audio-thread blocking) |
-| LIC-10 | Phase 6 | Pending |
-| CFG-01 | Phase 6.5 | Pending |
-| CFG-02 | Phase 6.5 | Pending |
-| CFG-03 | Phase 6.5 | Pending |
-| CFG-04 | Phase 6.5 | Pending |
-| CFG-05 | Phase 6.5 | Pending |
-| CFG-06 | Phase 6.5 | Pending |
-| CFG-07 | Phase 6.5 | Pending |
-| CFG-08 | Phase 6.5 | Pending |
-| CFG-09 | Phase 6.5 | Pending |
+| LIC-10 | Phase 6 | Complete (06-01/06-02/06-04: cross-language fixtures, 8 test files) |
+| CFG-01 | Phase 6.5 | Complete (06.5-01: project-config.json with schema) |
+| CFG-02 | Phase 6.5 | Complete (06.5-01: Config.cmake reads project-config.json) |
+| CFG-03 | Phase 6.5 | Complete (06.5-02: ProjectConfig.h.in template) |
+| CFG-04 | Phase 6.5 | Complete (06.5-03: generate-config-ts.mjs) |
+| CFG-05 | Phase 6.5 | Complete (06.5-02/03: Worker/infra config generation) |
+| CFG-06 | Phase 6.5 | Complete (06.5-03: scripts/config.ps1 template) |
+| CFG-07 | Phase 6.5 | Complete (06.5-01: validate-config.mjs + Config.cmake) |
+| CFG-08 | Phase 6.5 | Complete (06.5-01: schema $version field) |
+| CFG-09 | Phase 6.5 | Complete (06.5-03: generate-all-config.mjs) |
 | INFRA-01 | Phase 4 | Complete (04-01: Manifest, wrangler config, generated-state) |
 | INFRA-02 | Phase 4 | Complete |
 | INFRA-03 | Phase 4 | Complete |
@@ -214,9 +214,11 @@ Roadmap phase mappings are populated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 68 total
+- Complete: 62 (91%)
+- Pending: 6 (UI-06, UI-07, QUAL-01, QUAL-02, QUAL-03, QUAL-04)
 - Mapped to phases: 68
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-06-22*
-*Last updated: 2026-06-22 after roadmap creation*
+*Last updated: 2026-06-27 — Phase 6 health check: reconciled statuses with codebase reality*

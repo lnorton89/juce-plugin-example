@@ -59,7 +59,7 @@ Standalone ──→ SourceController ──→ LumaScopeAudioProcessor
 | JUCE | 8.0.14, pinned | VST3/standalone shell, audio, DSP, WebView |
 | C++ | C++20 | Real-time DSP, host integration, licensing |
 | CMake | 3.22+ | Reproducible native builds |
-| MSVC | VS 2022 toolset | Windows compiler |
+| MSVC | VS 2019 toolset | Windows compiler (Ninja presets also work with VS 2022) |
 | React + TypeScript | Pinned | Embedded application UI |
 | Material UI | Current `@mui/material` | Accessible controls, layout, theming |
 | Vite | Pinned | Frontend dev/build |
@@ -89,12 +89,15 @@ The project uses one [Context7 MCP](https://github.com/upstash/context7) server 
 │   ├── source/        Implementation files
 │   │   └── Standalone/          Standalone-only source (controller, adapters, WASAPI loopback)
 ├── ui/                React/TypeScript/Vite frontend workspace
-├── cmake/             CMake modules (WebBundle, dependency resolution)
-├── scripts/           Build, test, validation, and packaging scripts
-├── docs/              Design docs (DSP contract, bridge protocol, development workflow, smoke test)
-├── tests/native/      C++ native unit tests (CTest)
 ├── worker/            Cloudflare Worker activation service
-└── .planning/         GSD phase plans, state, and roadmap
+├── cmake/             CMake modules (Config, CPM, Dependencies, WebBundle, templates)
+├── infra/             Cloudflare infrastructure scripts (bootstrap, deploy, teardown, verify)
+├── scripts/           Build, test, validation, and packaging scripts
+├── docs/              Design docs (DSP, bridge protocol, activation API, cloud infra, development)
+├── tests/             Native (CTest), frontend (Vitest), and Worker (Vitest) tests + fixtures
+├── .planning/         GSD phase plans, state, and roadmap
+├── project-config.json         Centralized product identity and branding
+└── project-config.schema.json  JSON Schema for project configuration
 ```
 
 ---
