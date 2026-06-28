@@ -111,6 +111,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260624-dep | Add deployment documentation for staging/testing and production environments. | 2026-06-24 | 6fb1b2e | [20260624-deployment-documentation](./quick/20260624-deployment-documentation/) |
+| 270627-hc | Comprehensive project health check — reconcile docs with codebase | 2026-06-27 | d2ef69f | [20260627-project-health-check](./quick/20260627-project-health-check/) |
 
 ## Deferred Items
 
